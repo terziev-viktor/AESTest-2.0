@@ -27,6 +27,7 @@ namespace AESTest2._0
                 string encrypted = Protection.Crypt(inp.Text);
                 if(decrypted == encrypted)
                 {
+                    ExplorerManager.Start();
                     Application.Exit();
                     //ExplorerManager.Start(); // starting explorer.exe
                 }

@@ -70,6 +70,7 @@ namespace AESTest2._0
             this.cmbGroups.Enabled = false;
             this.cmbPosts.Enabled = false;
 
+            ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
