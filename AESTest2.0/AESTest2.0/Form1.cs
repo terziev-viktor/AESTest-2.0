@@ -48,7 +48,7 @@ namespace AESTest2._0
 
             this.btnStart.Enabled = false;
             this.labelTime.Location = new System.Drawing.Point(this.Width / 2 - this.labelTime.Width / 2, 0);
-            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 200);
+            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 250);
             this.stage_1.Location = new System.Drawing.Point(this.Size.Width / 2 - this.stage_1.Width / 2, this.labelTime.Size.Height + 30);
             this.stage_2.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
             this.stage_2.Location = new System.Drawing.Point(0, this.labelTime.Height);
@@ -93,14 +93,12 @@ namespace AESTest2._0
             Workbook wb = app.Workbooks.Open(pathToTemplate);
             Worksheet ws = (Worksheet)wb.Worksheets.get_Item(1);
             Range range = ws.UsedRange;
-
             this.pBar.Visible = true;
             this.pBar.Enabled = true;
             this.pBar.Minimum = 1;
             this.pBar.Maximum = range.Cells.Count;
             this.pBar.Value = 1;
             this.pBar.Step = 1;
-
             for (int i = 1; i < range.Rows.Count; i++)
             {
                 for (int j = 1; j < range.Columns.Count; j++)
@@ -118,16 +116,13 @@ namespace AESTest2._0
                         if (content.Contains("<post>")) content = content.Replace("<post>", post);
                         if (content.Contains("<mark>")) content = content.Replace("<mark>", markInPercent);
                         if (content.Contains("<group>")) content = content.Replace("<group>", group);
-
                         (range.Cells[i, j] as Range).Value2 = content;
                     }
                     this.pBar.PerformStep();
                 }
+                
             }
-            while (this.pBar.Value == this.pBar.Maximum) this.pBar.PerformStep();
-
             wb.SaveAs(saveAsPath, XlFileFormat.xlOpenXMLWorkbook);
-
             wb.Close(true, misValue, misValue);
             app.Quit();
             ReleaseObject(ws);
@@ -263,27 +258,27 @@ namespace AESTest2._0
 
         private void setQuestion(int index)
         {
+            this.UncolorAnswerLabels();
             lblQuestionText.Text = this.questions[index].Questiontext;
             lblAnswerA.Text = this.questions[index].AnswerA;
             lblAnswerB.Text = this.questions[index].AnswerB;
             lblAnswerC.Text = this.questions[index].AnswerC;
             lblAnswerD.Text = this.questions[index].AnswerD;
-            this.UncolorAnswerLabels();
             if (this.questions[index].StudentsAnswer != -1)
             {
                 switch (this.questions[index].StudentsAnswer)
                 {
                     case 1:
-                        this.lblAnswerA.BackColor = Color.Green;
+                        this.lblAnswerA.BackColor = Color.DodgerBlue;
                         break;
                     case 2:
-                        this.lblAnswerB.BackColor = Color.Green;
+                        this.lblAnswerB.BackColor = Color.DodgerBlue;
                         break;
                     case 3:
-                        this.lblAnswerC.BackColor = Color.Green;
+                        this.lblAnswerC.BackColor = Color.DodgerBlue;
                         break;
                     case 4:
-                        this.lblAnswerD.BackColor = Color.Green;
+                        this.lblAnswerD.BackColor = Color.DodgerBlue;
                         break;
                     default: break;
                 }
@@ -352,28 +347,50 @@ namespace AESTest2._0
             this.labelTime.Text = string.Format("Оставащо време: {0}:{1}", this.min, this.sec);
         }
 
+        private void CheckIfHasToHideBtn()
+        {
+            if(this.questionIndex == 0)
+            {
+                this.btnPrev.Enabled = false;
+                this.btnPrev.Visible = false;
+
+                this.btnNext.Enabled = true;
+                this.btnNext.Visible = true;
+            }
+            else if(this.questionIndex == this.questions.Count - 1)
+            {
+                this.btnPrev.Enabled = true;
+                this.btnPrev.Visible = true;
+
+                this.btnNext.Enabled = false;
+                this.btnNext.Visible = false;
+
+                this.btnEnd.Visible = true;
+                this.btnEnd.Enabled = true;
+            }
+            else
+            {
+                this.btnEnd.Visible = false;
+                this.btnEnd.Enabled = false;
+                this.btnPrev.Enabled = true;
+                this.btnPrev.Visible = true;
+                this.btnNext.Enabled = true;
+                this.btnNext.Visible = true;
+            }
+        }
+
         private void btnPrev_Click(object sender, EventArgs e)
         {
-            this.btnEnd.Enabled = false;
-            this.btnEnd.Visible = false;
             this.questionIndex--;
-            if (this.questionIndex < 0)
-            {
-                this.questionIndex = 0;
-            }
             this.setQuestion(this.questionIndex);
+            this.CheckIfHasToHideBtn();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
             this.questionIndex++;
-            if (this.questionIndex >= this.questions.Count - 1)
-            {
-                this.questionIndex = this.questions.Count - 1;
-                this.btnEnd.Enabled = true;
-                this.btnEnd.Visible = true;
-            }
             this.setQuestion(this.questionIndex);
+            this.CheckIfHasToHideBtn();
         }
 
         private void UncolorAnswerLabels()
@@ -416,6 +433,7 @@ namespace AESTest2._0
         // Fills the templates and starts stage_3
         private void btnEnd_Click(object sender, EventArgs e)
         {
+            this.btnEnd.Enabled = false;
             DialogResult dialogResult = MessageBox.Show("Сигурни ли сте че искате да приключите теста?",
                 "Приключи теста",
                 MessageBoxButtons.YesNo);
@@ -565,12 +583,15 @@ namespace AESTest2._0
         {
             this.cmbNames.Items.Clear();
             this.cmbPosts.Items.Clear();
-            this.ReadDataStage_1();
+            this.cmbGroups.SelectedIndex = -1;
             this.stage_3.Enabled = false;
             this.stage_3.Visible = false;
             this.stage_1.Enabled = true;
             this.stage_1.Visible = true;
             this.stage_1.BringToFront();
+            this.btnStart.Enabled = false;
+            this.btnStart.Visible = false;
+            this.ReadDataStage_1();
             this.cmbNames.Enabled = true;
             this.cmbGroups.Enabled = true;
             this.cmbPosts.Enabled = true;
@@ -587,12 +608,20 @@ namespace AESTest2._0
             this.cmbGroups.Enabled = false;
             this.cmbPosts.Enabled = false;
             this.questions.Clear();
-            this.ReadDataStage_2();
-            this.setQuestion(this.questionIndex);
-            this.btnPrev.Enabled = true;
-            this.btnPrev.Visible = true;
+            this.questionIndex = 0;
+            this.btnPrev.Enabled = false;
+            this.btnPrev.Visible = false;
             this.btnNext.Enabled = true;
             this.btnNext.Visible = true;
+            this.btnEnd.Visible = false;
+            this.btnEnd.Enabled = false;
+            this.lblAnswerA.Text = "Отговор А";
+            this.lblAnswerB.Text = "Отговор Б";
+            this.lblAnswerC.Text = "Отговор В";
+            this.lblAnswerD.Text = "Отговор Г";
+            this.lblQuestion.Text = "...";
+            this.ReadDataStage_2();
+            this.setQuestion(this.questionIndex);
             this.Time.Start();
         }
 

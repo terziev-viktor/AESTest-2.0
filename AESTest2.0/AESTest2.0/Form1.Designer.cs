@@ -361,14 +361,14 @@
             // 
             this.stage_3.BackColor = System.Drawing.Color.White;
             this.stage_3.BackgroundImage = global::AESTest2._0.Properties.Resources.aeslogo;
-            this.stage_3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.stage_3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.stage_3.Controls.Add(this.btnNextTest);
             this.stage_3.Controls.Add(this.lblMark);
             this.stage_3.Controls.Add(this.YesNoLabel);
             this.stage_3.Enabled = false;
             this.stage_3.Location = new System.Drawing.Point(958, 269);
             this.stage_3.Name = "stage_3";
-            this.stage_3.Size = new System.Drawing.Size(332, 287);
+            this.stage_3.Size = new System.Drawing.Size(283, 283);
             this.stage_3.TabIndex = 36;
             this.stage_3.Visible = false;
             // 
@@ -378,9 +378,9 @@
             this.btnNextTest.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnNextTest.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNextTest.ForeColor = System.Drawing.Color.White;
-            this.btnNextTest.Location = new System.Drawing.Point(71, 215);
+            this.btnNextTest.Location = new System.Drawing.Point(45, 215);
             this.btnNextTest.Name = "btnNextTest";
-            this.btnNextTest.Size = new System.Drawing.Size(200, 54);
+            this.btnNextTest.Size = new System.Drawing.Size(187, 54);
             this.btnNextTest.TabIndex = 2;
             this.btnNextTest.Text = "Нов изпит";
             this.btnNextTest.UseVisualStyleBackColor = false;
@@ -389,7 +389,7 @@
             // lblMark
             // 
             this.lblMark.AutoSize = true;
-            this.lblMark.Location = new System.Drawing.Point(68, 0);
+            this.lblMark.Location = new System.Drawing.Point(42, 0);
             this.lblMark.Name = "lblMark";
             this.lblMark.Size = new System.Drawing.Size(190, 17);
             this.lblMark.TabIndex = 1;
@@ -400,7 +400,7 @@
             this.YesNoLabel.AutoSize = true;
             this.YesNoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.YesNoLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.YesNoLabel.Location = new System.Drawing.Point(102, 89);
+            this.YesNoLabel.Location = new System.Drawing.Point(79, 89);
             this.YesNoLabel.Name = "YesNoLabel";
             this.YesNoLabel.Size = new System.Drawing.Size(356, 91);
             this.YesNoLabel.TabIndex = 0;
