@@ -500,6 +500,7 @@ namespace AESTest2._0
                 this.pBar.Enabled = false;
                 this.EnterStage_3(mark, passed);
                 this.RemoveCurrentNameFromList(name);
+                Time.Stop();
             }
             else
             {
@@ -619,9 +620,11 @@ namespace AESTest2._0
             this.lblAnswerB.Text = "Отговор Б";
             this.lblAnswerC.Text = "Отговор В";
             this.lblAnswerD.Text = "Отговор Г";
-            this.lblQuestion.Text = "...";
+            this.lblQuestionText.Text = "...";
             this.ReadDataStage_2();
             this.setQuestion(this.questionIndex);
+            this.sec = 0;
+            this.min = 30;
             this.Time.Start();
         }
 
