@@ -187,7 +187,6 @@
             this.Controls.Add(this.inp);
             this.Controls.Add(this.label1);
             this.Name = "PasswordForm";
-            this.Text = "Въведете парола";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

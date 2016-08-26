@@ -93,12 +93,7 @@ namespace AESTest2._0
             Workbook wb = app.Workbooks.Open(pathToTemplate);
             Worksheet ws = (Worksheet)wb.Worksheets.get_Item(1);
             Range range = ws.UsedRange;
-            this.pBar.Visible = true;
-            this.pBar.Enabled = true;
-            this.pBar.Minimum = 1;
-            this.pBar.Maximum = range.Cells.Count;
-            this.pBar.Value = 1;
-            this.pBar.Step = 1;
+            this.setProgressBar(1, range.Rows.Count + range.Columns.Count);
             for (int i = 1; i < range.Rows.Count; i++)
             {
                 for (int j = 1; j < range.Columns.Count; j++)
@@ -120,7 +115,6 @@ namespace AESTest2._0
                     }
                     this.pBar.PerformStep();
                 }
-                
             }
             wb.SaveAs(saveAsPath, XlFileFormat.xlOpenXMLWorkbook);
             wb.Close(true, misValue, misValue);
@@ -496,10 +490,10 @@ namespace AESTest2._0
                 }
                 this.PutInAreToBeExamined();
                 this.GeneratePrivateDocuments(name, mark, protocol);
+                this.RemoveCurrentNameFromList(name);
                 this.pBar.Visible = false;
                 this.pBar.Enabled = false;
                 this.EnterStage_3(mark, passed);
-                this.RemoveCurrentNameFromList(name);
                 Time.Stop();
             }
             else
@@ -541,7 +535,7 @@ namespace AESTest2._0
             object misValue = System.Reflection.Missing.Value;
             xlWorkBook = xlApp.Workbooks.Open(this.mainPath + "Имена.xlsx");
             xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
-
+            this.setProgressBar(1, this.cmbNames.Items.Count / 2 - 1);
             for (int i = 0; i < this.cmbNames.Items.Count; i++)
             {
                 if ((string)this.cmbNames.Items[i] == name)
@@ -550,6 +544,7 @@ namespace AESTest2._0
                     this.allEgn.RemoveAt(i);
                     break;
                 }
+                pBar.PerformStep();
             }
 
             int index;
@@ -557,6 +552,7 @@ namespace AESTest2._0
             {
                 (xlWorkSheet.Cells[index, 1] as Range).Value2 = this.cmbNames.Items[index - 1];
                 (xlWorkSheet.Cells[index, 2] as Range).Value2 = this.allEgn[index - 1];
+                pBar.PerformStep();
             }
             (xlWorkSheet.Cells[index, 1] as Range).Value2 = "";
             (xlWorkSheet.Cells[index, 2] as Range).Value2 = "";
@@ -666,6 +662,7 @@ namespace AESTest2._0
 
         private void GeneratePrivateDocuments(string name, int mark, int protocol)
         {
+            setProgressBar(1, this.questions.Count);
             using (StreamWriter privateWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Anatoliy\Отговори на {0}.txt", name)))
             using (StreamWriter publicWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Отговори\Отговори на {0}.txt", name)))
             {
@@ -711,6 +708,7 @@ namespace AESTest2._0
                         publicWriter.WriteLine("**Грешен**");
                     }
                     publicWriter.WriteLine("-------------------------------------------------------");
+                    this.pBar.PerformStep();
                 }
             }
         }
@@ -830,6 +828,16 @@ namespace AESTest2._0
         private void btnNextTest_Click(object sender, EventArgs e)
         {
             this.EnterStage_1();
+        }
+
+        private void setProgressBar(int min, int max)
+        {
+            this.pBar.Visible = true;
+            this.pBar.Enabled = true;
+            this.pBar.Minimum = min;
+            this.pBar.Maximum = max;
+            this.pBar.Value = 1;
+            this.pBar.Step = 1;
         }
     }
 }
