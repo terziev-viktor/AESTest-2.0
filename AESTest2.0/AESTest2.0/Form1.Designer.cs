@@ -411,6 +411,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1322, 790);
+            this.ControlBox = false;
             this.Controls.Add(this.stage_2);
             this.Controls.Add(this.stage_1);
             this.Controls.Add(this.labelTime);

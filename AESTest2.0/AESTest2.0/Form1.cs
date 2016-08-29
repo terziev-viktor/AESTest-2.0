@@ -58,10 +58,14 @@ namespace AESTest2._0
             this.btnEnd.Location = new System.Drawing.Point(this.Width / 2 - this.btnEnd.Width / 2, this.Height - (this.btnEnd.Height + 100));
             this.pBar.Location = new System.Drawing.Point(this.Width / 2 - this.pBar.Width / 2, this.btnEnd.Location.Y - this.pBar.Height);
             this.lblQuestionText.MaximumSize = new Size(this.stage_2.Width - this.lblQuestion.Width - 20, 500);
-            this.lblAnswerA.Location = new System.Drawing.Point(50, this.Height / 3);
-            this.lblAnswerB.Location = new System.Drawing.Point(50, this.Height * 2 / 3);
+            this.lblAnswerA.Location = new System.Drawing.Point(25, this.Height / 3);
+            this.lblAnswerA.MaximumSize = new Size(this.Width / 3, this.Height / 3);
+            this.lblAnswerB.Location = new System.Drawing.Point(25, this.Height * 2 / 3);
+            this.lblAnswerB.MaximumSize = new Size(this.Width / 3, this.Height / 3);
             this.lblAnswerC.Location = new System.Drawing.Point(this.Width * 2 / 3, this.Height / 3);
+            this.lblAnswerC.MaximumSize = new Size(this.Width / 3 - 25, this.Height / 3);
             this.lblAnswerD.Location = new System.Drawing.Point(this.Width * 2 / 3, this.Height * 2 / 3);
+            this.lblAnswerD.MaximumSize = new Size(this.Width / 3 - 25, this.Height / 3);
             this.btnStart.Height = 50;
             this.cmbNames.Width = stage_1.Width - (lblPosts.Width + 20);
             this.cmbGroups.Width = stage_1.Width - (lblPosts.Width + 20);
