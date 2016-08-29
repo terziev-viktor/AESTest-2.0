@@ -416,7 +416,7 @@
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.stage_3);
             this.Name = "MainForm";
-            this.Text = "AESTest";
+            this.Text = "AESTest 2.0";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.stage_2.ResumeLayout(false);
