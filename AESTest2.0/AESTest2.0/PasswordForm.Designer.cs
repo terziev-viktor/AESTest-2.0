@@ -187,6 +187,9 @@
             this.Controls.Add(this.inp);
             this.Controls.Add(this.label1);
             this.Name = "PasswordForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

@@ -416,9 +416,15 @@
             this.Controls.Add(this.stage_1);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.stage_3);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "MainForm";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "AESTest 2.0";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.stage_2.ResumeLayout(false);
             this.stage_2.PerformLayout();

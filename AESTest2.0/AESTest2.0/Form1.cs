@@ -40,7 +40,8 @@ namespace AESTest2._0
         private void MainForm_Load(object sender, EventArgs e)
         {
             this.ShowIcon = false;
-
+            this.MaximumSize = this.Size;
+            this.MinimumSize = this.Size;
             stage_2.Enabled = false;
             stage_2.Visible = false;
             stage_3.Visible = false;
@@ -646,7 +647,7 @@ namespace AESTest2._0
 
             if (this.StudentHasAlreadyFailed(name)) path = "Повторно " + path;
 
-            using (StreamWriter writer = new StreamWriter(path, true))
+            using (StreamWriter writer = new StreamWriter(this.mainPath + @"\" + path, true))
             {
                 writer.WriteLine(name);
             }
@@ -842,6 +843,14 @@ namespace AESTest2._0
             this.pBar.Maximum = max;
             this.pBar.Value = 1;
             this.pBar.Step = 1;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == System.Windows.Forms.CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }
