@@ -662,9 +662,9 @@ namespace AESTest2._0
             string path = "Неиздържали";
             switch (this.getGroupType(this.cmbGroups.SelectedItem.ToString()))
             {
-                case 0: path += "Наредба 9.txt"; break;
-                case 1: path += "Ел.txt"; break;
-                case 2: path += "НеЕл.txt"; break;
+                case 0: path += " Наредба 9.txt"; break;
+                case 1: path += " Ел.txt"; break;
+                case 2: path += " НеЕл.txt"; break;
             }
             return path;
         }
