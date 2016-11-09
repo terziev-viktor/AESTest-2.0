@@ -448,7 +448,6 @@ namespace AESTest2._0
                 string[] selectedItem = cmbGroups.SelectedItem.ToString().Split();
                 char group = selectedItem[selectedItem.Length - 1][0]; // student's group as char
                 int mark = ((rightAnswersCount * 100) / this.questionsForGroup[group]); // students mark
-
                 int protocol = this.getProtocolNumber(); // number of protocol
                 string name = this.cmbNames.SelectedItem.ToString(); // student's name
                 string post = this.cmbPosts.SelectedItem.ToString(); // student's post
@@ -461,7 +460,7 @@ namespace AESTest2._0
                 string[] nameSplitted = name.Split(new char[] { ' ' });
                 string saveAsPath = this.mainPath + @"Генерирани Документи\" + name;
                 saveAsPath += passed ? "_Издържал_" : "_Неиздържал_";
-                saveAsPath += this.cmbGroups.SelectedItem.ToString() + ".xlsx";
+                saveAsPath += this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + ".xlsx";
                 this.Fill(this.mainPath + @"Темплейти\" + path, saveAsPath,
                     protocol.ToString(),
                     date, 
@@ -475,7 +474,12 @@ namespace AESTest2._0
                     groupAsString);
                 if(passed)
                 {
-                    this.Fill(this.mainPath + @"Темплейти\" + certificatePath, saveAsPath,
+                    string saveCertificatePath = this.mainPath + @"Генерирани Документи\Удостоверения\" + 
+                        name +
+                        "_" +
+                        this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + "_Удостоверение.xlsx;";
+
+                    this.Fill(this.mainPath + @"Темплейти\" + certificatePath, saveCertificatePath,
                         protocol.ToString(),
                         date, 
                         dateplus,
@@ -822,6 +826,13 @@ namespace AESTest2._0
             if (type[5] == "ПБЗРНЕУ") return 2; // не ел група
             throw new System.Exception("Group of test is not supported");
 
+        }
+        private string getGroupTypeString(string group)
+        {
+            string[] type = group.Split(' ');
+            if (type.Length == 4) return "Наредба 9"; // наредба 9
+            return type[5];
+            throw new System.Exception("Group of test is not supported");
         }
 
         private void labelTime_Click(object sender, EventArgs e)
