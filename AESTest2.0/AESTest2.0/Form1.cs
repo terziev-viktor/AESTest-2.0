@@ -49,8 +49,9 @@ namespace AESTest2._0
 
             this.btnStart.Enabled = false;
             this.labelTime.Location = new System.Drawing.Point(this.Width / 2 - this.labelTime.Width / 2, 0);
-            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 250);
+            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 500);
             this.stage_1.Location = new System.Drawing.Point(this.Size.Width / 2 - this.stage_1.Width / 2, this.labelTime.Size.Height + 30);
+            this.logoStage_1.Size = new Size(this.stage_1.Width, this.stage_1.Height / 2);
             this.stage_2.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
             this.stage_2.Location = new System.Drawing.Point(0, this.labelTime.Height);
             this.stage_3.Location = new System.Drawing.Point(this.Width / 2 - this.stage_3.Width / 2, this.Height / 2 - this.stage_3.Height / 2);

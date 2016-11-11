@@ -56,10 +56,12 @@
             this.lblMark = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.YesNoLabel = new System.Windows.Forms.TextBox();
+            this.logoStage_1 = new System.Windows.Forms.PictureBox();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).BeginInit();
             this.SuspendLayout();
             // 
             // labelTime
@@ -207,7 +209,7 @@
             this.stage_2.Controls.Add(this.lblAnswerC);
             this.stage_2.Controls.Add(this.lblAnswerB);
             this.stage_2.Controls.Add(this.lblAnswerA);
-            this.stage_2.Location = new System.Drawing.Point(12, 12);
+            this.stage_2.Location = new System.Drawing.Point(12, 28);
             this.stage_2.Name = "stage_2";
             this.stage_2.Size = new System.Drawing.Size(934, 738);
             this.stage_2.TabIndex = 51;
@@ -235,8 +237,8 @@
             // stage_1
             // 
             this.stage_1.BackColor = System.Drawing.Color.White;
-            this.stage_1.BackgroundImage = global::AESTest2._0.Properties.Resources.tpp_aes_logo;
             this.stage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.stage_1.Controls.Add(this.logoStage_1);
             this.stage_1.Controls.Add(this.btnStart);
             this.stage_1.Controls.Add(this.cmbPosts);
             this.stage_1.Controls.Add(this.lblPosts);
@@ -244,9 +246,9 @@
             this.stage_1.Controls.Add(this.lblNames);
             this.stage_1.Controls.Add(this.cmbGroups);
             this.stage_1.Controls.Add(this.cmbNames);
-            this.stage_1.Location = new System.Drawing.Point(143, 37);
+            this.stage_1.Location = new System.Drawing.Point(97, 12);
             this.stage_1.Name = "stage_1";
-            this.stage_1.Size = new System.Drawing.Size(1008, 226);
+            this.stage_1.Size = new System.Drawing.Size(1008, 511);
             this.stage_1.TabIndex = 38;
             // 
             // btnStart
@@ -420,6 +422,16 @@
             this.YesNoLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.YesNoLabel.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
+            // logoStage_1
+            // 
+            this.logoStage_1.BackgroundImage = global::AESTest2._0.Properties.Resources.tpp_aes_logo;
+            this.logoStage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.logoStage_1.Location = new System.Drawing.Point(3, 226);
+            this.logoStage_1.Name = "logoStage_1";
+            this.logoStage_1.Size = new System.Drawing.Size(1002, 276);
+            this.logoStage_1.TabIndex = 49;
+            this.logoStage_1.TabStop = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -448,6 +460,7 @@
             this.stage_3.ResumeLayout(false);
             this.stage_3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -481,6 +494,7 @@
         private System.Windows.Forms.Timer Time;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TextBox YesNoLabel;
+        private System.Windows.Forms.PictureBox logoStage_1;
     }
 }
 
