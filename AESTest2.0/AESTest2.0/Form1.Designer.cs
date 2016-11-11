@@ -54,10 +54,12 @@
             this.stage_3 = new System.Windows.Forms.Panel();
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
-            this.YesNoLabel = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.YesNoLabel = new System.Windows.Forms.TextBox();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // labelTime
@@ -361,15 +363,15 @@
             // stage_3
             // 
             this.stage_3.BackColor = System.Drawing.Color.White;
-            this.stage_3.BackgroundImage = global::AESTest2._0.Properties.Resources.aeslogo;
             this.stage_3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.stage_3.Controls.Add(this.YesNoLabel);
             this.stage_3.Controls.Add(this.btnNextTest);
             this.stage_3.Controls.Add(this.lblMark);
-            this.stage_3.Controls.Add(this.YesNoLabel);
+            this.stage_3.Controls.Add(this.pictureBox1);
             this.stage_3.Enabled = false;
             this.stage_3.Location = new System.Drawing.Point(958, 269);
             this.stage_3.Name = "stage_3";
-            this.stage_3.Size = new System.Drawing.Size(283, 283);
+            this.stage_3.Size = new System.Drawing.Size(352, 380);
             this.stage_3.TabIndex = 36;
             this.stage_3.Visible = false;
             // 
@@ -379,9 +381,9 @@
             this.btnNextTest.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnNextTest.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNextTest.ForeColor = System.Drawing.Color.White;
-            this.btnNextTest.Location = new System.Drawing.Point(45, 215);
+            this.btnNextTest.Location = new System.Drawing.Point(34, 323);
             this.btnNextTest.Name = "btnNextTest";
-            this.btnNextTest.Size = new System.Drawing.Size(187, 54);
+            this.btnNextTest.Size = new System.Drawing.Size(288, 54);
             this.btnNextTest.TabIndex = 2;
             this.btnNextTest.Text = "Нов изпит";
             this.btnNextTest.UseVisualStyleBackColor = false;
@@ -390,22 +392,33 @@
             // lblMark
             // 
             this.lblMark.AutoSize = true;
-            this.lblMark.Location = new System.Drawing.Point(42, 0);
+            this.lblMark.Location = new System.Drawing.Point(84, 0);
             this.lblMark.Name = "lblMark";
             this.lblMark.Size = new System.Drawing.Size(190, 17);
             this.lblMark.TabIndex = 1;
             this.lblMark.Text = "Оценка от последен изпит:";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackgroundImage = global::AESTest2._0.Properties.Resources.aeslogo;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBox1.Location = new System.Drawing.Point(3, 7);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(346, 219);
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
+            // 
             // YesNoLabel
             // 
-            this.YesNoLabel.AutoSize = true;
+            this.YesNoLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.YesNoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.YesNoLabel.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.YesNoLabel.Location = new System.Drawing.Point(79, 89);
+            this.YesNoLabel.Location = new System.Drawing.Point(34, 226);
             this.YesNoLabel.Name = "YesNoLabel";
-            this.YesNoLabel.Size = new System.Drawing.Size(356, 91);
-            this.YesNoLabel.TabIndex = 0;
+            this.YesNoLabel.Size = new System.Drawing.Size(288, 91);
+            this.YesNoLabel.TabIndex = 4;
             this.YesNoLabel.Text = "lblYesNo";
+            this.YesNoLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.YesNoLabel.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // MainForm
             // 
@@ -434,6 +447,7 @@
             this.stage_1.PerformLayout();
             this.stage_3.ResumeLayout(false);
             this.stage_3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -444,7 +458,6 @@
         private System.Windows.Forms.Panel stage_3;
         private System.Windows.Forms.Button btnNextTest;
         private System.Windows.Forms.Label lblMark;
-        private System.Windows.Forms.Label YesNoLabel;
         private System.Windows.Forms.Label labelTime;
         private System.Windows.Forms.Panel stage_1;
         private System.Windows.Forms.ComboBox cmbPosts;
@@ -466,6 +479,8 @@
         private System.Windows.Forms.Button btnNext;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Timer Time;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.TextBox YesNoLabel;
     }
 }
 

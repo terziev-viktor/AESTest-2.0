@@ -78,8 +78,7 @@ namespace AESTest2._0
             ExplorerManager.Kill();
             this.EnterStage_1();
         }
-
-        // Fix the ws and range cells disparity
+        
         private void Fill(string pathToTemplate, string saveAsPath,
             string protocolNumber,
             string date,
@@ -109,7 +108,7 @@ namespace AESTest2._0
                         if (content.Contains("<protocol>")) content = content.Replace("<protocol>", protocolNumber);
                         if (content.Contains("<date>")) content = content.Replace("<date>", date);
                         if (content.Contains("<date+>")) content = content.Replace("<date+>", dateplus);
-                        if (content.Contains("<fullname>")) content = content.Replace("<fullname>", name);
+                        if (content.Contains("<fullname>")) content = content.Replace("<fullname>", fullname);
                         if (content.Contains("<name>")) content = content.Replace("<name>", name);
                         if (content.Contains("<sur>")) content = content.Replace("<sur>", sur);
                         if (content.Contains("<famil>")) content = content.Replace("<famil>",famil);
@@ -429,7 +428,7 @@ namespace AESTest2._0
         }
 
         //
-        // Fills the templates and starts stage_3
+        // Fills the templates and enters stage_3
         private void btnEnd_Click(object sender, EventArgs e)
         {
             this.btnEnd.Enabled = false;
@@ -477,13 +476,14 @@ namespace AESTest2._0
                     string saveCertificatePath = this.mainPath + @"Генерирани Документи\Удостоверения\" + 
                         name +
                         "_" +
-                        this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + "_Удостоверение.xlsx;";
+                        this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + "_Удостоверение.xlsx";
 
                     this.Fill(this.mainPath + @"Темплейти\" + certificatePath, saveCertificatePath,
                         protocol.ToString(),
                         date, 
                         dateplus,
-                        name,nameSplitted[0], 
+                        name,
+                        nameSplitted[0], 
                         nameSplitted[1],
                         nameSplitted[2],
                         post,
@@ -862,6 +862,11 @@ namespace AESTest2._0
             {
                 e.Cancel = true;
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
