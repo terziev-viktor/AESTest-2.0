@@ -118,7 +118,7 @@ namespace AESTest2._0
                         if (content.Contains("<post>")) content = content.Replace("<post>", post);
                         if (content.Contains("<mark>")) content = content.Replace("<mark>", markInPercent);
                         if (content.Contains("<group>")) content = content.Replace("<group>", group);
-                        if (content.Contains("<egn>")) content = content.Replace("<egn>", egn);
+                        if (content.Contains("<pin>")) content = content.Replace("<pin>", egn);
                         (range.Cells[i, j] as Range).Value2 = content;
                     }
                     this.pBar.PerformStep();
