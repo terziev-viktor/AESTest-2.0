@@ -90,7 +90,8 @@ namespace AESTest2._0
             string famil,
             string post,
             string markInPercent,
-            string group)
+            string group,
+            string egn)
         {
             
             object misValue = System.Reflection.Missing.Value;
@@ -116,6 +117,7 @@ namespace AESTest2._0
                         if (content.Contains("<post>")) content = content.Replace("<post>", post);
                         if (content.Contains("<mark>")) content = content.Replace("<mark>", markInPercent);
                         if (content.Contains("<group>")) content = content.Replace("<group>", group);
+                        if (content.Contains("<egn>")) content = content.Replace("<egn>", egn);
                         (range.Cells[i, j] as Range).Value2 = content;
                     }
                     this.pBar.PerformStep();
@@ -451,11 +453,12 @@ namespace AESTest2._0
                 int protocol = this.getProtocolNumber(); // number of protocol
                 string name = this.cmbNames.SelectedItem.ToString(); // student's name
                 string post = this.cmbPosts.SelectedItem.ToString(); // student's post
+                string egn = this.allEgn[this.cmbNames.SelectedIndex];
                 string date = DateTime.Now.ToShortDateString();
                 string dateplus = DateTime.Now.AddYears(1).ToShortDateString();
                 string path = this.GetTemplatePath(mark, name); // Path to main template for current group and post
                 string certificatePath = this.getCertificatePath(); // path to certificate for current group
-                bool passed = mark >= this.calcScoreNeeded(); // If the student passed the exam
+                bool passed = true; // mark >= this.calcScoreNeeded(); // If the student passed the exam
                 string groupAsString = "" + group;
                 string[] nameSplitted = name.Split(new char[] { ' ' });
                 string saveAsPath = this.mainPath + @"Генерирани Документи\" + name;
@@ -471,7 +474,8 @@ namespace AESTest2._0
                     nameSplitted[2], 
                     post, 
                     mark.ToString(), 
-                    groupAsString);
+                    groupAsString,
+                    egn);
                 if(passed)
                 {
                     string saveCertificatePath = this.mainPath + @"Генерирани Документи\Удостоверения\" + 
@@ -489,7 +493,8 @@ namespace AESTest2._0
                         nameSplitted[2],
                         post,
                         mark.ToString(),
-                        groupAsString);
+                        groupAsString,
+                        egn);
                     string failedDoc = this.GetFailedDocument();
                     this.RemoveFromFailedDocument(failedDoc, name);
                     this.RemoveFromFailedDocument("Повторно " + failedDoc, name);

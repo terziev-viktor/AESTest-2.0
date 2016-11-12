@@ -44,6 +44,7 @@
             this.btnNext = new System.Windows.Forms.Button();
             this.Time = new System.Windows.Forms.Timer(this.components);
             this.stage_1 = new System.Windows.Forms.Panel();
+            this.logoStage_1 = new System.Windows.Forms.PictureBox();
             this.btnStart = new System.Windows.Forms.Button();
             this.cmbPosts = new System.Windows.Forms.ComboBox();
             this.lblPosts = new System.Windows.Forms.Label();
@@ -52,16 +53,15 @@
             this.cmbGroups = new System.Windows.Forms.ComboBox();
             this.cmbNames = new System.Windows.Forms.ComboBox();
             this.stage_3 = new System.Windows.Forms.Panel();
+            this.YesNoLabel = new System.Windows.Forms.TextBox();
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.YesNoLabel = new System.Windows.Forms.TextBox();
-            this.logoStage_1 = new System.Windows.Forms.PictureBox();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).BeginInit();
             this.stage_3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).BeginInit();
             this.SuspendLayout();
             // 
             // labelTime
@@ -209,7 +209,7 @@
             this.stage_2.Controls.Add(this.lblAnswerC);
             this.stage_2.Controls.Add(this.lblAnswerB);
             this.stage_2.Controls.Add(this.lblAnswerA);
-            this.stage_2.Location = new System.Drawing.Point(12, 28);
+            this.stage_2.Location = new System.Drawing.Point(97, 554);
             this.stage_2.Name = "stage_2";
             this.stage_2.Size = new System.Drawing.Size(934, 738);
             this.stage_2.TabIndex = 51;
@@ -250,6 +250,16 @@
             this.stage_1.Name = "stage_1";
             this.stage_1.Size = new System.Drawing.Size(1008, 511);
             this.stage_1.TabIndex = 38;
+            // 
+            // logoStage_1
+            // 
+            this.logoStage_1.BackgroundImage = global::AESTest2._0.Properties.Resources.tpp_aes_logo;
+            this.logoStage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.logoStage_1.Location = new System.Drawing.Point(3, 226);
+            this.logoStage_1.Name = "logoStage_1";
+            this.logoStage_1.Size = new System.Drawing.Size(1002, 276);
+            this.logoStage_1.TabIndex = 49;
+            this.logoStage_1.TabStop = false;
             // 
             // btnStart
             // 
@@ -377,6 +387,18 @@
             this.stage_3.TabIndex = 36;
             this.stage_3.Visible = false;
             // 
+            // YesNoLabel
+            // 
+            this.YesNoLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.YesNoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.YesNoLabel.Location = new System.Drawing.Point(34, 226);
+            this.YesNoLabel.Name = "YesNoLabel";
+            this.YesNoLabel.Size = new System.Drawing.Size(288, 91);
+            this.YesNoLabel.TabIndex = 4;
+            this.YesNoLabel.Text = "lblYesNo";
+            this.YesNoLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.YesNoLabel.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
             // btnNextTest
             // 
             this.btnNextTest.BackColor = System.Drawing.Color.DodgerBlue;
@@ -410,28 +432,6 @@
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
-            // YesNoLabel
-            // 
-            this.YesNoLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.YesNoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.YesNoLabel.Location = new System.Drawing.Point(34, 226);
-            this.YesNoLabel.Name = "YesNoLabel";
-            this.YesNoLabel.Size = new System.Drawing.Size(288, 91);
-            this.YesNoLabel.TabIndex = 4;
-            this.YesNoLabel.Text = "lblYesNo";
-            this.YesNoLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.YesNoLabel.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // logoStage_1
-            // 
-            this.logoStage_1.BackgroundImage = global::AESTest2._0.Properties.Resources.tpp_aes_logo;
-            this.logoStage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.logoStage_1.Location = new System.Drawing.Point(3, 226);
-            this.logoStage_1.Name = "logoStage_1";
-            this.logoStage_1.Size = new System.Drawing.Size(1002, 276);
-            this.logoStage_1.TabIndex = 49;
-            this.logoStage_1.TabStop = false;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -457,10 +457,10 @@
             this.stage_2.PerformLayout();
             this.stage_1.ResumeLayout(false);
             this.stage_1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).EndInit();
             this.stage_3.ResumeLayout(false);
             this.stage_3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
