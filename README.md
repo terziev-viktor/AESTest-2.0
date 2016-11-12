@@ -1,16 +1,16 @@
 # AESTest-2.0
 
-Template alphabet:
-<protocol> - Number of protocol
-<date> - Current date
-<date+> - Current date + One Year
-<fullname> - Full name of the student
-<name> - First name of student
-<sur> - Surname of student
-<famil> - Falil name of student
-<post> - Post of the student
-<mark> - Student's mark in %
-<group> - Group of the student
-<pin> - Personal identification number of the student
+Template alphabet:<br>
+&lt;protocol&gt; - Number of protocol<br>
+&lt;date&gt; - Current date<br>
+&lt;date+&gt; - Current date + One Year<br>
+&lt;fullname&gt; - Full name of the student<br>
+&lt;name&gt; - First name of student<br>
+&lt;sur&gt; - Surname of student<br>
+&lt;famil&gt; - Falil name of student<br>
+&lt;post&gt; - Post of the student<br>
+&lt;mark&gt; - Student's mark in %<br>
+&lt;group&gt; - Group of the student<br>
+&lt;pin&gt; - Personal identification number of the student<br>
 
 
