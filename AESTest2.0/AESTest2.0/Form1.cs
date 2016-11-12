@@ -46,8 +46,9 @@ namespace AESTest2._0
             stage_2.Visible = false;
             stage_3.Visible = false;
             stage_3.Enabled = false;
-
+            this.YesNoLabel.Enabled = false;
             this.btnStart.Enabled = false;
+
             this.labelTime.Location = new System.Drawing.Point(this.Width / 2 - this.labelTime.Width / 2, 0);
             this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 500);
             this.stage_1.Location = new System.Drawing.Point(this.Size.Width / 2 - this.stage_1.Width / 2, this.labelTime.Size.Height + 30);
@@ -458,7 +459,7 @@ namespace AESTest2._0
                 string dateplus = DateTime.Now.AddYears(1).ToShortDateString();
                 string path = this.GetTemplatePath(mark, name); // Path to main template for current group and post
                 string certificatePath = this.getCertificatePath(); // path to certificate for current group
-                bool passed = true; // mark >= this.calcScoreNeeded(); // If the student passed the exam
+                bool passed = mark >= this.calcScoreNeeded(); // If the student passed the exam
                 string groupAsString = "" + group;
                 string[] nameSplitted = name.Split(new char[] { ' ' });
                 string saveAsPath = this.mainPath + @"Генерирани Документи\" + name;
