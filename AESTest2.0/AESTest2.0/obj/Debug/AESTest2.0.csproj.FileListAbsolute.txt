@@ -8,3 +8,13 @@ C:\Users\Viktor\Projects\AESTEST\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AES
 C:\Users\Viktor\Projects\AESTEST\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.exe
 C:\Users\Viktor\Projects\AESTEST\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.pdb
 C:\Users\Viktor\Projects\AESTEST\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.PasswordForm.resources
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.exe.config
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.exe
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.pdb
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.exe
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.pdb
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.csprojResolveAssemblyReference.cache
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.MainForm.resources
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.PasswordForm.resources
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.Properties.Resources.resources
+C:\Users\terzi\Projects\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.csproj.GenerateResource.Cache

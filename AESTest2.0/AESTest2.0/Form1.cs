@@ -450,6 +450,7 @@ namespace AESTest2._0
                 int rightAnswersCount = rightAnswers.Count(); // number of right answers
                 string[] selectedItem = cmbGroups.SelectedItem.ToString().Split();
                 char group = selectedItem[selectedItem.Length - 1][0]; // student's group as char
+                string groupTypeStr = this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()); // selected group by user (el or notel)
                 int mark = ((rightAnswersCount * 100) / this.questionsForGroup[group]); // students mark
                 int protocol = this.getProtocolNumber(); // number of protocol
                 string name = this.cmbNames.SelectedItem.ToString(); // student's name
@@ -460,11 +461,12 @@ namespace AESTest2._0
                 string path = this.GetTemplatePath(mark, name); // Path to main template for current group and post
                 string certificatePath = this.getCertificatePath(); // path to certificate for current group
                 bool passed = mark >= this.calcScoreNeeded(); // If the student passed the exam
+                string passedStr = passed ? "Издържал" : "Неиздържал";
                 string groupAsString = "" + group;
                 string[] nameSplitted = name.Split(new char[] { ' ' });
                 string saveAsPath = this.mainPath + @"Генерирани Документи\" + name;
-                saveAsPath += passed ? "_Издържал_" : "_Неиздържал_";
-                saveAsPath += this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + ".xlsx";
+                saveAsPath += "_" + passedStr + "_";
+                saveAsPath += groupTypeStr + ".xlsx";
                 this.Fill(this.mainPath + @"Темплейти\" + path, saveAsPath,
                     protocol.ToString(),
                     date, 
@@ -505,7 +507,7 @@ namespace AESTest2._0
                     this.PutInFailedDocument(name);
                 }
                 this.PutInAreToBeExamined();
-                this.GeneratePrivateDocuments(name, mark, protocol);
+                this.GeneratePrivateDocuments(name, mark, protocol, passedStr, groupTypeStr);
                 this.RemoveCurrentNameFromList(name);
                 this.pBar.Visible = false;
                 this.pBar.Enabled = false;
@@ -676,11 +678,11 @@ namespace AESTest2._0
             return path;
         }
 
-        private void GeneratePrivateDocuments(string name, int mark, int protocol)
+        private void GeneratePrivateDocuments(string name, int mark, int protocol, string passed, string group)
         {
             setProgressBar(1, this.questions.Count);
-            using (StreamWriter privateWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Anatoliy\Отговори на {0}.txt", name)))
-            using (StreamWriter publicWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Отговори\Отговори на {0}.txt", name)))
+            using (StreamWriter privateWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Anatoliy\Отговори на {0}_{1}_{2}.txt", name, passed, group)))
+            using (StreamWriter publicWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Отговори\Отговори на {0}_{1}_{2}.txt", name, passed, group)))
             {
                 int indexOfQuestion = 1;
                 publicWriter.WriteLine(string.Format("Дата: {0}-{1}-{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year));
@@ -735,11 +737,14 @@ namespace AESTest2._0
             {
                 return "certificate_neel.xlsx";
             }
-            if (this.cmbGroups.SelectedIndex < 8)
+            else if (this.cmbGroups.SelectedIndex < 8)
             {
                 return "certificate_el.xlsx";
             }
-            return "certificate_9.xlsx";
+            else
+            {
+                return "certificate_9.xlsx";
+            }
         }
 
         private string GetTemplatePath(int mark, string name)
@@ -834,12 +839,13 @@ namespace AESTest2._0
             throw new System.Exception("Group of test is not supported");
 
         }
+
         private string getGroupTypeString(string group)
         {
             string[] type = group.Split(' ');
-            if (type.Length == 4) return "Наредба 9"; // наредба 9
+            if (type.Length == 4) return "Наредба_9"; // наредба 9
             return type[5];
-            throw new System.Exception("Group of test is not supported");
+            throw new Exception("Group of test is not supported");
         }
 
         private void labelTime_Click(object sender, EventArgs e)
