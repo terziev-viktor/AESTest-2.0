@@ -58,6 +58,7 @@ namespace AESTest2._0
             this.stage_3.Location = new System.Drawing.Point(this.Width / 2 - this.stage_3.Width / 2, this.Height / 2 - this.stage_3.Height / 2);
             this.btnPrev.Location = new System.Drawing.Point(10, this.Height - (this.btnPrev.Height + 100));
             this.btnNext.Location = new System.Drawing.Point(this.Width - (this.btnNext.Size.Width + 30), this.Height - (this.btnNext.Height + 100));
+            this.btnQuestIndex.Location = new System.Drawing.Point(this.Width / 2 - this.btnQuestIndex.Width / 2, this.Height - (this.btnQuestIndex.Height + 100));
             this.btnEnd.Location = new System.Drawing.Point(this.Width / 2 - this.btnEnd.Width / 2, this.Height - (this.btnEnd.Height + 100));
             this.pBar.Location = new System.Drawing.Point(this.Width / 2 - this.pBar.Width / 2, this.btnEnd.Location.Y - this.pBar.Height);
             this.lblQuestionText.MaximumSize = new Size(this.stage_2.Width - this.lblQuestion.Width - 20, 500);
@@ -369,11 +370,14 @@ namespace AESTest2._0
 
                 this.btnEnd.Visible = true;
                 this.btnEnd.Enabled = true;
+
+                this.btnQuestIndex.Visible = false;
             }
             else
             {
                 this.btnEnd.Visible = false;
                 this.btnEnd.Enabled = false;
+                this.btnQuestIndex.Visible = true;
                 this.btnPrev.Enabled = true;
                 this.btnPrev.Visible = true;
                 this.btnNext.Enabled = true;
@@ -384,6 +388,7 @@ namespace AESTest2._0
         private void btnPrev_Click(object sender, EventArgs e)
         {
             this.questionIndex--;
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
             this.setQuestion(this.questionIndex);
             this.CheckIfHasToHideBtn();
         }
@@ -391,6 +396,7 @@ namespace AESTest2._0
         private void btnNext_Click(object sender, EventArgs e)
         {
             this.questionIndex++;
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
             this.setQuestion(this.questionIndex);
             this.CheckIfHasToHideBtn();
         }
@@ -636,6 +642,7 @@ namespace AESTest2._0
             this.lblAnswerD.Text = "Отговор Г";
             this.lblQuestionText.Text = "...";
             this.ReadDataStage_2();
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
             this.setQuestion(this.questionIndex);
             this.sec = 0;
             this.min = 30;

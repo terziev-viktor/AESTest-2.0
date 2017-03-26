@@ -57,6 +57,7 @@
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.btnQuestIndex = new System.Windows.Forms.Button();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoStage_1)).BeginInit();
@@ -199,6 +200,7 @@
             // stage_2
             // 
             this.stage_2.BackColor = System.Drawing.Color.White;
+            this.stage_2.Controls.Add(this.btnQuestIndex);
             this.stage_2.Controls.Add(this.lblQuestionText);
             this.stage_2.Controls.Add(this.btnNext);
             this.stage_2.Controls.Add(this.lblQuestion);
@@ -209,7 +211,7 @@
             this.stage_2.Controls.Add(this.lblAnswerC);
             this.stage_2.Controls.Add(this.lblAnswerB);
             this.stage_2.Controls.Add(this.lblAnswerA);
-            this.stage_2.Location = new System.Drawing.Point(97, 554);
+            this.stage_2.Location = new System.Drawing.Point(97, 604);
             this.stage_2.Name = "stage_2";
             this.stage_2.Size = new System.Drawing.Size(934, 738);
             this.stage_2.TabIndex = 51;
@@ -432,6 +434,23 @@
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
+            // btnQuestIndex
+            // 
+            this.btnQuestIndex.BackColor = System.Drawing.Color.DodgerBlue;
+            this.btnQuestIndex.Enabled = false;
+            this.btnQuestIndex.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.btnQuestIndex.FlatAppearance.BorderSize = 0;
+            this.btnQuestIndex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnQuestIndex.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnQuestIndex.ForeColor = System.Drawing.SystemColors.Control;
+            this.btnQuestIndex.Location = new System.Drawing.Point(323, 355);
+            this.btnQuestIndex.Name = "btnQuestIndex";
+            this.btnQuestIndex.Size = new System.Drawing.Size(258, 68);
+            this.btnQuestIndex.TabIndex = 52;
+            this.btnQuestIndex.Text = "X/Y";
+            this.btnQuestIndex.UseMnemonic = false;
+            this.btnQuestIndex.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -495,6 +514,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TextBox YesNoLabel;
         private System.Windows.Forms.PictureBox logoStage_1;
+        private System.Windows.Forms.Button btnQuestIndex;
     }
 }
 

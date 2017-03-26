@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AESTest2._0
@@ -48,6 +41,7 @@ namespace AESTest2._0
             }
 
             string encrypted = Protection.Crypt(inp_1.Text);
+
             if (inp_2.Text == inp_3.Text && pass == encrypted)
             {
                 string newPassEncrypted = Protection.Crypt(inp_2.Text);
