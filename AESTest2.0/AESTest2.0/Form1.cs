@@ -742,11 +742,11 @@ namespace AESTest2._0
         {
             if (this.cmbGroups.SelectedIndex < 4)
             {
-                return "certificate_neel.xlsx";
+                return "certificate_el.xlsx";
             }
             else if (this.cmbGroups.SelectedIndex < 8)
             {
-                return "certificate_el.xlsx";
+                return "certificate_neel.xlsx";
             }
             else
             {
