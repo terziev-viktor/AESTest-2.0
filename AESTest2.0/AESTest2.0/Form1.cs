@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
@@ -14,23 +11,43 @@ namespace AESTest2._0
 {
     public partial class MainForm : Form
     {
-        private string mainPath = @"C:\data\";
+        private const string MAINPATH = @"C:\data\";
+        private const string GENERATEDDOCS = @"Генерирани Документи\";
+        private const string TEMPLATESDOCS = @"Темплейти\";
+        private const string TEMPLATESFAILED = @"Скъсани\";
+        private const string TEMPLATESFAILEDAGAIN = @"Скъсани Втори Път\";
+        private const string TEMPLATESPASSED = @"Преминали\";
+        private const string QUESTIONSDOCS = @"Въпросници\";
+        private const string TEMPLATESCERTIFICATES = @"Удостоверения\";
+        private const string HIDDENDOCS = @"Скрити\";
+        private const string PUBLICDOCS = @"Публични\";
+        private const string FAILEDDOCS = @"Неиздържали\";
+        private const string FAILEDAGAINDOCS = @"Повторно Неиздържали\";
+        private const string PROTOCOLDOC = @"Номер на протокола.txt";
+        private const string DEFAULTPROTOCOLNUMBER = "100";
+
+        private string[] templateStrings =
+        {
+            "<protocol>",
+            "<date>",
+            "<dateplus>",
+            "<fullname>",
+            "<name>",
+            "<sur>",
+            "<famil>",
+            "<post>",
+            "<mark>",
+            "<group>",
+            "<pin>",
+        };
+
+        private DataHolder dataHolder = new DataHolder();
+
         private int sec = 0;
         private int min = 30;
         private int questionIndex = 0;
         private const int WS_SYSMENU = 0x80000;
-        private List<int> deltaYear = new List<int>();
-        private List<Question> questions = new List<Question>();
-        private List<string> allEgn = new List<string>();
-
-        private Dictionary<char, int> questionsForGroup = new Dictionary<char, int>()
-        {
-            {'2', 10},
-            {'3', 10},
-            {'4', 10},
-            {'5', 15},
-            {'9', 15},
-        };
+        private Microsoft.Office.Interop.Word.Application wordApp;
 
         public MainForm()
         {
@@ -50,9 +67,14 @@ namespace AESTest2._0
             this.btnStart.Enabled = false;
 
             this.labelTime.Location = new System.Drawing.Point(this.Width / 2 - this.labelTime.Width / 2, 0);
-            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 500);
+            this.stageManager.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
+            this.stageManager.Location = new System.Drawing.Point(0, this.labelTime.Height);
+
+            this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 700);
+            this.rtbAbout.Width = this.stage_1.Width - 10;
+            this.rtbAbout.Height = 200;
             this.stage_1.Location = new System.Drawing.Point(this.Size.Width / 2 - this.stage_1.Width / 2, this.labelTime.Size.Height + 30);
-            this.logoStage_1.Size = new Size(this.stage_1.Width, this.stage_1.Height / 2);
+            this.btnOpenManagerPanel.Location = new System.Drawing.Point(this.Width - this.btnOpenManagerPanel.Width, this.btnOpenManagerPanel.Height);
             this.stage_2.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
             this.stage_2.Location = new System.Drawing.Point(0, this.labelTime.Height);
             this.stage_3.Location = new System.Drawing.Point(this.Width / 2 - this.stage_3.Width / 2, this.Height / 2 - this.stage_3.Height / 2);
@@ -77,11 +99,68 @@ namespace AESTest2._0
             this.cmbNames.Enabled = false;
             this.cmbGroups.Enabled = false;
             this.cmbPosts.Enabled = false;
-
-            ExplorerManager.Kill();
+            if (!Directory.Exists(MAINPATH))
+            {
+                // the program is opened for first time. Setup the main directory with all files that should be there
+                MessageBox.Show("Вие отворихте програмата за първи път. Таблица с данни ще бъде генерирана в папка C:/data/. Моля попълнете данните в нея.");
+                this.InitSetup();
+                System.Windows.Forms.Application.Exit();
+            }
+            // Kills explorer.exe
+            // ExplorerManager.Kill();
             this.EnterStage_1();
         }
-        
+
+        private void InitSetup()
+        {
+            Directory.CreateDirectory(MAINPATH);
+            Directory.CreateDirectory(MAINPATH + TEMPLATESDOCS);
+            Directory.CreateDirectory(MAINPATH + TEMPLATESDOCS + TEMPLATESPASSED);
+            Directory.CreateDirectory(MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED);
+            Directory.CreateDirectory(MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + TEMPLATESFAILEDAGAIN);
+            Directory.CreateDirectory(MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES);
+            Directory.CreateDirectory(MAINPATH + QUESTIONSDOCS);
+            Directory.CreateDirectory(MAINPATH + GENERATEDDOCS);
+            Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + PUBLICDOCS);
+            DirectoryInfo dir = Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS);
+            dir.Attributes = FileAttributes.Hidden;
+            Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS);
+            Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS);
+
+            object misValue = System.Reflection.Missing.Value;
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+            if (excelApp == null)
+            {
+                MessageBox.Show("MS Excel не е инсталиран правилно или е стара версия (< 2008).");
+                System.Windows.Forms.Application.Exit();
+            }
+            Workbook dataWorkbook = excelApp.Workbooks.Add(misValue);
+            dataWorkbook.Worksheets.Add();
+            dataWorkbook.Worksheets.Add();
+            Worksheet wsNames = (Worksheet)dataWorkbook.Worksheets.get_Item(1);
+            wsNames.Cells[1, 1] = "Име:";
+            wsNames.Cells[1, 2] = "ЕГН:";
+            Worksheet wsExamTypes = (Worksheet)dataWorkbook.Worksheets.get_Item(2);
+            wsExamTypes.Cells[1, 1] = "Вид Изпит:";
+            wsExamTypes.Cells[1, 2] = "Брой въпроси:";
+            wsExamTypes.Cells[1, 3] = "Нужен резултат за преминал в %:";
+            wsExamTypes.UsedRange.EntireColumn.ColumnWidth = 31.5;
+            Worksheet wsPositions = (Worksheet)dataWorkbook.Worksheets.get_Item(3);
+            wsPositions.Cells[1, 1] = "Длъжност:";
+            wsPositions.Cells[1, 2] = "Да се явява всеки n години.";
+            dataWorkbook.SaveAs(MAINPATH + "Данни.xlsx");
+            dataWorkbook.Close(true);
+            ReleaseObject(dataWorkbook);
+            excelApp.Quit();
+            ReleaseObject(excelApp);
+
+            // file with then number of protocol
+            using (var writer = File.CreateText(MAINPATH + PROTOCOLDOC))
+            {
+                writer.WriteLine(DEFAULTPROTOCOLNUMBER);
+            }
+        }
+
         private void Fill(string pathToTemplate, string saveAsPath,
             string protocolNumber,
             string date,
@@ -97,122 +176,120 @@ namespace AESTest2._0
         {
             
             object misValue = System.Reflection.Missing.Value;
-            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = app.Workbooks.Open(pathToTemplate);
-            Worksheet ws = (Worksheet)wb.Worksheets.get_Item(1);
-            Range range = ws.UsedRange;
-            this.setProgressBar(1, range.Rows.Count + range.Columns.Count);
-            for (int i = 1; i < range.Rows.Count; i++)
+            this.wordApp = new Microsoft.Office.Interop.Word.Application();
+            Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
+            this.setProgressBar(1, doc.Words.Count);
+            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, group, egn};
+            for (int i = 0; i < templateStrings.Length; i++)
             {
-                for (int j = 1; j < range.Columns.Count; j++)
-                {
-                    string content = Convert.ToString((range.Cells[i, j] as Range).Value2);
-                    if (content != null && content.Length != 0)
-                    {
-                        if (content.Contains("<protocol>")) content = content.Replace("<protocol>", protocolNumber);
-                        if (content.Contains("<date>")) content = content.Replace("<date>", date);
-                        if (content.Contains("<date+>")) content = content.Replace("<date+>", dateplus);
-                        if (content.Contains("<fullname>")) content = content.Replace("<fullname>", fullname);
-                        if (content.Contains("<name>")) content = content.Replace("<name>", name);
-                        if (content.Contains("<sur>")) content = content.Replace("<sur>", sur);
-                        if (content.Contains("<famil>")) content = content.Replace("<famil>",famil);
-                        if (content.Contains("<post>")) content = content.Replace("<post>", post);
-                        if (content.Contains("<mark>")) content = content.Replace("<mark>", markInPercent);
-                        if (content.Contains("<group>")) content = content.Replace("<group>", group);
-                        if (content.Contains("<pin>")) content = content.Replace("<pin>", egn);
-                        (range.Cells[i, j] as Range).Value2 = content;
-                    }
-                    this.pBar.PerformStep();
-                }
-            }
-            wb.SaveAs(saveAsPath, XlFileFormat.xlOpenXMLWorkbook);
-            wb.Close(true, misValue, misValue);
-            app.Quit();
-            ReleaseObject(ws);
-            ReleaseObject(wb);
-            ReleaseObject(app);
+                Microsoft.Office.Interop.Word.Find findObject = wordApp.Selection.Find;
+                findObject.ClearFormatting();
+                findObject.Text = templateStrings[i];
+                findObject.Replacement.ClearFormatting();
+                findObject.Replacement.Text = correspondingStrings[i];
 
+                object replaceAll = Microsoft.Office.Interop.Word.WdReplace.wdReplaceAll;
+
+                findObject.Execute(ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
+                    ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
+                    ref replaceAll, ref misValue, ref misValue, ref misValue, ref misValue);
+            }
+
+            doc.SaveAs2(saveAsPath);
+            doc.Close(true);
+            ReleaseObject(doc);
         }
 
         private void ReadDataStage_1()
         {
             this.btnNextTest.Text = "Зареждане...";
+            this.cmbGroups.Items.Clear();
+            this.cmbNames.Items.Clear();
+            this.cmbPosts.Items.Clear();
+            this.dataHolder.Questions.Clear();
             object misValue = System.Reflection.Missing.Value;
-            List<String> allNames = new List<string>();
-            List<string> allPosts = new List<string>();
 
-            Microsoft.Office.Interop.Excel.Application namesAndPostsApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook namesList = namesAndPostsApp.Workbooks.Open(this.mainPath + "Имена.xlsx");
-            Worksheet namesWorkSheet = (Worksheet)namesList.Worksheets.get_Item(1);
-            Range namesRange = namesWorkSheet.UsedRange;
+            // First sheet contains names
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+            Workbook dataWorkbook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
+            Worksheet namesWorkSheet = dataWorkbook.Worksheets.get_Item(1);
+            Microsoft.Office.Interop.Excel.Range namesRange = namesWorkSheet.UsedRange;
 
-            for (int i = 1; i <= namesRange.Cells.Count / 2; i++)
+            for (int i = 2; i <= namesRange.Cells.Count / 2; i++)
             {
-                string name = Convert.ToString((namesRange.Cells[i, 1] as Range).Value2);
-                string egn = Convert.ToString((namesRange.Cells[i, 2] as Range).Value2);
+                string name = Convert.ToString((namesRange.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string egn = Convert.ToString((namesRange.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
                 if (name != null && egn != null)
                 {
-                    allNames.Add(name);
-                    this.allEgn.Add(egn);
+                    this.cmbNames.Items.Add(name);
+                    this.dataHolder.Students.Add(new Student() { Fullname = name, PIN = egn });
                 }
             }
-            // release objects
-            namesList.Close(true, misValue, misValue);
-            namesAndPostsApp.Quit();
-            ReleaseObject(namesWorkSheet);
-            ReleaseObject(namesList);
-            ReleaseObject(namesAndPostsApp);
 
-            Microsoft.Office.Interop.Excel.Application postsApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook postsList = postsApp.Workbooks.Open(this.mainPath + "Длъжности.xlsx");
-            Worksheet postWorkSheet = (Worksheet)postsList.Worksheets.get_Item(1);
-            Range postsRange = postWorkSheet.UsedRange;
+            // second sheet contains exam types
+            Worksheet examtypeWorkSheet = dataWorkbook.Worksheets.get_Item(2);
+            Microsoft.Office.Interop.Excel.Range examtypeRange = examtypeWorkSheet.UsedRange;
 
-            for (int i = 1; i <= postsRange.Rows.Count; i++)
+            for (int i = 2; i <= examtypeRange.Rows.Count; i++)
             {
-                string post = Convert.ToString((postsRange.Cells[i, 1] as Range).Value2);
-                string yearAsStr = Convert.ToString((postsRange.Cells[i, 2] as Range).Value2);
-                if (post != null) allPosts.Add(post);
-                if(yearAsStr != null)
+                string examType = Convert.ToString((examtypeRange.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string numberofQuestions = Convert.ToString((examtypeRange.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string minScoreNeeded = Convert.ToString((examtypeRange.Cells[i, 3] as Microsoft.Office.Interop.Excel.Range).Value2);
+                
+                if (examType != null && numberofQuestions != null && minScoreNeeded != null)
                 {
-                    int year = int.Parse(yearAsStr);
-                    this.deltaYear.Add(year);
+                    this.cmbGroups.Items.Add(examType);
+                    this.dataHolder.Exams.Add(new Exam()
+                    {
+                        Title = examType,
+                        QuestionsCount = int.Parse(numberofQuestions),
+                        MinScore = int.Parse(minScoreNeeded)
+                    });
                 }
             }
-            postsList.Close(true, misValue, misValue);
-            postsApp.Quit();
-            ReleaseObject(postsList);
-            ReleaseObject(postWorkSheet);
-            ReleaseObject(postsApp);
-            this.cmbNames.Items.AddRange(allNames.ToArray());
-            this.cmbPosts.Items.AddRange(allPosts.ToArray());
+
+            Worksheet p = dataWorkbook.Worksheets.get_Item(3);
+            Microsoft.Office.Interop.Excel.Range p1 = p.UsedRange;
+
+            for (int i = 2; i <= p1.Rows.Count; i++)
+            {
+                string post = Convert.ToString((p1.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string yearAsStr = Convert.ToString((p1.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
+                if (post != null && yearAsStr != null)
+                {
+                    this.cmbPosts.Items.Add(post);
+                    this.dataHolder.Posts.Add(new Post()
+                    {
+                        DeltaYear = int.Parse(yearAsStr),
+                        Title = post
+                    });
+                }
+            }
+
+            ReleaseObject(examtypeWorkSheet);
+            ReleaseObject(namesWorkSheet);
+            ReleaseObject(p);
+            dataWorkbook.Close(true);
+            ReleaseObject(dataWorkbook);
+            excelApp.Quit();
+            ReleaseObject(excelApp);
         }
 
         private void ReadDataStage_2()
         {
             string selectedItem = cmbGroups.SelectedItem.ToString();
-            string path = this.GetPathToGroup(selectedItem);
-            char selectedItemNumber = selectedItem[selectedItem.Length - 1];
-            HashSet<int> asked = new HashSet<int>();
-            Random rnd = new Random();
-
-            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wBook = app.Workbooks.Open(path);
+            Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedItem).ElementAt(0);
+            
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wBook = excelApp.Workbooks.Open(MAINPATH + QUESTIONSDOCS + selectedItem + ".xlsx");
             Worksheet wSheet = (Worksheet)wBook.Worksheets.get_Item(1);
-            Range range = wSheet.UsedRange;
-            // 
-            int index = rnd.Next(2, range.Rows.Count);
-
-            for (int i = 1; i <= this.questionsForGroup[selectedItemNumber]; i++)
+            Microsoft.Office.Interop.Excel.Range range = wSheet.UsedRange;
+            
+            for (int i = 2; i <= range.Rows.Count; i++)
             {
-                while (asked.Contains(index))
-                {
-                    index = rnd.Next(2, range.Rows.Count);
-                }
-                asked.Add(index);
-                string currentQuestion = Convert.ToString((range.Cells[index, 1] as Range).Value2);
-                string currentAnswer = Convert.ToString((range.Cells[index, 2] as Range).Value2);
-                string currentReference = Convert.ToString((range.Cells[index, 3] as Range).Value2);
+                string currentQuestion = Convert.ToString((range.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string currentAnswer = Convert.ToString((range.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
+                string currentReference = Convert.ToString((range.Cells[i, 3] as Microsoft.Office.Interop.Excel.Range).Value2);
                 if (currentAnswer != null && currentQuestion != null && currentAnswer.Length != 0 && currentQuestion.Length != 0)
                 {
                     Question quest = new Question();
@@ -228,19 +305,17 @@ namespace AESTest2._0
                     }
                     quest.StudentsAnswer = -1;
                     quest.RightAnswer = int.Parse(currentAnswer.Trim());
-                    this.questions.Add(quest);
-                }
-                else
-                {
-                    i--;
+                    this.dataHolder.Questions.Add(quest);
                 }
             }
+            Random rnd = new Random();
+            this.dataHolder.Questions.OrderBy(x => rnd.Next());
             //
-            wBook.Close(0);
-            app.Quit();
-            ReleaseObject(wBook);
+            wBook.Close(false);
             ReleaseObject(wSheet);
-            ReleaseObject(app);
+            ReleaseObject(wBook);
+            excelApp.Quit();
+            ReleaseObject(excelApp);
         }
 
         private void cmb_SelectedIndexChanged(object sender, EventArgs e)
@@ -262,14 +337,14 @@ namespace AESTest2._0
         private void setQuestion(int index)
         {
             this.UncolorAnswerLabels();
-            lblQuestionText.Text = this.questions[index].Questiontext;
-            lblAnswerA.Text = this.questions[index].AnswerA;
-            lblAnswerB.Text = this.questions[index].AnswerB;
-            lblAnswerC.Text = this.questions[index].AnswerC;
-            lblAnswerD.Text = this.questions[index].AnswerD;
-            if (this.questions[index].StudentsAnswer != -1)
+            lblQuestionText.Text = this.dataHolder.Questions[index].Questiontext;
+            lblAnswerA.Text = this.dataHolder.Questions[index].AnswerA;
+            lblAnswerB.Text = this.dataHolder.Questions[index].AnswerB;
+            lblAnswerC.Text = this.dataHolder.Questions[index].AnswerC;
+            lblAnswerD.Text = this.dataHolder.Questions[index].AnswerD;
+            if (this.dataHolder.Questions[index].StudentsAnswer != -1)
             {
-                switch (this.questions[index].StudentsAnswer)
+                switch (this.dataHolder.Questions[index].StudentsAnswer)
                 {
                     case 1:
                         this.lblAnswerA.BackColor = Color.DodgerBlue;
@@ -293,23 +368,23 @@ namespace AESTest2._0
             switch (this.cmbGroups.SelectedItem.ToString())
             {
                 case "изпит за квалификационна група по ПБЗРЕУ  група 2":
-                    return this.mainPath + @"Тестове по групи\\Втора Група.xlsx";
+                    return MAINPATH + @"Тестове по групи\\Втора Група.xlsx";
                 case "изпит за квалификационна група по ПБЗРЕУ  група 3":
-                    return this.mainPath + @"Тестове по групи\\Трета Група.xlsx";
+                    return MAINPATH + @"Тестове по групи\\Трета Група.xlsx";
                 case "изпит за квалификационна група по ПБЗРЕУ  група 4":
-                    return this.mainPath + @"Тестове по групи\\Четвърта Група.xlsx";
+                    return MAINPATH + @"Тестове по групи\\Четвърта Група.xlsx";
                 case "изпит за квалификационна група по ПБЗРЕУ  група 5":
-                    return this.mainPath + "Тестове по групи\\Пета Група.xlsx";
+                    return MAINPATH + "Тестове по групи\\Пета Група.xlsx";
                 case "изпит за квалификационна група по ПБЗРНЕУ  група 2":
-                    return this.mainPath + "Тестове по групи\\Втора Група НеЕл.xlsx";
+                    return MAINPATH + "Тестове по групи\\Втора Група НеЕл.xlsx";
                 case "изпит за квалификационна група по ПБЗРНЕУ  група 3":
-                    return this.mainPath + "Тестове по групи\\Трета Група НеЕл.xlsx";
+                    return MAINPATH + "Тестове по групи\\Трета Група НеЕл.xlsx";
                 case "изпит за квалификационна група по ПБЗРНЕУ  група 4":
-                    return this.mainPath + "Тестове по групи\\Четвърта Група НеЕл.xlsx";
+                    return MAINPATH + "Тестове по групи\\Четвърта Група НеЕл.xlsx";
                 case "изпит за квалификационна група по ПБЗРНЕУ  група 5":
-                    return this.mainPath + "Тестове по групи\\Пета Група НеЕл.xlsx";
+                    return MAINPATH + "Тестове по групи\\Пета Група НеЕл.xlsx";
                 case "изпит по наредба 9":
-                    return this.mainPath + "Тестове по групи\\наредба 9\\" + this.cmbPosts.SelectedItem.ToString() + ".xlsx";
+                    return MAINPATH + "Тестове по групи\\наредба 9\\" + this.cmbPosts.SelectedItem.ToString() + ".xlsx";
                 default:
                     return "";
             }
@@ -344,15 +419,15 @@ namespace AESTest2._0
                 if (this.min < 0)
                 {
                     MessageBox.Show("Вашето време изтече");
-                    this.Close();
+                    System.Windows.Forms.Application.Exit();
                 }
             }
             this.labelTime.Text = string.Format("Оставащо време: {0}:{1}", this.min, this.sec);
         }
 
-        private void CheckIfHasToHideBtn()
+        private void CheckIfHasToHideBtn(int numberOfQuestionsForCurrentExam)
         {
-            if(this.questionIndex == 0)
+            if (this.questionIndex == 0)
             {
                 this.btnPrev.Enabled = false;
                 this.btnPrev.Visible = false;
@@ -360,7 +435,7 @@ namespace AESTest2._0
                 this.btnNext.Enabled = true;
                 this.btnNext.Visible = true;
             }
-            else if(this.questionIndex == this.questions.Count - 1)
+            else if (this.questionIndex == numberOfQuestionsForCurrentExam - 1)
             {
                 this.btnPrev.Enabled = true;
                 this.btnPrev.Visible = true;
@@ -387,18 +462,21 @@ namespace AESTest2._0
 
         private void btnPrev_Click(object sender, EventArgs e)
         {
+            int count = this.dataHolder.Exams[this.dataHolder.CurrentExamIndex].QuestionsCount;
             this.questionIndex--;
-            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + count;
             this.setQuestion(this.questionIndex);
-            this.CheckIfHasToHideBtn();
+            this.CheckIfHasToHideBtn(count);
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
+            int count = this.dataHolder.Exams[this.dataHolder.CurrentExamIndex].QuestionsCount;
+
             this.questionIndex++;
-            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + count;
             this.setQuestion(this.questionIndex);
-            this.CheckIfHasToHideBtn();
+            this.CheckIfHasToHideBtn(count);
         }
 
         private void UncolorAnswerLabels()
@@ -413,123 +491,201 @@ namespace AESTest2._0
         {
             this.UncolorAnswerLabels();
             this.lblAnswerA.BackColor = Color.DodgerBlue;
-            this.questions[this.questionIndex].StudentsAnswer = 1;
+            this.dataHolder.Questions[this.questionIndex].StudentsAnswer = 1;
         }
 
         private void lblAnswerB_Click(object sender, EventArgs e)
         {
             this.UncolorAnswerLabels();
             this.lblAnswerB.BackColor = Color.DodgerBlue;
-            this.questions[this.questionIndex].StudentsAnswer = 2;
+            this.dataHolder.Questions[this.questionIndex].StudentsAnswer = 2;
         }
 
         private void lblAnswerC_Click(object sender, EventArgs e)
         {
             this.UncolorAnswerLabels();
             this.lblAnswerC.BackColor = Color.DodgerBlue;
-            this.questions[this.questionIndex].StudentsAnswer = 3;
+            this.dataHolder.Questions[this.questionIndex].StudentsAnswer = 3;
         }
 
         private void lblAnswerD_Click(object sender, EventArgs e)
         {
             this.UncolorAnswerLabels();
             this.lblAnswerD.BackColor = Color.DodgerBlue;
-            this.questions[this.questionIndex].StudentsAnswer = 4;
+            this.dataHolder.Questions[this.questionIndex].StudentsAnswer = 4;
         }
 
-        //
         // Fills the templates and enters stage_3
         private void btnEnd_Click(object sender, EventArgs e)
         {
             this.btnEnd.Enabled = false;
             DialogResult dialogResult = MessageBox.Show("Сигурни ли сте че искате да приключите теста?",
-                "Приключи теста",
-                MessageBoxButtons.YesNo);
+                                                        "Приключи теста",
+                                                         MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
                 // contains only questions with right student's answer
-                var rightAnswers =
-                    from quest in this.questions
-                    where quest.StudentsAnswer == quest.RightAnswer
-                    select quest;
 
-                int rightAnswersCount = rightAnswers.Count(); // number of right answers
-                string[] selectedItem = cmbGroups.SelectedItem.ToString().Split();
-                char group = selectedItem[selectedItem.Length - 1][0]; // student's group as char
-                string groupTypeStr = this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()); // selected group by user (el or notel)
-                int mark = ((rightAnswersCount * 100) / this.questionsForGroup[group]); // students mark
+                string selectedExamType = cmbGroups.SelectedItem.ToString();
+                Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedExamType).ElementAt(0);
+                Student student = this.dataHolder.Students.Where(x => x.Fullname == this.cmbNames.SelectedItem.ToString()).ElementAt(0);
+                Post post = this.dataHolder.Posts.Where(x => x.Title == cmbPosts.SelectedItem.ToString()).ElementAt(0);
+
+                int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Where(x => x.RightAnswer == x.StudentsAnswer).Count(); // number of right answers
+                
+                int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
                 int protocol = this.getProtocolNumber(); // number of protocol
-                string name = this.cmbNames.SelectedItem.ToString(); // student's name
-                string post = this.cmbPosts.SelectedItem.ToString(); // student's post
-                string egn = this.allEgn[this.cmbNames.SelectedIndex];
+                string name = student.Fullname; // student's name
+                string egn = student.PIN;
                 string date = DateTime.Now.ToShortDateString();
-                string dateplus = DateTime.Now.AddYears(1).ToShortDateString();
-                string path = this.GetTemplatePath(mark, name); // Path to main template for current group and post
-                string certificatePath = this.getCertificatePath(); // path to certificate for current group
-                bool passed = mark >= this.calcScoreNeeded(); // If the student passed the exam
-                string passedStr = passed ? "Издържал" : "Неиздържал";
-                string groupAsString = "" + group;
+                string dateplus = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
+                string path = this.GetTemplatePath(mark, name, exam); // Path to template for current exam
+                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + selectedExamType + ".docx"; // path to certificate for current group
+                bool passed = mark >= exam.MinScore; // If the student passed the exam
+                string passedStr = passed ? "Издържал" : "Скъсан";
                 string[] nameSplitted = name.Split(new char[] { ' ' });
-                string saveAsPath = this.mainPath + @"Генерирани Документи\" + name;
+                string saveAsPath = MAINPATH + GENERATEDDOCS + name;
                 saveAsPath += "_" + passedStr + "_";
-                saveAsPath += groupTypeStr + ".xlsx";
-                this.Fill(this.mainPath + @"Темплейти\" + path, saveAsPath,
+                saveAsPath += selectedExamType + ".docx";
+                this.Fill(path, saveAsPath,
                     protocol.ToString(),
-                    date, 
+                    date,
                     dateplus,
-                    name, 
+                    name,
                     nameSplitted[0],
                     nameSplitted[1],
-                    nameSplitted[2], 
-                    post, 
-                    mark.ToString(), 
-                    groupAsString,
+                    nameSplitted[2],
+                    post.Title,
+                    mark.ToString(),
+                    selectedExamType,
                     egn);
-                if(passed)
+                if (passed)
                 {
-                    string saveCertificatePath = this.mainPath + @"Генерирани Документи\Удостоверения\" + 
+                    string saveCertificatePath = MAINPATH + GENERATEDDOCS + @"Удостоверения\" +
                         name +
                         "_" +
-                        this.getGroupTypeString(this.cmbGroups.SelectedItem.ToString()) + "_Удостоверение.xlsx";
+                        selectedExamType + ".docx";
 
-                    this.Fill(this.mainPath + @"Темплейти\" + certificatePath, saveCertificatePath,
+                    this.Fill(certificatePath, saveCertificatePath,
                         protocol.ToString(),
-                        date, 
+                        date,
                         dateplus,
                         name,
-                        nameSplitted[0], 
+                        nameSplitted[0],
                         nameSplitted[1],
                         nameSplitted[2],
-                        post,
+                        post.Title,
                         mark.ToString(),
-                        groupAsString,
+                        selectedExamType,
                         egn);
-                    string failedDoc = this.GetFailedDocument();
-                    this.RemoveFromFailedDocument(failedDoc, name);
-                    this.RemoveFromFailedDocument("Повторно " + failedDoc, name);
+                    this.RemoveFromFailedDocument(exam.Title, name);
                 }
                 else
                 {
-                    this.PutInFailedDocument(name);
+                    this.PutInFailedDocument(name, selectedExamType);
                 }
-                this.PutInAreToBeExamined();
-                this.GeneratePrivateDocuments(name, mark, protocol, passedStr, groupTypeStr);
-                this.RemoveCurrentNameFromList(name);
+                this.PutInAreToBeExamined(post, student);
+                this.GeneratePrivateDocuments(name, mark, protocol, passedStr, exam);
+                this.dataHolder.Students.Remove(student);
+                cmbNames.Items.Clear();
+                cmbNames.Items.AddRange(dataHolder.Students.ToArray());
                 this.pBar.Visible = false;
                 this.pBar.Enabled = false;
                 this.EnterStage_3(mark, passed);
                 Time.Stop();
             }
-            else
-            {
-                return;
-            }
         }
+
+        private void WriteDataToDataSheets()
+        {
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+            Workbook dataWorkbook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
+            Worksheet ws = dataWorkbook.Worksheets.get_Item(1);
+            Microsoft.Office.Interop.Excel.Range rng = ws.UsedRange;
+
+            int index = 2;
+            for (int i = 0; i < this.dataHolder.Students.Count; i++)
+            {
+                (rng.Cells[index, 1] as Range).Value2 = dataHolder.Students[i].Fullname;
+                (rng.Cells[index, 2] as Range).Value2 = dataHolder.Students[i].PIN;
+                index++;
+            }
+            for (int j = index; j < rng.Rows.Count; j++)
+            {
+                (rng.Cells[j, 1] as Range).Value2 = "";
+                (rng.Cells[j, 2] as Range).Value2 = "";
+            }
+
+            ReleaseObject(ws);
+            dataWorkbook.Close(true);
+            ReleaseObject(dataWorkbook);
+            excelApp.Quit();
+            ReleaseObject(excelApp);
+
+            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = app.Workbooks.Open(MAINPATH + "Данни.xlsx");
+            Worksheet ws1 = wb.Worksheets.get_Item(2);
+            Microsoft.Office.Interop.Excel.Range rng1 = ws1.UsedRange;
+
+            int index1 = 2;
+            for (int i = 0; i < this.dataHolder.Exams.Count; i++)
+            {
+                (rng.Cells[index1, 1] as Range).Value2 = dataHolder.Exams[i].Title;
+                (rng.Cells[index1, 2] as Range).Value2 = dataHolder.Exams[i].QuestionsCount;
+                (rng.Cells[index1, 3] as Range).Value2 = dataHolder.Exams[i].MinScore;
+                index1++;
+            }
+            for (int j = index1; j < rng.Rows.Count; j++)
+            {
+                (rng.Cells[j, 1] as Range).Value2 = "";
+                (rng.Cells[j, 2] as Range).Value2 = "";
+                (rng.Cells[j, 3] as Range).Value2 = "";
+            }
+
+            ReleaseObject(ws1);
+            wb.Close(true);
+            ReleaseObject(wb);
+            app.Quit();
+            ReleaseObject(app);
+
+            Microsoft.Office.Interop.Excel.Application app1 = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb1 = app1.Workbooks.Open(MAINPATH + "Данни.xlsx");
+            Worksheet ws11 = wb1.Worksheets.get_Item(3); // ws with posts
+            Microsoft.Office.Interop.Excel.Range rng11 = ws11.UsedRange;
+
+            int index11 = 2;
+            for (int i = 0; i < this.dataHolder.Posts.Count; i++)
+            {
+                (rng.Cells[index11, 1] as Range).Value2 = dataHolder.Posts[i].Title;
+                (rng.Cells[index11, 2] as Range).Value2 = dataHolder.Posts[i].DeltaYear;
+                index11++;
+            }
+            for (int j = index11; j < rng.Rows.Count; j++)
+            {
+                (rng.Cells[j, 1] as Range).Value2 = "";
+                (rng.Cells[j, 2] as Range).Value2 = "";
+            }
+
+            ReleaseObject(ws11);
+            wb1.Close(true);
+            ReleaseObject(wb1);
+            app1.Quit();
+            ReleaseObject(app1);
+        }
+
         // --------------------------------
-        private void RemoveFromFailedDocument(string path, string nameToRemove)
+        private void RemoveFromFailedDocument(string examtype, string nameToRemove)
+        {
+            string path1 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype;
+            string path2 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS + examtype;
+            RemoveNameFromDoc(path1, nameToRemove);
+            RemoveNameFromDoc(path2, nameToRemove);
+        }
+
+        private void RemoveNameFromDoc(string path, string nameToRemove)
         {
             List<string> names = new List<string>();
-            using (StreamReader reader = new StreamReader(string.Format(this.mainPath + path)))
+            using (StreamReader reader = new StreamReader(path))
             {
                 while (true)
                 {
@@ -540,8 +696,8 @@ namespace AESTest2._0
                 }
 
             }
-            File.WriteAllText(this.mainPath + path, String.Empty);
-            using (StreamWriter w = new StreamWriter(string.Format(this.mainPath + path)))
+            File.WriteAllText(path, String.Empty);
+            using (StreamWriter w = new StreamWriter(path))
             {
                 foreach (var name in names)
                 {
@@ -549,51 +705,13 @@ namespace AESTest2._0
                 }
             }
         }
-
-        private void RemoveCurrentNameFromList(string name)
+        
+        private void PutInAreToBeExamined(Post post, Student student)
         {
-            // Create a new Excel document ------------------------------------------------------------
-            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
-            Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
-            Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
-            object misValue = System.Reflection.Missing.Value;
-            xlWorkBook = xlApp.Workbooks.Open(this.mainPath + "Имена.xlsx");
-            xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
-            this.setProgressBar(1, this.cmbNames.Items.Count / 2 - 1);
-            for (int i = 0; i < this.cmbNames.Items.Count; i++)
+            using (StreamWriter w = new StreamWriter(MAINPATH + "Предстоят да се явят.txt", true))
             {
-                if ((string)this.cmbNames.Items[i] == name)
-                {
-                    this.cmbNames.Items.RemoveAt(i);
-                    this.allEgn.RemoveAt(i);
-                    break;
-                }
-                pBar.PerformStep();
-            }
-
-            int index;
-            for (index = 1; index <= this.cmbNames.Items.Count; index++)
-            {
-                (xlWorkSheet.Cells[index, 1] as Range).Value2 = this.cmbNames.Items[index - 1];
-                (xlWorkSheet.Cells[index, 2] as Range).Value2 = this.allEgn[index - 1];
-                pBar.PerformStep();
-            }
-            (xlWorkSheet.Cells[index, 1] as Range).Value2 = "";
-            (xlWorkSheet.Cells[index, 2] as Range).Value2 = "";
-
-            xlWorkBook.Close(true, misValue, misValue);
-            xlApp.Quit();
-            ReleaseObject(xlWorkSheet);
-            ReleaseObject(xlWorkBook);
-            ReleaseObject(xlApp);
-        }
-
-        private void PutInAreToBeExamined()
-        {
-            using (StreamWriter w = new StreamWriter(this.mainPath + "Предстоят да се явят.txt", true))
-            {
-                int year = cmbPosts.SelectedIndex == 8 ? DateTime.Now.Year + this.deltaYear[this.cmbPosts.SelectedIndex] : 1;
-                w.WriteLine(string.Format("{0} - {1}.{2}.{3}", cmbNames.SelectedItem.ToString(),
+                int year = post.DeltaYear;
+                w.WriteLine(string.Format("{0} - {1}.{2}.{3}", student.Fullname,
                     DateTime.Now.Day,
                     DateTime.Now.Month,
                     year));
@@ -602,9 +720,10 @@ namespace AESTest2._0
 
         private void EnterStage_1()
         {
-            this.cmbNames.Items.Clear();
-            this.cmbPosts.Items.Clear();
             this.cmbGroups.SelectedIndex = -1;
+            
+            this.stageManager.Enabled = false;
+            this.stageManager.Visible = false;
             this.stage_3.Enabled = false;
             this.stage_3.Visible = false;
             this.stage_1.Enabled = true;
@@ -628,7 +747,7 @@ namespace AESTest2._0
             this.cmbNames.Enabled = false;
             this.cmbGroups.Enabled = false;
             this.cmbPosts.Enabled = false;
-            this.questions.Clear();
+            this.dataHolder.Questions.Clear();
             this.questionIndex = 0;
             this.btnPrev.Enabled = false;
             this.btnPrev.Visible = false;
@@ -641,8 +760,9 @@ namespace AESTest2._0
             this.lblAnswerC.Text = "Отговор В";
             this.lblAnswerD.Text = "Отговор Г";
             this.lblQuestionText.Text = "...";
+            this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.Where(x => x.Title == this.cmbGroups.SelectedItem.ToString()).First());
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.dataHolder.Exams.Where(x => x.Title == cmbGroups.SelectedItem.ToString()).ElementAt(0).QuestionsCount;
             this.ReadDataStage_2();
-            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.questions.Count;
             this.setQuestion(this.questionIndex);
             this.sec = 0;
             this.min = 30;
@@ -661,40 +781,29 @@ namespace AESTest2._0
             this.YesNoLabel.BackColor = passed ? Color.Green : Color.Red;
         }
 
-        private void PutInFailedDocument(string name)
+        private void PutInFailedDocument(string name, string examtype)
         {
-            string path = this.GetFailedDocument();
+            string path = MAINPATH + GENERATEDDOCS + HIDDENDOCS;
 
-            if (this.StudentHasAlreadyFailed(name)) path = "Повторно " + path;
+            if (this.StudentHasAlreadyFailed(name, examtype)) path += FAILEDAGAINDOCS + examtype + ".txt";
+            else path += FAILEDDOCS + examtype + ".txt";
 
-            using (StreamWriter writer = new StreamWriter(this.mainPath + @"\" + path, true))
+            using (StreamWriter writer = new StreamWriter(path, true))
             {
                 writer.WriteLine(name);
             }
         }
 
-        private string GetFailedDocument()
+        private void GeneratePrivateDocuments(string name, int mark, int protocol, string passed, Exam exam)
         {
-            string path = "Неиздържали";
-            switch (this.getGroupType(this.cmbGroups.SelectedItem.ToString()))
-            {
-                case 0: path += " Наредба 9.txt"; break;
-                case 1: path += " Ел.txt"; break;
-                case 2: path += " НеЕл.txt"; break;
-            }
-            return path;
-        }
-
-        private void GeneratePrivateDocuments(string name, int mark, int protocol, string passed, string group)
-        {
-            setProgressBar(1, this.questions.Count);
-            using (StreamWriter privateWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Anatoliy\Отговори на {0}_{1}_{2}.txt", name, passed, group)))
-            using (StreamWriter publicWriter = new StreamWriter(string.Format(this.mainPath + @"Генерирани Документи\_Отговори\Отговори на {0}_{1}_{2}.txt", name, passed, group)))
+            setProgressBar(1, exam.QuestionsCount);
+            using (StreamWriter privateWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + HIDDENDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam)))
+            using (StreamWriter publicWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + PUBLICDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam)))
             {
                 int indexOfQuestion = 1;
                 publicWriter.WriteLine(string.Format("Дата: {0}-{1}-{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year));
                 publicWriter.WriteLine("Номер на протокола: " + protocol);
-                publicWriter.WriteLine("Явил се на " + cmbGroups.SelectedItem.ToString());
+                publicWriter.WriteLine("Явил се на " + exam.Title);
                 publicWriter.WriteLine("Отговорите на: " + name);
                 publicWriter.WriteLine("Резултат: " + mark + "%");
                 publicWriter.WriteLine("\n");
@@ -706,28 +815,29 @@ namespace AESTest2._0
                 privateWriter.WriteLine("Резултат: " + mark + "%");
                 privateWriter.WriteLine("\n");
 
-                foreach (var quest in this.questions)
+                for (int i = 0; i < exam.QuestionsCount; i++)
                 {
-                    privateWriter.WriteLine(indexOfQuestion + ". " + quest.Questiontext);
-                    privateWriter.WriteLine(quest.AnswerA);
-                    privateWriter.WriteLine(quest.AnswerB);
-                    privateWriter.WriteLine(quest.AnswerC);
-                    privateWriter.WriteLine(quest.AnswerD);
-                    privateWriter.WriteLine("Верен отговор: " + quest.RightAnswer);
-                    privateWriter.WriteLine("Даден отговор: " + quest.StudentsAnswer);
-                    bool isWrong = quest.RightAnswer != quest.StudentsAnswer;
+                    privateWriter.WriteLine(indexOfQuestion + ". " + dataHolder.Questions[i].Questiontext);
+                    privateWriter.WriteLine(dataHolder.Questions[i].AnswerA);
+                    privateWriter.WriteLine(dataHolder.Questions[i].AnswerB);
+                    privateWriter.WriteLine(dataHolder.Questions[i].AnswerC);
+                    privateWriter.WriteLine(dataHolder.Questions[i].AnswerD);
+                    privateWriter.WriteLine("Верен отговор: " + dataHolder.Questions[i].RightAnswer);
+                    privateWriter.WriteLine("Даден отговор: " + dataHolder.Questions[i].StudentsAnswer);
+                    bool isWrong = dataHolder.Questions[i].RightAnswer != dataHolder.Questions[i].StudentsAnswer;
                     if (isWrong)
                     {
-                        privateWriter.WriteLine("За справка: " + quest.ForReference);
+                        privateWriter.Write("** Грешен **");
+                        privateWriter.WriteLine("За справка: " + dataHolder.Questions[i].ForReference);
                     }
                     privateWriter.WriteLine("-------------------------------------------------------");
 
-                    publicWriter.WriteLine(indexOfQuestion++ + ". " + quest.Questiontext);
-                    publicWriter.WriteLine(quest.AnswerA);
-                    publicWriter.WriteLine(quest.AnswerB);
-                    publicWriter.WriteLine(quest.AnswerC);
-                    publicWriter.WriteLine(quest.AnswerD);
-                    publicWriter.WriteLine("Даден отговор: " + quest.StudentsAnswer);
+                    publicWriter.WriteLine(indexOfQuestion++ + ". " + dataHolder.Questions[i].Questiontext);
+                    publicWriter.WriteLine(dataHolder.Questions[i].AnswerA);
+                    publicWriter.WriteLine(dataHolder.Questions[i].AnswerB);
+                    publicWriter.WriteLine(dataHolder.Questions[i].AnswerC);
+                    publicWriter.WriteLine(dataHolder.Questions[i].AnswerD);
+                    publicWriter.WriteLine("Даден отговор: " + dataHolder.Questions[i].StudentsAnswer);
                     if (isWrong)
                     {
                         publicWriter.WriteLine("**Грешен**");
@@ -738,113 +848,94 @@ namespace AESTest2._0
             }
         }
 
-        private string getCertificatePath()
+        private string GetTemplatePath(int mark, string name, Exam exam)
         {
-            if (this.cmbGroups.SelectedIndex < 4)
-            {
-                return "certificate_el.xlsx";
-            }
-            else if (this.cmbGroups.SelectedIndex < 8)
-            {
-                return "certificate_neel.xlsx";
-            }
-            else
-            {
-                return "certificate_9.xlsx";
-            }
-        }
+            bool hasAlreadyFailed = this.StudentHasAlreadyFailed(name, exam.Title);
+            // TODO: calculate the score needed to pass the exam
+            int scoreNeeded = exam.MinScore;
 
-        private string GetTemplatePath(int mark, string name)
-        {
-            int groupType = this.getGroupType(this.cmbGroups.SelectedItem.ToString());
-            bool hasAlreadyFailed = this.StudentHasAlreadyFailed(name);
-            int scoreNeeded = this.calcScoreNeeded();
-
-            string path = "Template";
+            string path = MAINPATH + TEMPLATESDOCS;
             if (mark >= scoreNeeded)
             {
-                path += "Passed";
+                path += TEMPLATESPASSED;
             }
             else
             {
-                path += "NotPassed";
+                path += TEMPLATESFAILED;
                 if (hasAlreadyFailed)
                 {
-                    path += "SecondTime";
+                    path += TEMPLATESFAILEDAGAIN;
                 }
             }
-            switch (groupType)
-            {
-                case 0: path += "_Ordinance_9"; break;
-                case 1: path += "El"; break;
-                case 2: break;
-                default: break;
-            }
-            path += ".xlsx";
+            path += exam.Title;
+            path += ".docx";
             return path;
 
         }
 
-        private bool StudentHasAlreadyFailed(string name)
+        private bool StudentHasAlreadyFailed(string name, string examtype)
         {
-            using (StreamReader r = new StreamReader(this.mainPath + "Неиздържали.txt"))
+            if (!File.Exists(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
             {
-                while (true)
+                File.Create(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt");
+                return false;
+            }
+            using (StreamReader r = new StreamReader(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
+            {
+                string readName;
+                do
                 {
-                    string readName = r.ReadLine();
-                    if (readName == null) return false;
+                    readName = r.ReadLine();
                     if (readName == name)
                     {
                         return true;
                     }
-                }
+                } while (readName != null);
+                return false;
             }
         }
 
-        private int calcScoreNeeded()
+        private string getScoreNeeded(string examType)
         {
-            if(this.cmbGroups.SelectedIndex == 8) // Ordinance 9
+            string result = "80";
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wBook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
+            Worksheet wSheet = (Worksheet)wBook.Worksheets.get_Item(2);
+            Microsoft.Office.Interop.Excel.Range range = wSheet.UsedRange;
+
+            for (int i = 2; i < range.Rows.Count; i++)
             {
-                return 75;
+                if (examType == Convert.ToString((range.Cells[i, 1] as Range).Value2))
+                {
+                    result = Convert.ToString((range.Cells[i, 3] as Range).Value2);
+                }
             }
-            else
-            {
-                return 80;
-            }
+            ReleaseObject(wSheet);
+            wBook.Close(true);
+            ReleaseObject(wBook);
+            excelApp.Quit();
+            ReleaseObject(excelApp);
+            return result;
         }
 
         private int getProtocolNumber()
         {
             int protocolNo;
-            string group = this.cmbGroups.SelectedItem.ToString();
-            int typeOfGroup = getGroupType(group); // 0 -> наредба 9; 1 -> Ел; 2 -> НеЕл;
-            using (StreamReader reader = new StreamReader(this.mainPath + "ПротоколНомер.txt"))
+            using (StreamReader reader = new StreamReader(MAINPATH + PROTOCOLDOC))
             {
-                int[] protocolNumber = new int[3];
-                protocolNumber[0] = int.Parse(reader.ReadLine().Trim());
-                protocolNumber[1] = int.Parse(reader.ReadLine().Trim());
-                protocolNumber[2] = int.Parse(reader.ReadLine().Trim());
-                protocolNo = protocolNumber[typeOfGroup];
-                reader.Close();
-                using (StreamWriter writer = new StreamWriter(this.mainPath + "ПротоколНомер.txt"))
+                bool success = int.TryParse(reader.ReadLine(), out protocolNo);
+                if (!success)
                 {
-                    protocolNumber[typeOfGroup]++;
-                    writer.WriteLine(protocolNumber[0]);
-                    writer.WriteLine(protocolNumber[1]);
-                    writer.WriteLine(protocolNumber[2]);
+                    MessageBox.Show("Файлът с номера на протокола е бил променен. Ще бъде използван номер по подразбиране.");
+                    return 100;
                 }
             }
+            using (StreamWriter writer = new StreamWriter(MAINPATH + PROTOCOLDOC))
+            {
+
+                writer.Write(protocolNo + 1);
+            }
             return protocolNo;
-        }
-
-        private int getGroupType(string group)
-        {
-            string[] type = group.Split(' ');
-            if (type.Length == 4) return 0; // наредба 9
-            if (type[5] == "ПБЗРЕУ") return 1; // ел група
-            if (type[5] == "ПБЗРНЕУ") return 2; // не ел група
-            throw new System.Exception("Group of test is not supported");
-
         }
 
         private string getGroupTypeString(string group)
@@ -878,15 +969,213 @@ namespace AESTest2._0
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == System.Windows.Forms.CloseReason.UserClosing)
+            if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
             }
+            WriteDataToDataSheets();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnOpenManagerPanel_Click(object sender, EventArgs e)
+        {
+            this.enterManagerStage();
+        }
+
+        private void enterManagerStage()
+        {
+            this.stage_1.Enabled = false;
+            this.stage_1.Visible = false;
+            this.stageManager.Enabled = true;
+            this.stageManager.Visible = true;
+            this.lbExamTypes.Items.Clear();
+            this.readDataStageManager();
+        }
+
+        private void readDataStageManager()
+        {
+            foreach (var item in this.dataHolder.Exams)
+            {
+                this.lbExamTypes.Items.Add(item.Title + " -> " + item.QuestionsCount);
+            }
+        }
+
+        private void btnAddExamType_Click(object sender, EventArgs e)
+        {
+            string newExamType = this.tbAddExamType.Text;
+            string qcount = this.tbAddExamTypeQCount.Text;
+            string minscoreStr = this.tbAddExamTypeMinScore.Text;
+
+            if (this.cmbGroups.Items.Contains(newExamType))
+            {
+                MessageBox.Show("Вече има такъв изпит.");
+                return;
+            }
+            if (newExamType == null || qcount == null)
+            {
+                MessageBox.Show("Попълнете полетата.");
+                return;
+            }
+            int count;
+            int minscore;
+            bool isCountInt = int.TryParse(qcount, out count);
+            bool isMinScoreInt = int.TryParse(minscoreStr, out minscore);
+            if(!isCountInt)
+            {
+                MessageBox.Show("Невалиден брой въпроси.");
+                return;
+            }
+            if(!isMinScoreInt)
+            {
+                MessageBox.Show("Невалиден минимален резултат за оценка 'Да'.");
+                return;
+            }
+            Exam newExam = new Exam()
+            {
+                Title = newExamType,
+                QuestionsCount = count,
+                MinScore = minscore
+            };
+            this.dataHolder.Exams.Add(newExam);
+            this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
+        }
+
+        private void lbExamTypes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = this.lbExamTypes.SelectedIndex;
+            if (index < 0)
+            {
+                //this.btnRemoveExamType.Enabled = false;
+                //this.btnRemoveExamType.Visible = false;
+                this.btnAddQuestionsFile.Enabled = false;
+                this.btnAddQuestionsFile.Visible = false;
+                this.btnAddPassedTemplate.Enabled = false;
+                this.btnAddPassedTemplate.Visible = false;
+                this.btnAddFailedTemplate.Enabled = false;
+                this.btnAddFailedTemplate.Visible = false;
+                this.btnAddTemplateFailedSecondTime.Visible = false;
+                this.btnAddTemplateFailedSecondTime.Enabled = false;
+                this.btnAddCertificateTemplate.Enabled = false;
+                this.btnAddCertificateTemplate.Visible = false;
+            }
+            else
+            {
+                //this.btnRemoveExamType.Enabled = true;
+                //this.btnRemoveExamType.Visible = true;
+                this.btnAddQuestionsFile.Enabled = true;
+                this.btnAddQuestionsFile.Visible = true;
+                this.btnAddPassedTemplate.Enabled = true;
+                this.btnAddPassedTemplate.Visible = true;
+                this.btnAddFailedTemplate.Enabled = true;
+                this.btnAddTemplateFailedSecondTime.Visible = true;
+                this.btnAddTemplateFailedSecondTime.Enabled = true;
+                this.btnAddFailedTemplate.Visible = true;
+                this.btnAddCertificateTemplate.Enabled = true;
+                this.btnAddCertificateTemplate.Visible = true;
+            }
+        }
+
+        private void btnRemoveExamType_Click(object sender, EventArgs e)
+        {
+            this.dataHolder.Exams.Remove(this.dataHolder.Exams.Where(x => x.Title == lbExamTypes.SelectedItem.ToString()).First());
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.CloseManagerStage();
+        }
+
+        private void CloseManagerStage()
+        {
+            this.stageManager.Visible = false;
+            this.stageManager.Enabled = false;
+
+            this.stage_1.Visible = true;
+            this.stage_1.Enabled = true;
+        }
+
+        private void btnAddQuestionsFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Excel Files|*.xlsx;";
+            dialog.Title = "Please select a Excel 2007+ document for the template.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string item = this.lbExamTypes.SelectedItem.ToString();
+                int n = item.IndexOf(" -> ");
+                item = item.Remove(n);
+                File.Copy(dialog.FileName, MAINPATH + @"Въпросници\" + item + ".xlsx", true);
+            }
+        }
+
+        private void btnAddPassedTemplate_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Word Files|*.docx;";
+            dialog.Title = "Please select a Word 2007+ document for the template.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string item = this.lbExamTypes.SelectedItem.ToString();
+                int n = item.IndexOf(" -> ");
+                item = item.Remove(n);
+                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Преминали\\" + item + ".docx", true);
+            }
+        }
+
+        private void btnAddFailedTemplate_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Word Files|*.docx;";
+            dialog.Title = "Please select a Word 2007+ document for the template.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string item = this.lbExamTypes.SelectedItem.ToString();
+                int n = item.IndexOf(" -> ");
+                item = item.Remove(n);
+                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + item + ".docx", true);
+            }
+        }
+
+        private void btnAddCertificateTemplate_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Word Files|*.docx;";
+            dialog.Title = "Please select a Word 2007+ document for the template.";
+
+            string item = this.lbExamTypes.SelectedItem.ToString();
+            int n = item.IndexOf(" -> ");
+            item = item.Remove(n);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Удостоверения\\" + item + ".docx", true);
+            }
+        }
+
+        private void btnAddTemplateFailedSecondTime_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Word Files|*.docx;";
+            dialog.Title = "Please select a Word 2007+ document for the template.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                string item = this.lbExamTypes.SelectedItem.ToString();
+                int n = item.IndexOf(" -> ");
+                item = item.Remove(n);
+                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + TEMPLATESFAILEDAGAIN + item + ".docx", true);
+            }
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            // Open Help Panel
         }
     }
 }

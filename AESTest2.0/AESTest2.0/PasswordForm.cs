@@ -1,20 +1,32 @@
 ﻿using System;
 using System.IO;
+using System.Security.AccessControl;
 using System.Windows.Forms;
 
 namespace AESTest2._0
 {
     public partial class PasswordForm : Form
     {
-        private string path = @"C:\Windows\pass.txt";
+        private const string PATH = @"C:\Windows\iluesjkdgbk.txt";
+        private const string DEFAULTPASS = "123";
         public PasswordForm()
         {
             InitializeComponent();
+            if (!File.Exists(PATH))
+            {
+                MessageBox.Show("Паролата ви е по подразбиране. Силно ви съветваме да я смените с нова!");
+
+                using (StreamWriter writer = File.CreateText(PATH))
+                {
+                    string encrypted = Protection.Crypt(DEFAULTPASS);
+                    writer.WriteLine(encrypted);
+                }
+            }
         }
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            using(StreamReader reader = new StreamReader(this.path))
+            using(StreamReader reader = new StreamReader(PATH))
             {
                 string decrypted = reader.ReadLine();
                 string encrypted = Protection.Crypt(inp.Text);
@@ -35,7 +47,7 @@ namespace AESTest2._0
         private void btnChangePass_Click(object sender, EventArgs e)
         {
             string pass;
-            using(StreamReader reader = new StreamReader(this.path))
+            using(StreamReader reader = new StreamReader(PATH))
             {
                 pass = reader.ReadLine();
             }
@@ -45,7 +57,7 @@ namespace AESTest2._0
             if (inp_2.Text == inp_3.Text && pass == encrypted)
             {
                 string newPassEncrypted = Protection.Crypt(inp_2.Text);
-                using(StreamWriter w = new StreamWriter(this.path))
+                using(StreamWriter w = new StreamWriter(PATH))
                 {
                     w.WriteLine(newPassEncrypted);
                 }
