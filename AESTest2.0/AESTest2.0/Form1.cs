@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
+using AESTest2._0.Extensions;
 
 namespace AESTest2._0
 {
@@ -50,7 +51,7 @@ namespace AESTest2._0
         private int min = 30;
         private int questionIndex = 0;
         private const int WS_SYSMENU = 0x80000;
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -110,7 +111,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            //ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -189,6 +190,8 @@ namespace AESTest2._0
             Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
             this.setProgressBar(1, doc.Words.Count);
             string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, group, egn};
+            pBar.Maximum = templateStrings.Length;
+            pBar.Value = 0;
             for (int i = 0; i < templateStrings.Length; i++)
             {
                 Microsoft.Office.Interop.Word.Find findObject = wordApp.Selection.Find;
@@ -202,6 +205,7 @@ namespace AESTest2._0
                 findObject.Execute(ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
                     ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
                     ref replaceAll, ref misValue, ref misValue, ref misValue, ref misValue);
+                pBar.PerformStep();
             }
 
             doc.SaveAs2(saveAsPath);
@@ -311,9 +315,7 @@ namespace AESTest2._0
                     this.dataHolder.Questions.Add(quest);
                 }
             }
-            Random rnd = new Random();
-            this.dataHolder.Questions.OrderBy(x => rnd.Next());
-            //
+            this.dataHolder.Questions.Shuffle();
             wBook.Close(false);
             ReleaseObject(wSheet);
             ReleaseObject(wBook);
@@ -756,6 +758,8 @@ namespace AESTest2._0
                 privateWriter.WriteLine("Резултат: " + mark + "%");
                 privateWriter.WriteLine("\n");
 
+                this.pBar.Maximum = exam.QuestionsCount;
+                this.pBar.Value = 0;
                 for (int i = 0; i < exam.QuestionsCount; i++)
                 {
                     privateWriter.WriteLine(indexOfQuestion + ". " + dataHolder.Questions[i].Questiontext);
@@ -916,7 +920,11 @@ namespace AESTest2._0
 
         private void btnOpenManagerPanel_Click(object sender, EventArgs e)
         {
-            this.enterManagerStage();
+            bool isAdmin = PasswordForm.GetPassword();
+            if(isAdmin)
+            {
+                this.enterManagerStage();
+            }
         }
 
         private void enterManagerStage()

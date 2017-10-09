@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AESTest2._0.Extensions;
+using System;
 using System.IO;
 using System.Security.AccessControl;
 using System.Windows.Forms;
@@ -34,7 +35,6 @@ namespace AESTest2._0
                 {
                     ExplorerManager.Start();
                     Application.Exit();
-                    //ExplorerManager.Start(); // starting explorer.exe
                 }
                 else
                 {
@@ -42,6 +42,19 @@ namespace AESTest2._0
                     this.Close();
                 }
             }
+        }
+
+        public static bool GetPassword()
+        {
+            string inp = Prompt.ShowDialog("Поле за парола:", "За да влезете в мениджърския прозорец въведете парола!");
+            bool rightPass = false;
+            using (var r = new StreamReader(PATH))
+            {
+                string cryptedPass = r.ReadLine();
+                string cryptedInp = Protection.Crypt(inp);
+                rightPass = cryptedPass == cryptedInp;
+            }
+            return rightPass;
         }
 
         private void btnChangePass_Click(object sender, EventArgs e)

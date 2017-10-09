@@ -547,9 +547,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(29, 478);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(154, 17);
+            this.label1.Size = new System.Drawing.Size(127, 17);
             this.label1.TabIndex = 14;
-            this.label1.Text = "Добави нов вид изпит";
+            this.label1.Text = "Добави нов изпит";
             // 
             // lbExamTypes
             // 
@@ -665,9 +665,9 @@
             this.lblExamTypes.Font = new System.Drawing.Font("Modern No. 20", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblExamTypes.Location = new System.Drawing.Point(22, 137);
             this.lblExamTypes.Name = "lblExamTypes";
-            this.lblExamTypes.Size = new System.Drawing.Size(331, 30);
+            this.lblExamTypes.Size = new System.Drawing.Size(280, 30);
             this.lblExamTypes.TabIndex = 2;
-            this.lblExamTypes.Text = "Вид Изпит  -> Брой Въпроси";
+            this.lblExamTypes.Text = "Изпит  -> Брой Въпроси";
             // 
             // lblManager
             // 

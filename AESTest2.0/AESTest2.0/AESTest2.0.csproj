@@ -59,6 +59,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\Prompt.cs" />
     <Compile Include="Models\DataHolder.cs" />
     <Compile Include="Models\Exam.cs" />
     <Compile Include="ExplorerManager.cs" />

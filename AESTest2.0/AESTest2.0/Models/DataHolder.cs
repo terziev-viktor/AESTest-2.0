@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AESTest2._0
 {
@@ -11,6 +12,7 @@ namespace AESTest2._0
             this.Questions = new List<Question>();
             this.Posts = new List<Post>();
         }
+        
         public int CurrentExamIndex { get; set; }
 
         public List<Student> Students { get; set; }
