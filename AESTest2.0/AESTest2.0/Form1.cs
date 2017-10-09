@@ -12,6 +12,9 @@ namespace AESTest2._0
     public partial class MainForm : Form
     {
         private const string MAINPATH = @"C:\data\";
+        private const string DATAEXAMS = @"данни_тестове.txt";
+        private const string DATASTUDENTS = @"данни_имена.txt";
+        private const string DATAPOSTS = @"данни_длъжности.txt";
         private const string GENERATEDDOCS = @"Генерирани Документи\";
         private const string TEMPLATESDOCS = @"Темплейти\";
         private const string TEMPLATESFAILED = @"Скъсани\";
@@ -25,7 +28,7 @@ namespace AESTest2._0
         private const string FAILEDAGAINDOCS = @"Повторно Неиздържали\";
         private const string PROTOCOLDOC = @"Номер на протокола.txt";
         private const string DEFAULTPROTOCOLNUMBER = "100";
-
+        private bool SaveDataToDataSheets = true;
         private string[] templateStrings =
         {
             "<protocol>",
@@ -104,6 +107,7 @@ namespace AESTest2._0
                 // the program is opened for first time. Setup the main directory with all files that should be there
                 MessageBox.Show("Вие отворихте програмата за първи път. Таблица с данни ще бъде генерирана в папка C:/data/. Моля попълнете данните в нея.");
                 this.InitSetup();
+                this.SaveDataToDataSheets = false;
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
@@ -134,25 +138,30 @@ namespace AESTest2._0
                 MessageBox.Show("MS Excel не е инсталиран правилно или е стара версия (< 2008).");
                 System.Windows.Forms.Application.Exit();
             }
-            Workbook dataWorkbook = excelApp.Workbooks.Add(misValue);
-            dataWorkbook.Worksheets.Add();
-            dataWorkbook.Worksheets.Add();
-            Worksheet wsNames = (Worksheet)dataWorkbook.Worksheets.get_Item(1);
-            wsNames.Cells[1, 1] = "Име:";
-            wsNames.Cells[1, 2] = "ЕГН:";
-            Worksheet wsExamTypes = (Worksheet)dataWorkbook.Worksheets.get_Item(2);
-            wsExamTypes.Cells[1, 1] = "Вид Изпит:";
-            wsExamTypes.Cells[1, 2] = "Брой въпроси:";
-            wsExamTypes.Cells[1, 3] = "Нужен резултат за преминал в %:";
-            wsExamTypes.UsedRange.EntireColumn.ColumnWidth = 31.5;
-            Worksheet wsPositions = (Worksheet)dataWorkbook.Worksheets.get_Item(3);
-            wsPositions.Cells[1, 1] = "Длъжност:";
-            wsPositions.Cells[1, 2] = "Да се явява всеки n години.";
-            dataWorkbook.SaveAs(MAINPATH + "Данни.xlsx");
-            dataWorkbook.Close(true);
-            ReleaseObject(dataWorkbook);
-            excelApp.Quit();
-            ReleaseObject(excelApp);
+            
+            File.Create(MAINPATH + DATAEXAMS).Close();
+            File.Create(MAINPATH + DATAPOSTS).Close();
+            File.Create(MAINPATH + DATASTUDENTS).Close();
+
+            using (var w = new StreamWriter(MAINPATH + DATAEXAMS))
+            {
+                w.WriteLine(".");
+                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
+                w.WriteLine("<вид изпит> <брой въпроси> <нужен резултата за оценка 'ДА'> <нов ред>");
+            }
+
+            using (var w = new StreamWriter(MAINPATH + DATAPOSTS))
+            {
+                w.WriteLine(".");
+                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
+                w.WriteLine("<длъжност> <на колко години да се явява> <нов ред>");
+            }
+            using (var w = new StreamWriter(MAINPATH + DATASTUDENTS))
+            {
+                w.WriteLine(".");
+                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
+                w.WriteLine("<3 имена> <ЕГН> <нов ред>");
+            }
 
             // file with then number of protocol
             using (var writer = File.CreateText(MAINPATH + PROTOCOLDOC))
@@ -209,70 +218,62 @@ namespace AESTest2._0
             this.dataHolder.Questions.Clear();
             object misValue = System.Reflection.Missing.Value;
 
-            // First sheet contains names
-            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook dataWorkbook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
-            Worksheet namesWorkSheet = dataWorkbook.Worksheets.get_Item(1);
-            Microsoft.Office.Interop.Excel.Range namesRange = namesWorkSheet.UsedRange;
-
-            for (int i = 2; i <= namesRange.Cells.Count / 2; i++)
+            using (var r = new StreamReader(MAINPATH + DATASTUDENTS))
             {
-                string name = Convert.ToString((namesRange.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
-                string egn = Convert.ToString((namesRange.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
-                if (name != null && egn != null)
+                string line = r.ReadLine();
+                while(line != null && line != "")
                 {
-                    this.cmbNames.Items.Add(name);
-                    this.dataHolder.Students.Add(new Student() { Fullname = name, PIN = egn });
-                }
-            }
-
-            // second sheet contains exam types
-            Worksheet examtypeWorkSheet = dataWorkbook.Worksheets.get_Item(2);
-            Microsoft.Office.Interop.Excel.Range examtypeRange = examtypeWorkSheet.UsedRange;
-
-            for (int i = 2; i <= examtypeRange.Rows.Count; i++)
-            {
-                string examType = Convert.ToString((examtypeRange.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
-                string numberofQuestions = Convert.ToString((examtypeRange.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
-                string minScoreNeeded = Convert.ToString((examtypeRange.Cells[i, 3] as Microsoft.Office.Interop.Excel.Range).Value2);
-                
-                if (examType != null && numberofQuestions != null && minScoreNeeded != null)
-                {
-                    this.cmbGroups.Items.Add(examType);
-                    this.dataHolder.Exams.Add(new Exam()
+                    string[] sp = line.Split(new char[] { ' ' });
+                    string egn = sp[sp.Length - 1];
+                    string name = string.Join(" ", sp.Take(sp.Length - 1));
+                    dataHolder.Students.Add(new Student()
                     {
-                        Title = examType,
-                        QuestionsCount = int.Parse(numberofQuestions),
-                        MinScore = int.Parse(minScoreNeeded)
+                        Fullname = name,
+                        PIN = egn
                     });
+                    cmbNames.Items.Add(name);
+                    line = r.ReadLine();
                 }
             }
 
-            Worksheet p = dataWorkbook.Worksheets.get_Item(3);
-            Microsoft.Office.Interop.Excel.Range p1 = p.UsedRange;
-
-            for (int i = 2; i <= p1.Rows.Count; i++)
+            using (var r = new StreamReader(MAINPATH + DATAEXAMS))
             {
-                string post = Convert.ToString((p1.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
-                string yearAsStr = Convert.ToString((p1.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
-                if (post != null && yearAsStr != null)
+                string line = r.ReadLine();
+                while(line != null && line != "")
                 {
-                    this.cmbPosts.Items.Add(post);
+                    string[] sp = line.Split(new char[] { ' ' });
+                    string minScore = sp[sp.Length - 1];
+                    string num = sp[sp.Length - 2];
+                    string exam = string.Join(" ", sp.Take(sp.Length - 2));
+                    dataHolder.Exams.Add(new Exam()
+                    {
+                        MinScore = int.Parse(minScore),
+                        QuestionsCount = int.Parse(num),
+                        Title = exam
+                    });
+                    cmbGroups.Items.Add(exam);
+                    line = r.ReadLine();
+                }
+            }
+
+            using (var r = new StreamReader(MAINPATH + DATAPOSTS))
+            {
+                string line = r.ReadLine();
+                while(line != null && line != "")
+                {
+                    string[] sp = line.Split(new char[] { ' ' });
+                    string deltaYear = sp[sp.Length - 1];
+                    string post = string.Join(" ", sp.Take(sp.Length - 1));
+                    cmbPosts.Items.Add(post);
                     this.dataHolder.Posts.Add(new Post()
                     {
-                        DeltaYear = int.Parse(yearAsStr),
+                        DeltaYear = int.Parse(deltaYear),
                         Title = post
                     });
+                    line = r.ReadLine();
                 }
             }
-
-            ReleaseObject(examtypeWorkSheet);
-            ReleaseObject(namesWorkSheet);
-            ReleaseObject(p);
-            dataWorkbook.Close(true);
-            ReleaseObject(dataWorkbook);
-            excelApp.Quit();
-            ReleaseObject(excelApp);
+            
         }
 
         private void ReadDataStage_2()
@@ -360,33 +361,6 @@ namespace AESTest2._0
                         break;
                     default: break;
                 }
-            }
-        }
-
-        private string GetPathToGroup(string group)
-        {
-            switch (this.cmbGroups.SelectedItem.ToString())
-            {
-                case "изпит за квалификационна група по ПБЗРЕУ  група 2":
-                    return MAINPATH + @"Тестове по групи\\Втора Група.xlsx";
-                case "изпит за квалификационна група по ПБЗРЕУ  група 3":
-                    return MAINPATH + @"Тестове по групи\\Трета Група.xlsx";
-                case "изпит за квалификационна група по ПБЗРЕУ  група 4":
-                    return MAINPATH + @"Тестове по групи\\Четвърта Група.xlsx";
-                case "изпит за квалификационна група по ПБЗРЕУ  група 5":
-                    return MAINPATH + "Тестове по групи\\Пета Група.xlsx";
-                case "изпит за квалификационна група по ПБЗРНЕУ  група 2":
-                    return MAINPATH + "Тестове по групи\\Втора Група НеЕл.xlsx";
-                case "изпит за квалификационна група по ПБЗРНЕУ  група 3":
-                    return MAINPATH + "Тестове по групи\\Трета Група НеЕл.xlsx";
-                case "изпит за квалификационна група по ПБЗРНЕУ  група 4":
-                    return MAINPATH + "Тестове по групи\\Четвърта Група НеЕл.xlsx";
-                case "изпит за квалификационна група по ПБЗРНЕУ  група 5":
-                    return MAINPATH + "Тестове по групи\\Пета Група НеЕл.xlsx";
-                case "изпит по наредба 9":
-                    return MAINPATH + "Тестове по групи\\наредба 9\\" + this.cmbPosts.SelectedItem.ToString() + ".xlsx";
-                default:
-                    return "";
             }
         }
 
@@ -598,79 +572,33 @@ namespace AESTest2._0
 
         private void WriteDataToDataSheets()
         {
-            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook dataWorkbook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
-            Worksheet ws = dataWorkbook.Worksheets.get_Item(1);
-            Microsoft.Office.Interop.Excel.Range rng = ws.UsedRange;
 
-            int index = 2;
-            for (int i = 0; i < this.dataHolder.Students.Count; i++)
+            File.WriteAllText(MAINPATH + DATASTUDENTS, String.Empty);
+            using (var w = new StreamWriter(MAINPATH + DATASTUDENTS))
             {
-                (rng.Cells[index, 1] as Range).Value2 = dataHolder.Students[i].Fullname;
-                (rng.Cells[index, 2] as Range).Value2 = dataHolder.Students[i].PIN;
-                index++;
-            }
-            for (int j = index; j < rng.Rows.Count; j++)
-            {
-                (rng.Cells[j, 1] as Range).Value2 = "";
-                (rng.Cells[j, 2] as Range).Value2 = "";
+                for (int i = 0; i < dataHolder.Students.Count; i++)
+                {
+                    w.WriteLine(dataHolder.Students[i].Fullname + " " + dataHolder.Students[i].PIN);
+                }
             }
 
-            ReleaseObject(ws);
-            dataWorkbook.Close(true);
-            ReleaseObject(dataWorkbook);
-            excelApp.Quit();
-            ReleaseObject(excelApp);
-
-            Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb = app.Workbooks.Open(MAINPATH + "Данни.xlsx");
-            Worksheet ws1 = wb.Worksheets.get_Item(2);
-            Microsoft.Office.Interop.Excel.Range rng1 = ws1.UsedRange;
-
-            int index1 = 2;
-            for (int i = 0; i < this.dataHolder.Exams.Count; i++)
+            File.WriteAllText(MAINPATH + DATAEXAMS, String.Empty);
+            using (var w = new StreamWriter(MAINPATH + DATAEXAMS))
             {
-                (rng.Cells[index1, 1] as Range).Value2 = dataHolder.Exams[i].Title;
-                (rng.Cells[index1, 2] as Range).Value2 = dataHolder.Exams[i].QuestionsCount;
-                (rng.Cells[index1, 3] as Range).Value2 = dataHolder.Exams[i].MinScore;
-                index1++;
-            }
-            for (int j = index1; j < rng.Rows.Count; j++)
-            {
-                (rng.Cells[j, 1] as Range).Value2 = "";
-                (rng.Cells[j, 2] as Range).Value2 = "";
-                (rng.Cells[j, 3] as Range).Value2 = "";
+                for (int i = 0; i < dataHolder.Exams.Count; i++)
+                {
+                    w.WriteLine(dataHolder.Exams[i].Title + " " + dataHolder.Exams[i].QuestionsCount + " " + dataHolder.Exams[i].MinScore);
+                }
             }
 
-            ReleaseObject(ws1);
-            wb.Close(true);
-            ReleaseObject(wb);
-            app.Quit();
-            ReleaseObject(app);
-
-            Microsoft.Office.Interop.Excel.Application app1 = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wb1 = app1.Workbooks.Open(MAINPATH + "Данни.xlsx");
-            Worksheet ws11 = wb1.Worksheets.get_Item(3); // ws with posts
-            Microsoft.Office.Interop.Excel.Range rng11 = ws11.UsedRange;
-
-            int index11 = 2;
-            for (int i = 0; i < this.dataHolder.Posts.Count; i++)
+            File.WriteAllText(MAINPATH + DATAPOSTS, String.Empty);
+            using (var w = new StreamWriter(MAINPATH + DATAPOSTS))
             {
-                (rng.Cells[index11, 1] as Range).Value2 = dataHolder.Posts[i].Title;
-                (rng.Cells[index11, 2] as Range).Value2 = dataHolder.Posts[i].DeltaYear;
-                index11++;
+                for (int i = 0; i < dataHolder.Posts.Count; i++)
+                {
+                    w.WriteLine(dataHolder.Posts[i].Title + " " + dataHolder.Posts[i].DeltaYear);
+                }
             }
-            for (int j = index11; j < rng.Rows.Count; j++)
-            {
-                (rng.Cells[j, 1] as Range).Value2 = "";
-                (rng.Cells[j, 2] as Range).Value2 = "";
-            }
-
-            ReleaseObject(ws11);
-            wb1.Close(true);
-            ReleaseObject(wb1);
-            app1.Quit();
-            ReleaseObject(app1);
         }
 
         // --------------------------------
@@ -973,7 +901,10 @@ namespace AESTest2._0
             {
                 e.Cancel = true;
             }
-            WriteDataToDataSheets();
+            if(this.SaveDataToDataSheets)
+            {
+                WriteDataToDataSheets();
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -1042,6 +973,7 @@ namespace AESTest2._0
             };
             this.dataHolder.Exams.Add(newExam);
             this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
+            this.cmbGroups.Items.Add(newExam.Title);
         }
 
         private void lbExamTypes_SelectedIndexChanged(object sender, EventArgs e)
@@ -1081,7 +1013,9 @@ namespace AESTest2._0
 
         private void btnRemoveExamType_Click(object sender, EventArgs e)
         {
+            // TODO: selected item has -> <number of questions> appended to it.
             this.dataHolder.Exams.Remove(this.dataHolder.Exams.Where(x => x.Title == lbExamTypes.SelectedItem.ToString()).First());
+            this.cmbGroups.Items.Remove(lbExamTypes.SelectedItem.ToString());
         }
 
         private void button1_Click(object sender, EventArgs e)
