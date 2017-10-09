@@ -126,6 +126,7 @@ namespace AESTest2._0
             Directory.CreateDirectory(MAINPATH + QUESTIONSDOCS);
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS);
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + PUBLICDOCS);
+            Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES);
             DirectoryInfo dir = Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS);
             dir.Attributes = FileAttributes.Hidden;
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS);
@@ -509,57 +510,55 @@ namespace AESTest2._0
                 
                 int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
                 int protocol = this.getProtocolNumber(); // number of protocol
-                string name = student.Fullname; // student's name
-                string egn = student.PIN;
                 string date = DateTime.Now.ToShortDateString();
                 string dateplus = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
-                string path = this.GetTemplatePath(mark, name, exam); // Path to template for current exam
-                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + selectedExamType + ".docx"; // path to certificate for current group
+                string path = this.GetTemplatePath(mark, student.Fullname, exam); // Path to template for current exam
+                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + exam.Title + ".docx"; // path to certificate for current group
                 bool passed = mark >= exam.MinScore; // If the student passed the exam
                 string passedStr = passed ? "Издържал" : "Скъсан";
-                string[] nameSplitted = name.Split(new char[] { ' ' });
-                string saveAsPath = MAINPATH + GENERATEDDOCS + name;
+                string[] nameSplitted = student.Fullname.Split(new char[] { ' ' });
+                string saveAsPath = MAINPATH + GENERATEDDOCS + student.Fullname;
                 saveAsPath += "_" + passedStr + "_";
-                saveAsPath += selectedExamType + ".docx";
+                saveAsPath += exam.Title + ".docx";
                 this.Fill(path, saveAsPath,
                     protocol.ToString(),
                     date,
                     dateplus,
-                    name,
+                    student.Fullname,
                     nameSplitted[0],
                     nameSplitted[1],
                     nameSplitted[2],
                     post.Title,
                     mark.ToString(),
                     selectedExamType,
-                    egn);
+                    student.PIN);
                 if (passed)
                 {
-                    string saveCertificatePath = MAINPATH + GENERATEDDOCS + @"Удостоверения\" +
-                        name +
+                    string saveCertificatePath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
+                        student.Fullname +
                         "_" +
-                        selectedExamType + ".docx";
+                        exam.Title + ".docx";
 
                     this.Fill(certificatePath, saveCertificatePath,
                         protocol.ToString(),
                         date,
                         dateplus,
-                        name,
+                        student.Fullname,
                         nameSplitted[0],
                         nameSplitted[1],
                         nameSplitted[2],
                         post.Title,
                         mark.ToString(),
                         selectedExamType,
-                        egn);
-                    this.RemoveFromFailedDocument(exam.Title, name);
+                        student.PIN);
+                    this.RemoveFromFailedDocument(exam.Title, student.Fullname);
                 }
                 else
                 {
-                    this.PutInFailedDocument(name, selectedExamType);
+                    this.PutInFailedDocument(student.Fullname, exam.Title);
                 }
                 this.PutInAreToBeExamined(post, student);
-                this.GeneratePrivateDocuments(name, mark, protocol, passedStr, exam);
+                this.GeneratePrivateDocuments(student.Fullname, mark, protocol, passedStr, exam);
                 this.dataHolder.Students.Remove(student);
                 cmbNames.Items.Clear();
                 cmbNames.Items.AddRange(dataHolder.Students.ToArray());
@@ -604,14 +603,18 @@ namespace AESTest2._0
         // --------------------------------
         private void RemoveFromFailedDocument(string examtype, string nameToRemove)
         {
-            string path1 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype;
-            string path2 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS + examtype;
+            string path1 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt";
+            string path2 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS + examtype + ".txt";
             RemoveNameFromDoc(path1, nameToRemove);
             RemoveNameFromDoc(path2, nameToRemove);
         }
 
         private void RemoveNameFromDoc(string path, string nameToRemove)
         {
+            if(!File.Exists(path))
+            {
+                File.Create(path).Close();
+            }
             List<string> names = new List<string>();
             using (StreamReader reader = new StreamReader(path))
             {
@@ -713,9 +716,18 @@ namespace AESTest2._0
         {
             string path = MAINPATH + GENERATEDDOCS + HIDDENDOCS;
 
-            if (this.StudentHasAlreadyFailed(name, examtype)) path += FAILEDAGAINDOCS + examtype + ".txt";
-            else path += FAILEDDOCS + examtype + ".txt";
-
+            if (this.StudentHasAlreadyFailed(name, examtype))
+            {
+                path += FAILEDAGAINDOCS + examtype + ".txt";
+            }
+            else
+            {
+                path += FAILEDDOCS + examtype + ".txt";
+            }
+            if(!File.Exists(path))
+            {
+                File.Create(path).Close();
+            }
             using (StreamWriter writer = new StreamWriter(path, true))
             {
                 writer.WriteLine(name);
@@ -805,7 +817,7 @@ namespace AESTest2._0
         {
             if (!File.Exists(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
             {
-                File.Create(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt");
+                File.Create(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt").Close();
                 return false;
             }
             using (StreamReader r = new StreamReader(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
