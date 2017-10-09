@@ -50,7 +50,6 @@ namespace AESTest2._0
         private int min = 30;
         private int questionIndex = 0;
         private const int WS_SYSMENU = 0x80000;
-        private Microsoft.Office.Interop.Word.Application wordApp;
 
         public MainForm()
         {
@@ -105,13 +104,13 @@ namespace AESTest2._0
             if (!Directory.Exists(MAINPATH))
             {
                 // the program is opened for first time. Setup the main directory with all files that should be there
-                MessageBox.Show("Вие отворихте програмата за първи път. Таблица с данни ще бъде генерирана в папка C:/data/. Моля попълнете данните в нея.");
+                MessageBox.Show("Вие отворихте програмата за първи път. Файлове с данни ще бъдат генерирани в папка C:/data/. Моля попълнете ги.");
                 this.InitSetup();
                 this.SaveDataToDataSheets = false;
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            // ExplorerManager.Kill();
+            ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -186,7 +185,7 @@ namespace AESTest2._0
         {
             
             object misValue = System.Reflection.Missing.Value;
-            this.wordApp = new Microsoft.Office.Interop.Word.Application();
+            Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
             Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
             this.setProgressBar(1, doc.Words.Count);
             string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, group, egn};
@@ -208,6 +207,8 @@ namespace AESTest2._0
             doc.SaveAs2(saveAsPath);
             doc.Close(true);
             ReleaseObject(doc);
+            wordApp.Quit();
+            ReleaseObject(wordApp);
         }
 
         private void ReadDataStage_1()
@@ -559,9 +560,9 @@ namespace AESTest2._0
                 }
                 this.PutInAreToBeExamined(post, student);
                 this.GeneratePrivateDocuments(student.Fullname, mark, protocol, passedStr, exam);
-                this.dataHolder.Students.Remove(student);
+                this.dataHolder.Students.RemoveAt(dataHolder.Students.FindIndex(x => x.Fullname == student.Fullname));
                 cmbNames.Items.Clear();
-                cmbNames.Items.AddRange(dataHolder.Students.ToArray());
+                cmbNames.Items.AddRange(dataHolder.Students.Select(x => x.Fullname).ToArray());
                 this.pBar.Visible = false;
                 this.pBar.Enabled = false;
                 this.EnterStage_3(mark, passed);
@@ -737,8 +738,8 @@ namespace AESTest2._0
         private void GeneratePrivateDocuments(string name, int mark, int protocol, string passed, Exam exam)
         {
             setProgressBar(1, exam.QuestionsCount);
-            using (StreamWriter privateWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + HIDDENDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam)))
-            using (StreamWriter publicWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + PUBLICDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam)))
+            using (StreamWriter privateWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + HIDDENDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam.Title)))
+            using (StreamWriter publicWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + PUBLICDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam.Title)))
             {
                 int indexOfQuestion = 1;
                 publicWriter.WriteLine(string.Format("Дата: {0}-{1}-{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year));
@@ -834,30 +835,7 @@ namespace AESTest2._0
                 return false;
             }
         }
-
-        private string getScoreNeeded(string examType)
-        {
-            string result = "80";
-            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wBook = excelApp.Workbooks.Open(MAINPATH + "Данни.xlsx");
-            Worksheet wSheet = (Worksheet)wBook.Worksheets.get_Item(2);
-            Microsoft.Office.Interop.Excel.Range range = wSheet.UsedRange;
-
-            for (int i = 2; i < range.Rows.Count; i++)
-            {
-                if (examType == Convert.ToString((range.Cells[i, 1] as Range).Value2))
-                {
-                    result = Convert.ToString((range.Cells[i, 3] as Range).Value2);
-                }
-            }
-            ReleaseObject(wSheet);
-            wBook.Close(true);
-            ReleaseObject(wBook);
-            excelApp.Quit();
-            ReleaseObject(excelApp);
-            return result;
-        }
-
+        
         private int getProtocolNumber()
         {
             int protocolNo;
@@ -872,7 +850,6 @@ namespace AESTest2._0
             }
             using (StreamWriter writer = new StreamWriter(MAINPATH + PROTOCOLDOC))
             {
-
                 writer.Write(protocolNo + 1);
             }
             return protocolNo;
@@ -894,7 +871,20 @@ namespace AESTest2._0
 
         private void btnNextTest_Click(object sender, EventArgs e)
         {
-            this.EnterStage_1();
+            this.cmbGroups.SelectedIndex = -1;
+            this.stageManager.Enabled = false;
+            this.stageManager.Visible = false;
+            this.stage_3.Enabled = false;
+            this.stage_3.Visible = false;
+            this.stage_1.Enabled = true;
+            this.stage_1.Visible = true;
+            this.stage_1.BringToFront();
+            this.btnStart.Enabled = false;
+            this.btnStart.Visible = false;
+            this.cmbNames.Enabled = true;
+            this.cmbGroups.Enabled = true;
+            this.cmbPosts.Enabled = true;
+
         }
 
         private void setProgressBar(int min, int max)
