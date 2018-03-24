@@ -105,13 +105,13 @@ namespace AESTest2._0
             if (!Directory.Exists(MAINPATH))
             {
                 // the program is opened for first time. Setup the main directory with all files that should be there
-                MessageBox.Show("Вие отворихте програмата за първи път. Файлове с данни ще бъдат генерирани в папка C:/data/. Моля попълнете ги.");
+                MessageBox.Show("Вие отворихте програмата за първи път. Файлове с данни ще бъдат генерирани в папка C:/data/. Моля попълнете ги. Или отворете програмата отново с администраторски права и попълненте всичко от мениджърския панел, като влезете с парола по подразбиране.");
                 this.InitSetup();
                 this.SaveDataToDataSheets = false;
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            //ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -163,12 +163,6 @@ namespace AESTest2._0
                 w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
                 w.WriteLine("<3 имена> <ЕГН> <нов ред>");
             }
-
-            // file with then number of protocol
-            using (var writer = File.CreateText(MAINPATH + PROTOCOLDOC))
-            {
-                writer.WriteLine(DEFAULTPROTOCOLNUMBER);
-            }
         }
 
         private void Fill(string pathToTemplate, string saveAsPath,
@@ -215,6 +209,9 @@ namespace AESTest2._0
             ReleaseObject(wordApp);
         }
 
+        /// <summary>
+        /// Reads data for exams, student names and posts
+        /// </summary>
         private void ReadDataStage_1()
         {
             this.btnNextTest.Text = "Зареждане...";
@@ -279,9 +276,23 @@ namespace AESTest2._0
                     line = r.ReadLine();
                 }
             }
-            
+
+            using (var r = new StreamReader(MAINPATH + PROTOCOLDOC))
+            {
+                string line = r.ReadLine();
+                while(line != null && line != "" && line != "\n")
+                {
+                    string[] examAndProtocolPath = line.Split(new char[] { ' ' });
+                    string examTitle = examAndProtocolPath[0];
+                    dataHolder.Exams.First((x) => { return x.Title == examTitle; }).ProtocolNumberPath = examAndProtocolPath[1];
+                    line = r.ReadLine();
+                }
+            }
         }
 
+        /// <summary>
+        /// reads questions from .xlsx file with the same name as the selected exam
+        /// </summary>
         private void ReadDataStage_2()
         {
             string selectedItem = cmbGroups.SelectedItem.ToString();
@@ -512,7 +523,7 @@ namespace AESTest2._0
                 int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Where(x => x.RightAnswer == x.StudentsAnswer).Count(); // number of right answers
                 
                 int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
-                int protocol = this.getProtocolNumber(); // number of protocol
+                int protocol = this.getProtocolNumber(exam); // number of protocol
                 string date = DateTime.Now.ToShortDateString();
                 string dateplus = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
                 string path = this.GetTemplatePath(mark, student.Fullname, exam); // Path to template for current exam
@@ -840,10 +851,10 @@ namespace AESTest2._0
             }
         }
         
-        private int getProtocolNumber()
+        private int getProtocolNumber(Exam exam)
         {
             int protocolNo;
-            using (StreamReader reader = new StreamReader(MAINPATH + PROTOCOLDOC))
+            using (StreamReader reader = new StreamReader(exam.ProtocolNumberPath))
             {
                 bool success = int.TryParse(reader.ReadLine(), out protocolNo);
                 if (!success)
@@ -852,7 +863,7 @@ namespace AESTest2._0
                     return 100;
                 }
             }
-            using (StreamWriter writer = new StreamWriter(MAINPATH + PROTOCOLDOC))
+            using (StreamWriter writer = new StreamWriter(exam.ProtocolNumberPath))
             {
                 writer.Write(protocolNo + 1);
             }
@@ -951,6 +962,12 @@ namespace AESTest2._0
             string qcount = this.tbAddExamTypeQCount.Text;
             string minscoreStr = this.tbAddExamTypeMinScore.Text;
 
+            if (newExamType == "" || newExamType == null)
+            {
+                MessageBox.Show("Въвели сте невалиден изпит бе!");
+                return;
+            }
+
             if (this.cmbGroups.Items.Contains(newExamType))
             {
                 MessageBox.Show("Вече има такъв изпит.");
@@ -1003,6 +1020,8 @@ namespace AESTest2._0
                 this.btnAddTemplateFailedSecondTime.Enabled = false;
                 this.btnAddCertificateTemplate.Enabled = false;
                 this.btnAddCertificateTemplate.Visible = false;
+                this.btn_AddProtocolFile.Enabled = false;
+                this.btn_AddProtocolFile.Visible = false;
             }
             else
             {
@@ -1018,6 +1037,8 @@ namespace AESTest2._0
                 this.btnAddFailedTemplate.Visible = true;
                 this.btnAddCertificateTemplate.Enabled = true;
                 this.btnAddCertificateTemplate.Visible = true;
+                this.btn_AddProtocolFile.Enabled = true;
+                this.btn_AddProtocolFile.Visible = true;
             }
         }
 
@@ -1046,11 +1067,16 @@ namespace AESTest2._0
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Excel Files|*.xlsx;";
-            dialog.Title = "Please select a Excel 2007+ document for the template.";
+            dialog.Title = "Please select a Excel 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string item = this.lbExamTypes.SelectedItem.ToString();
+                if (item == "" && item == null)
+                {
+                    // TODO
+                    return;
+                }
                 int n = item.IndexOf(" -> ");
                 item = item.Remove(n);
                 File.Copy(dialog.FileName, MAINPATH + @"Въпросници\" + item + ".xlsx", true);
@@ -1061,7 +1087,7 @@ namespace AESTest2._0
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Word Files|*.docx;";
-            dialog.Title = "Please select a Word 2007+ document for the template.";
+            dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -1076,7 +1102,7 @@ namespace AESTest2._0
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Word Files|*.docx;";
-            dialog.Title = "Please select a Word 2007+ document for the template.";
+            dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -1091,7 +1117,7 @@ namespace AESTest2._0
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Word Files|*.docx;";
-            dialog.Title = "Please select a Word 2007+ document for the template.";
+            dialog.Title = "Please select a Word 2008+ document for the template.";
 
             string item = this.lbExamTypes.SelectedItem.ToString();
             int n = item.IndexOf(" -> ");
@@ -1106,7 +1132,7 @@ namespace AESTest2._0
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Word Files|*.docx;";
-            dialog.Title = "Please select a Word 2007+ document for the template.";
+            dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -1120,6 +1146,25 @@ namespace AESTest2._0
         private void btnHelp_Click(object sender, EventArgs e)
         {
             // Open Help Panel
+        }
+
+        private void btn_AddProtocolFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Text Files|*.txt";
+            dialog.Title = "Please select a text file containing the protocol number.";
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                using (var w = new StreamWriter(MAINPATH + PROTOCOLDOC, true))
+                {
+                    string item = this.lbExamTypes.SelectedItem.ToString();
+                    int n = item.IndexOf(" -> ");
+                    item = item.Remove(n);
+
+                    w.WriteLine(item + " " + dialog.FileName);
+                }
+            }
         }
     }
 }

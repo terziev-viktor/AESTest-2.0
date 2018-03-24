@@ -9,7 +9,7 @@ namespace AESTest2._0
     public partial class PasswordForm : Form
     {
         private const string PATH = @"C:\Windows\iluesjkdgbk.txt";
-        private const string DEFAULTPASS = "123";
+        private const string DEFAULTPASS = "adminadmin";
         public PasswordForm()
         {
             InitializeComponent();
@@ -48,6 +48,13 @@ namespace AESTest2._0
         {
             string inp = Prompt.ShowDialog("Поле за парола:", "За да влезете в мениджърския прозорец въведете парола!");
             bool rightPass = false;
+            bool exists = File.Exists(PATH);
+            if (!exists)
+            {
+                var w = File.CreateText(PATH);
+                w.Write(Protection.Crypt(DEFAULTPASS));
+                w.Close();
+            }
             using (var r = new StreamReader(PATH))
             {
                 string cryptedPass = r.ReadLine();

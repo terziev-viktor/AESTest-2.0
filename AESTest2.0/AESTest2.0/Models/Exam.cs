@@ -7,5 +7,7 @@
         public int QuestionsCount { get; set; }
 
         public int MinScore { get; set; }
+
+        public string ProtocolNumberPath { get; set; }
     }
 }

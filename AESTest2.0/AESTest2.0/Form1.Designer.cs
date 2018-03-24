@@ -77,6 +77,7 @@
             this.lblManager = new System.Windows.Forms.Label();
             this.btnOpenManagerPanel = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btn_AddProtocolFile = new System.Windows.Forms.Button();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
@@ -276,7 +277,7 @@
             // stage_1
             // 
             this.stage_1.BackColor = System.Drawing.Color.White;
-            this.stage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.stage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.stage_1.Controls.Add(this.rtbAbout);
             this.stage_1.Controls.Add(this.btnStart);
             this.stage_1.Controls.Add(this.cmbPosts);
@@ -455,6 +456,7 @@
             // stageManager
             // 
             this.stageManager.BackColor = System.Drawing.Color.White;
+            this.stageManager.Controls.Add(this.btn_AddProtocolFile);
             this.stageManager.Controls.Add(this.label3);
             this.stageManager.Controls.Add(this.tbAddExamTypeMinScore);
             this.stageManager.Controls.Add(this.btnHelp);
@@ -516,7 +518,7 @@
             this.btnAddTemplateFailedSecondTime.Enabled = false;
             this.btnAddTemplateFailedSecondTime.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddTemplateFailedSecondTime.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddTemplateFailedSecondTime.Location = new System.Drawing.Point(724, 341);
+            this.btnAddTemplateFailedSecondTime.Location = new System.Drawing.Point(724, 319);
             this.btnAddTemplateFailedSecondTime.Name = "btnAddTemplateFailedSecondTime";
             this.btnAddTemplateFailedSecondTime.Size = new System.Drawing.Size(261, 50);
             this.btnAddTemplateFailedSecondTime.TabIndex = 17;
@@ -557,7 +559,7 @@
             this.lbExamTypes.Font = new System.Drawing.Font("Modern No. 20", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbExamTypes.FormattingEnabled = true;
             this.lbExamTypes.ItemHeight = 22;
-            this.lbExamTypes.Location = new System.Drawing.Point(28, 172);
+            this.lbExamTypes.Location = new System.Drawing.Point(30, 183);
             this.lbExamTypes.Name = "lbExamTypes";
             this.lbExamTypes.Size = new System.Drawing.Size(690, 290);
             this.lbExamTypes.TabIndex = 13;
@@ -583,7 +585,7 @@
             this.btnAddCertificateTemplate.Enabled = false;
             this.btnAddCertificateTemplate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddCertificateTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddCertificateTemplate.Location = new System.Drawing.Point(724, 397);
+            this.btnAddCertificateTemplate.Location = new System.Drawing.Point(724, 365);
             this.btnAddCertificateTemplate.Name = "btnAddCertificateTemplate";
             this.btnAddCertificateTemplate.Size = new System.Drawing.Size(261, 50);
             this.btnAddCertificateTemplate.TabIndex = 9;
@@ -598,7 +600,7 @@
             this.btnAddFailedTemplate.Enabled = false;
             this.btnAddFailedTemplate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddFailedTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddFailedTemplate.Location = new System.Drawing.Point(724, 285);
+            this.btnAddFailedTemplate.Location = new System.Drawing.Point(724, 273);
             this.btnAddFailedTemplate.Name = "btnAddFailedTemplate";
             this.btnAddFailedTemplate.Size = new System.Drawing.Size(261, 50);
             this.btnAddFailedTemplate.TabIndex = 8;
@@ -629,7 +631,7 @@
             this.btnAddQuestionsFile.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddQuestionsFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddQuestionsFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnAddQuestionsFile.Location = new System.Drawing.Point(724, 173);
+            this.btnAddQuestionsFile.Location = new System.Drawing.Point(724, 183);
             this.btnAddQuestionsFile.Name = "btnAddQuestionsFile";
             this.btnAddQuestionsFile.Size = new System.Drawing.Size(261, 50);
             this.btnAddQuestionsFile.TabIndex = 6;
@@ -697,6 +699,21 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // btn_AddProtocolFile
+            // 
+            this.btn_AddProtocolFile.BackColor = System.Drawing.Color.White;
+            this.btn_AddProtocolFile.Enabled = false;
+            this.btn_AddProtocolFile.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.btn_AddProtocolFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_AddProtocolFile.Location = new System.Drawing.Point(724, 412);
+            this.btn_AddProtocolFile.Name = "btn_AddProtocolFile";
+            this.btn_AddProtocolFile.Size = new System.Drawing.Size(261, 50);
+            this.btn_AddProtocolFile.TabIndex = 21;
+            this.btn_AddProtocolFile.Text = "Добави Файл за протокол";
+            this.btn_AddProtocolFile.UseVisualStyleBackColor = false;
+            this.btn_AddProtocolFile.Visible = false;
+            this.btn_AddProtocolFile.Click += new System.EventHandler(this.btn_AddProtocolFile_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -704,11 +721,11 @@
             this.ClientSize = new System.Drawing.Size(1322, 790);
             this.ControlBox = false;
             this.Controls.Add(this.stageManager);
-            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stage_2);
             this.Controls.Add(this.btnOpenManagerPanel);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.stage_3);
+            this.Controls.Add(this.stage_1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -782,6 +799,7 @@
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.TextBox tbAddExamTypeMinScore;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btn_AddProtocolFile;
     }
 }
 
