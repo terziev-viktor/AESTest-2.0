@@ -1,6 +1,7 @@
 # AESTest-2.0
 
-Template alphabet:<br>
+### Template alphabet:
+```
 &lt;protocol&gt; - Number of protocol<br>
 &lt;date&gt; - Current date<br>
 &lt;date+&gt; - Current date + One Year<br>
@@ -12,5 +13,6 @@ Template alphabet:<br>
 &lt;mark&gt; - Student's mark in %<br>
 &lt;group&gt; - Group of the student<br>
 &lt;pin&gt; - Personal identification number of the student<br>
+```
 
 
