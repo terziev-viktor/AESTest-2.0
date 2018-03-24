@@ -293,13 +293,18 @@ namespace AESTest2._0
         /// <summary>
         /// reads questions from .xlsx file with the same name as the selected exam
         /// </summary>
-        private void ReadDataStage_2()
+        private bool ReadDataStage_2()
         {
             string selectedItem = cmbGroups.SelectedItem.ToString();
             Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedItem).ElementAt(0);
-            
+            string examQuestionsPath = MAINPATH + QUESTIONSDOCS + selectedItem + ".xlsx";
+            if (!File.Exists(examQuestionsPath))
+            {
+                MessageBox.Show("Не сте избрали въпросник за този тест.");
+                return false;
+            }
             Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-            Workbook wBook = excelApp.Workbooks.Open(MAINPATH + QUESTIONSDOCS + selectedItem + ".xlsx");
+            Workbook wBook = excelApp.Workbooks.Open(examQuestionsPath);
             Worksheet wSheet = (Worksheet)wBook.Worksheets.get_Item(1);
             Microsoft.Office.Interop.Excel.Range range = wSheet.UsedRange;
             
@@ -332,6 +337,7 @@ namespace AESTest2._0
             ReleaseObject(wBook);
             excelApp.Quit();
             ReleaseObject(excelApp);
+            return true;
         }
 
         private void cmb_SelectedIndexChanged(object sender, EventArgs e)
@@ -684,6 +690,11 @@ namespace AESTest2._0
 
         private void EnterStage_2()
         {
+            bool read = this.ReadDataStage_2();
+            if (!read)
+            {
+                return;
+            }
             this.stage_1.Enabled = false;
             this.stage_1.Visible = false;
             this.stage_2.Enabled = true;
@@ -707,7 +718,6 @@ namespace AESTest2._0
             this.lblQuestionText.Text = "...";
             this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.Where(x => x.Title == this.cmbGroups.SelectedItem.ToString()).First());
             this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.dataHolder.Exams.Where(x => x.Title == cmbGroups.SelectedItem.ToString()).ElementAt(0).QuestionsCount;
-            this.ReadDataStage_2();
             this.setQuestion(this.questionIndex);
             this.sec = 0;
             this.min = 30;
