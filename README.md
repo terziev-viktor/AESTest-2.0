@@ -15,4 +15,9 @@
 <pin> - Personal identification number of the student<br>
 ```
 
+### Naming templates
+```
+path + Exam Title + .docx where path is one if {'Темплейти\Преминали', 'Темплейти\Скъсани', 'Темплейти\Скъсани\Скъсани Втори Път\'}
+```
+
 
