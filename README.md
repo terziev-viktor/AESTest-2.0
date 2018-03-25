@@ -2,17 +2,17 @@
 
 ### Template alphabet:
 ```
-<protocol> - Number of protocol<br>
-<date> - Current date<br>
-<date+> - Current date + One Year<br>
-<fullname> - Full name of the student<br>
-<name> - First name of student<br>
-<sur> - Surname of student<br>
-<famil> - Falil name of student<br>
-<post> - Post of the student<br>
-<mark> - Student's mark in %<br>
-<group> - Group of the student<br>
-<pin> - Personal identification number of the student<br>
+<protocol> - Number of protocol
+<date> - Current date
+<dateplus> - Current date + One Year
+<fullname> - Full name of the studens
+<name> - First name of student
+<sur> - Surname of student
+<famil> - Falil name of student
+<post> - Post of the student
+<mark> - Student's mark in %
+<group> - Group of the student
+<pin> - Personal identification number of the student
 ```
 
 ### Naming templates
