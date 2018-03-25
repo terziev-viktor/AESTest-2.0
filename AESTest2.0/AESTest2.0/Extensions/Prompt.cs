@@ -12,7 +12,7 @@ namespace AESTest2._0.Extensions
                 Height = 150,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = Caption,
-                StartPosition = FormStartPosition.CenterScreen
+                StartPosition = FormStartPosition.CenterScreen,
             };
             Label textLabel = new Label() { Left = 50, Top = 20, Text = text };
             TextBox tbox = new TextBox() { Left = 50, Top = 50, Width = 400 };

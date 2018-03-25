@@ -131,7 +131,7 @@ namespace AESTest2._0
             dir.Attributes = FileAttributes.Hidden;
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS);
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS);
-
+            
             object misValue = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
             if (excelApp == null)
@@ -139,30 +139,10 @@ namespace AESTest2._0
                 MessageBox.Show("MS Excel не е инсталиран правилно или е стара версия (< 2008).");
                 System.Windows.Forms.Application.Exit();
             }
-            
+            File.Create(MAINPATH + PROTOCOLDOC).Close();
             File.Create(MAINPATH + DATAEXAMS).Close();
             File.Create(MAINPATH + DATAPOSTS).Close();
             File.Create(MAINPATH + DATASTUDENTS).Close();
-
-            using (var w = new StreamWriter(MAINPATH + DATAEXAMS))
-            {
-                w.WriteLine(".");
-                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
-                w.WriteLine("<вид изпит> <брой въпроси> <нужен резултата за оценка 'ДА'> <нов ред>");
-            }
-
-            using (var w = new StreamWriter(MAINPATH + DATAPOSTS))
-            {
-                w.WriteLine(".");
-                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
-                w.WriteLine("<длъжност> <на колко години да се явява> <нов ред>");
-            }
-            using (var w = new StreamWriter(MAINPATH + DATASTUDENTS))
-            {
-                w.WriteLine(".");
-                w.WriteLine("Изтрийте всичко и попълнете в следния формат:");
-                w.WriteLine("<3 имена> <ЕГН> <нов ред>");
-            }
         }
 
         private void Fill(string pathToTemplate, string saveAsPath,
@@ -179,13 +159,14 @@ namespace AESTest2._0
             string egn)
         {
             
-            object misValue = System.Reflection.Missing.Value;
+            object missing = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
             Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
             this.setProgressBar(1, doc.Words.Count);
             string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, group, egn};
             pBar.Maximum = templateStrings.Length;
-            pBar.Value = 0;
+            pBar.Minimum = 0;
+            pBar.Value = 1;
             for (int i = 0; i < templateStrings.Length; i++)
             {
                 Microsoft.Office.Interop.Word.Find findObject = wordApp.Selection.Find;
@@ -195,10 +176,10 @@ namespace AESTest2._0
                 findObject.Replacement.Text = correspondingStrings[i];
 
                 object replaceAll = Microsoft.Office.Interop.Word.WdReplace.wdReplaceAll;
+                findObject.Execute(ref missing, ref missing, ref missing, ref missing, ref missing,
+                    ref missing, ref missing, ref missing, ref missing, ref missing,
+                    ref replaceAll, ref missing, ref missing, ref missing, ref missing);
 
-                findObject.Execute(ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
-                    ref misValue, ref misValue, ref misValue, ref misValue, ref misValue,
-                    ref replaceAll, ref misValue, ref misValue, ref misValue, ref misValue);
                 pBar.PerformStep();
             }
 
@@ -219,6 +200,9 @@ namespace AESTest2._0
             this.cmbNames.Items.Clear();
             this.cmbPosts.Items.Clear();
             this.dataHolder.Questions.Clear();
+            this.dataHolder.Exams.Clear();
+            this.dataHolder.Posts.Clear();
+            this.dataHolder.Students.Clear();
             object misValue = System.Reflection.Missing.Value;
 
             using (var r = new StreamReader(MAINPATH + DATASTUDENTS))
@@ -234,7 +218,7 @@ namespace AESTest2._0
                         Fullname = name,
                         PIN = egn
                     });
-                    cmbNames.Items.Add(name);
+                    this.cmbNames.Items.Add(name);
                     line = r.ReadLine();
                 }
             }
@@ -254,7 +238,7 @@ namespace AESTest2._0
                         QuestionsCount = int.Parse(num),
                         Title = exam
                     });
-                    cmbGroups.Items.Add(exam);
+                    this.cmbGroups.Items.Add(exam);
                     line = r.ReadLine();
                 }
             }
@@ -267,12 +251,12 @@ namespace AESTest2._0
                     string[] sp = line.Split(new char[] { ' ' });
                     string deltaYear = sp[sp.Length - 1];
                     string post = string.Join(" ", sp.Take(sp.Length - 1));
-                    cmbPosts.Items.Add(post);
                     this.dataHolder.Posts.Add(new Post()
                     {
                         DeltaYear = int.Parse(deltaYear),
                         Title = post
                     });
+                    cmbPosts.Items.Add(post);
                     line = r.ReadLine();
                 }
             }
@@ -283,21 +267,21 @@ namespace AESTest2._0
                 while(line != null && line != "" && line != "\n")
                 {
                     string[] examAndProtocolPath = line.Split(new char[] { ' ' });
-                    string examTitle = examAndProtocolPath[0];
-                    dataHolder.Exams.First((x) => { return x.Title == examTitle; }).ProtocolNumberPath = examAndProtocolPath[1];
+                    string examTitle = string.Join(" ", examAndProtocolPath.Take(examAndProtocolPath.Length - 1).ToArray());
+                    dataHolder.Exams.First((x) => { return x.Title == examTitle; }).ProtocolNumberPath = examAndProtocolPath[examAndProtocolPath.Length - 1];
                     line = r.ReadLine();
                 }
             }
         }
 
         /// <summary>
-        /// reads questions from .xlsx file with the same name as the selected exam
+        /// reads questions from .xls file with the same name as the selected exam
         /// </summary>
         private bool ReadDataStage_2()
         {
             string selectedItem = cmbGroups.SelectedItem.ToString();
             Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedItem).ElementAt(0);
-            string examQuestionsPath = MAINPATH + QUESTIONSDOCS + selectedItem + ".xlsx";
+            string examQuestionsPath = MAINPATH + QUESTIONSDOCS + selectedItem + ".xls";
             if (!File.Exists(examQuestionsPath))
             {
                 MessageBox.Show("Не сте избрали въпросник за този тест.");
@@ -331,7 +315,7 @@ namespace AESTest2._0
                     this.dataHolder.Questions.Add(quest);
                 }
             }
-            this.dataHolder.Questions.Shuffle();
+            this.dataHolder.Questions.Shuffle(exam.QuestionsCount);
             wBook.Close(false);
             ReleaseObject(wSheet);
             ReleaseObject(wBook);
@@ -665,14 +649,15 @@ namespace AESTest2._0
                 w.WriteLine(string.Format("{0} - {1}.{2}.{3}", student.Fullname,
                     DateTime.Now.Day,
                     DateTime.Now.Month,
-                    year));
+                    DateTime.Now.Year + year));
             }
         }
 
         private void EnterStage_1()
         {
             this.cmbGroups.SelectedIndex = -1;
-            
+            this.cmbPosts.SelectedIndex = -1;
+            this.cmbNames.SelectedIndex = -1;
             this.stageManager.Enabled = false;
             this.stageManager.Visible = false;
             this.stage_3.Enabled = false;
@@ -682,19 +667,24 @@ namespace AESTest2._0
             this.stage_1.BringToFront();
             this.btnStart.Enabled = false;
             this.btnStart.Visible = false;
-            this.ReadDataStage_1();
             this.cmbNames.Enabled = true;
             this.cmbGroups.Enabled = true;
             this.cmbPosts.Enabled = true;
+            this.btnStart.Enabled = true;
+
+            this.ReadDataStage_1();
         }
 
         private void EnterStage_2()
         {
+            this.dataHolder.Questions.Clear();
             bool read = this.ReadDataStage_2();
             if (!read)
             {
                 return;
             }
+            this.btnStart.Enabled = false;
+            this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.First(x => x.Title == this.cmbGroups.SelectedItem.ToString()));
             this.stage_1.Enabled = false;
             this.stage_1.Visible = false;
             this.stage_2.Enabled = true;
@@ -703,7 +693,6 @@ namespace AESTest2._0
             this.cmbNames.Enabled = false;
             this.cmbGroups.Enabled = false;
             this.cmbPosts.Enabled = false;
-            this.dataHolder.Questions.Clear();
             this.questionIndex = 0;
             this.btnPrev.Enabled = false;
             this.btnPrev.Visible = false;
@@ -716,7 +705,6 @@ namespace AESTest2._0
             this.lblAnswerC.Text = "Отговор В";
             this.lblAnswerD.Text = "Отговор Г";
             this.lblQuestionText.Text = "...";
-            this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.Where(x => x.Title == this.cmbGroups.SelectedItem.ToString()).First());
             this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.dataHolder.Exams.Where(x => x.Title == cmbGroups.SelectedItem.ToString()).ElementAt(0).QuestionsCount;
             this.setQuestion(this.questionIndex);
             this.sec = 0;
@@ -780,7 +768,7 @@ namespace AESTest2._0
                 privateWriter.WriteLine("\n");
 
                 this.pBar.Maximum = exam.QuestionsCount;
-                this.pBar.Value = 0;
+                this.pBar.Value = 1;
                 for (int i = 0; i < exam.QuestionsCount; i++)
                 {
                     privateWriter.WriteLine(indexOfQuestion + ". " + dataHolder.Questions[i].Questiontext);
@@ -897,6 +885,7 @@ namespace AESTest2._0
         private void btnNextTest_Click(object sender, EventArgs e)
         {
             this.cmbGroups.SelectedIndex = -1;
+            this.cmbPosts.SelectedIndex = -1;
             this.stageManager.Enabled = false;
             this.stageManager.Visible = false;
             this.stage_3.Enabled = false;
@@ -1011,6 +1000,10 @@ namespace AESTest2._0
             this.dataHolder.Exams.Add(newExam);
             this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
             this.cmbGroups.Items.Add(newExam.Title);
+
+            this.tbAddExamType.Text = "";
+            this.tbAddExamTypeQCount.Text = "";
+            this.tbAddExamTypeMinScore.Text = "";
         }
 
         private void lbExamTypes_SelectedIndexChanged(object sender, EventArgs e)
@@ -1068,7 +1061,6 @@ namespace AESTest2._0
         {
             this.stageManager.Visible = false;
             this.stageManager.Enabled = false;
-
             this.stage_1.Visible = true;
             this.stage_1.Enabled = true;
         }
@@ -1076,7 +1068,7 @@ namespace AESTest2._0
         private void btnAddQuestionsFile_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Excel Files|*.xlsx;";
+            dialog.Filter = "Excel Files|*.xls;";
             dialog.Title = "Please select a Excel 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -1089,7 +1081,7 @@ namespace AESTest2._0
                 }
                 int n = item.IndexOf(" -> ");
                 item = item.Remove(n);
-                File.Copy(dialog.FileName, MAINPATH + @"Въпросници\" + item + ".xlsx", true);
+                File.Copy(dialog.FileName, MAINPATH + @"Въпросници\" + item + ".xls", true);
             }
         }
 
@@ -1175,6 +1167,82 @@ namespace AESTest2._0
                     w.WriteLine(item + " " + dialog.FileName);
                 }
             }
+        }
+
+        private void btnAddNames_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(tbAddName.Text))
+            {
+                MessageBox.Show("Въведете името на служителя");
+                return;
+            }
+            if (string.IsNullOrEmpty(tbAddSurname.Text))
+            {
+                MessageBox.Show("Въведете презимето на служителя");
+                return;
+            }
+            if (string.IsNullOrEmpty(tbAddFamilName.Text))
+            {
+                MessageBox.Show("Въведете фамилното име на служителя");
+                return;
+            }
+            if (string.IsNullOrEmpty(tbAddEgn.Text))
+            {
+                MessageBox.Show("Въведете ЕГН-то на служителя");
+                return;
+            }
+            string fullName = tbAddName.Text + " " + tbAddSurname.Text + " " + tbAddFamilName.Text;
+            using (StreamWriter w = new StreamWriter(MAINPATH + DATASTUDENTS, true))
+            {
+                w.WriteLine(fullName + " " + tbAddEgn.Text);
+                w.Flush();
+            }
+            tbAddName.Text = "";
+            tbAddSurname.Text = "";
+            tbAddFamilName.Text = "";
+            tbAddEgn.Text = "";
+            dataHolder.Students.Add(new Student()
+            {
+                Fullname = fullName,
+                PIN = tbAddEgn.Text
+            });
+            this.cmbNames.Items.Add(fullName);
+            MessageBox.Show("Служителят е добавен за изпитване");
+        }
+
+        private void btnAddPost_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(tbAddPostYears.Text))
+            {
+                MessageBox.Show("Не сте въвели длъжност");
+                return;
+            }
+            if (string.IsNullOrEmpty(tbAddPostYears.Text))
+            {
+                MessageBox.Show("Не сте въвели на колко години има изпит за тази длъжност");
+                return;
+            }
+            int deltaYears = 0;
+            if (!int.TryParse(tbAddPostYears.Text, out deltaYears))
+            {
+                MessageBox.Show("Годините за изпит на длъжността трябва да е число");
+                return;
+            }
+            using (StreamWriter w = new StreamWriter(MAINPATH + DATAPOSTS, true))
+            {
+                w.WriteLine(tbAddPost.Text + " " + tbAddPostYears.Text);
+                w.Flush();
+            }
+            this.cmbPosts.Items.Add(tbAddPost.Text);
+            this.dataHolder.Posts.Add(new Post()
+            {
+                Title = tbAddPost.Text,
+                DeltaYear = deltaYears
+            });
+
+            this.tbAddPost.Text = "";
+            this.tbAddPostYears.Text = "";
+            MessageBox.Show("Добавихте нова длъжност успешно");
         }
     }
 }
