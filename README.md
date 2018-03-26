@@ -11,7 +11,8 @@
 <famil> - Falil name of student
 <post> - Post of the student
 <mark> - Student's mark in %
-<group> - Group of the student
+<exam> - Title of exam that has been taken
+<group> - Qualification group chosen by the user
 <pin> - Personal identification number of the student
 ```
 

@@ -13,6 +13,7 @@ namespace AESTest2._0
         public PasswordForm()
         {
             InitializeComponent();
+            inp.PasswordChar = '*';
             if (!File.Exists(PATH))
             {
                 MessageBox.Show("Паролата ви е по подразбиране. Силно ви съветваме да я смените с нова!");

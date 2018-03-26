@@ -29,6 +29,7 @@ namespace AESTest2._0
         private const string FAILEDAGAINDOCS = @"Повторно Неиздържали\";
         private const string PROTOCOLDOC = @"Номер на протокола.txt";
         private const string DEFAULTPROTOCOLNUMBER = "100";
+        private const string DATAGROUPS = "квалификационни_групи.txt";
         private bool SaveDataToDataSheets = true;
         private string[] templateStrings =
         {
@@ -41,6 +42,7 @@ namespace AESTest2._0
             "<famil>",
             "<post>",
             "<mark>",
+            "<exam>",
             "<group>",
             "<pin>",
         };
@@ -97,11 +99,13 @@ namespace AESTest2._0
             this.lblAnswerD.MaximumSize = new Size(this.Width / 3 - 25, this.Height / 3);
             this.btnStart.Height = 50;
             this.cmbNames.Width = stage_1.Width - (lblPosts.Width + 20);
-            this.cmbGroups.Width = stage_1.Width - (lblPosts.Width + 20);
+            this.cmbExams.Width = stage_1.Width - (lblPosts.Width + 20);
             this.cmbPosts.Width = stage_1.Width - (lblPosts.Width + 20);
+            this.cmbGroups.Width = stage_1.Width - (lblPosts.Width + 20);
             this.cmbNames.Enabled = false;
-            this.cmbGroups.Enabled = false;
+            this.cmbExams.Enabled = false;
             this.cmbPosts.Enabled = false;
+            this.cmbGroups.Enabled = false;
             if (!Directory.Exists(MAINPATH))
             {
                 // the program is opened for first time. Setup the main directory with all files that should be there
@@ -155,6 +159,7 @@ namespace AESTest2._0
             string famil,
             string post,
             string markInPercent,
+            string exam,
             string group,
             string egn)
         {
@@ -163,7 +168,7 @@ namespace AESTest2._0
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
             Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
             this.setProgressBar(1, doc.Words.Count);
-            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, group, egn};
+            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, exam, group, egn};
             pBar.Maximum = templateStrings.Length;
             pBar.Minimum = 0;
             pBar.Value = 1;
@@ -196,9 +201,10 @@ namespace AESTest2._0
         private void ReadDataStage_1()
         {
             this.btnNextTest.Text = "Зареждане...";
-            this.cmbGroups.Items.Clear();
+            this.cmbExams.Items.Clear();
             this.cmbNames.Items.Clear();
             this.cmbPosts.Items.Clear();
+            this.cmbGroups.Items.Clear();
             this.dataHolder.Questions.Clear();
             this.dataHolder.Exams.Clear();
             this.dataHolder.Posts.Clear();
@@ -238,7 +244,7 @@ namespace AESTest2._0
                         QuestionsCount = int.Parse(num),
                         Title = exam
                     });
-                    this.cmbGroups.Items.Add(exam);
+                    this.cmbExams.Items.Add(exam);
                     line = r.ReadLine();
                 }
             }
@@ -264,7 +270,7 @@ namespace AESTest2._0
             using (var r = new StreamReader(MAINPATH + PROTOCOLDOC))
             {
                 string line = r.ReadLine();
-                while(line != null && line != "" && line != "\n")
+                while(!string.IsNullOrEmpty(line) && line != "\n")
                 {
                     string[] examAndProtocolPath = line.Split(new char[] { ' ' });
                     string examTitle = string.Join(" ", examAndProtocolPath.Take(examAndProtocolPath.Length - 1).ToArray());
@@ -272,6 +278,17 @@ namespace AESTest2._0
                     line = r.ReadLine();
                 }
             }
+
+            using (var r = new StreamReader(MAINPATH + DATAGROUPS))
+            {
+                string line = r.ReadLine();
+                while (!string.IsNullOrEmpty(line))
+                {
+                    this.cmbGroups.Items.Add(line);
+                    line = r.ReadLine();
+                }
+            }
+
         }
 
         /// <summary>
@@ -279,7 +296,7 @@ namespace AESTest2._0
         /// </summary>
         private bool ReadDataStage_2()
         {
-            string selectedItem = cmbGroups.SelectedItem.ToString();
+            string selectedItem = cmbExams.SelectedItem.ToString();
             Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedItem).ElementAt(0);
             string examQuestionsPath = MAINPATH + QUESTIONSDOCS + selectedItem + ".xls";
             if (!File.Exists(examQuestionsPath))
@@ -327,11 +344,17 @@ namespace AESTest2._0
         private void cmb_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbPosts.SelectedIndex > -1
-                && cmbGroups.SelectedIndex > -1
-                && cmbNames.SelectedIndex > -1)
+                && cmbExams.SelectedIndex > -1
+                && cmbNames.SelectedIndex > -1
+                && cmbGroups.SelectedIndex > -1)
             {
                 this.btnStart.Enabled = true;
                 this.btnStart.Visible = true;
+            }
+            else
+            {
+                this.btnStart.Enabled = false;
+                this.btnStart.Visible = false;
             }
         }
 
@@ -505,25 +528,25 @@ namespace AESTest2._0
             {
                 // contains only questions with right student's answer
 
-                string selectedExamType = cmbGroups.SelectedItem.ToString();
+                string selectedExamType = cmbExams.SelectedItem.ToString();
                 Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedExamType).ElementAt(0);
                 Student student = this.dataHolder.Students.Where(x => x.Fullname == this.cmbNames.SelectedItem.ToString()).ElementAt(0);
                 Post post = this.dataHolder.Posts.Where(x => x.Title == cmbPosts.SelectedItem.ToString()).ElementAt(0);
 
                 int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Where(x => x.RightAnswer == x.StudentsAnswer).Count(); // number of right answers
-                
+                string group = cmbGroups.SelectedItem.ToString();
                 int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
                 int protocol = this.getProtocolNumber(exam); // number of protocol
                 string date = DateTime.Now.ToShortDateString();
                 string dateplus = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
                 string path = this.GetTemplatePath(mark, student.Fullname, exam); // Path to template for current exam
-                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + exam.Title + ".docx"; // path to certificate for current group
+                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + exam.Title + ".doc"; // path to certificate for current group
                 bool passed = mark >= exam.MinScore; // If the student passed the exam
                 string passedStr = passed ? "Издържал" : "Скъсан";
                 string[] nameSplitted = student.Fullname.Split(new char[] { ' ' });
                 string saveAsPath = MAINPATH + GENERATEDDOCS + student.Fullname;
                 saveAsPath += "_" + passedStr + "_";
-                saveAsPath += exam.Title + ".docx";
+                saveAsPath += exam.Title + ".doc";
                 this.Fill(path, saveAsPath,
                     protocol.ToString(),
                     date,
@@ -534,14 +557,15 @@ namespace AESTest2._0
                     nameSplitted[2],
                     post.Title,
                     mark.ToString(),
-                    selectedExamType,
+                    exam.Title,
+                    group,
                     student.PIN);
                 if (passed)
                 {
                     string saveCertificatePath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
                         student.Fullname +
                         "_" +
-                        exam.Title + ".docx";
+                        exam.Title + ".doc";
 
                     this.Fill(certificatePath, saveCertificatePath,
                         protocol.ToString(),
@@ -554,6 +578,7 @@ namespace AESTest2._0
                         post.Title,
                         mark.ToString(),
                         selectedExamType,
+                        cmbGroups.SelectedItem.ToString(),
                         student.PIN);
                     this.RemoveFromFailedDocument(exam.Title, student.Fullname);
                 }
@@ -655,9 +680,10 @@ namespace AESTest2._0
 
         private void EnterStage_1()
         {
-            this.cmbGroups.SelectedIndex = -1;
+            this.cmbExams.SelectedIndex = -1;
             this.cmbPosts.SelectedIndex = -1;
             this.cmbNames.SelectedIndex = -1;
+            this.cmbGroups.SelectedIndex = -1;
             this.stageManager.Enabled = false;
             this.stageManager.Visible = false;
             this.stage_3.Enabled = false;
@@ -668,30 +694,32 @@ namespace AESTest2._0
             this.btnStart.Enabled = false;
             this.btnStart.Visible = false;
             this.cmbNames.Enabled = true;
-            this.cmbGroups.Enabled = true;
+            this.cmbExams.Enabled = true;
             this.cmbPosts.Enabled = true;
             this.btnStart.Enabled = true;
-
+            this.cmbGroups.Enabled = true;
             this.ReadDataStage_1();
         }
 
         private void EnterStage_2()
         {
             this.dataHolder.Questions.Clear();
+            this.btnStart.Enabled = false;
             bool read = this.ReadDataStage_2();
             if (!read)
             {
+                this.btnStart.Enabled = true;
                 return;
             }
             this.btnStart.Enabled = false;
-            this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.First(x => x.Title == this.cmbGroups.SelectedItem.ToString()));
+            this.dataHolder.CurrentExamIndex = this.dataHolder.Exams.IndexOf(this.dataHolder.Exams.First(x => x.Title == this.cmbExams.SelectedItem.ToString()));
             this.stage_1.Enabled = false;
             this.stage_1.Visible = false;
             this.stage_2.Enabled = true;
             this.stage_2.Visible = true;
             this.stage_2.BringToFront();
             this.cmbNames.Enabled = false;
-            this.cmbGroups.Enabled = false;
+            this.cmbExams.Enabled = false;
             this.cmbPosts.Enabled = false;
             this.questionIndex = 0;
             this.btnPrev.Enabled = false;
@@ -705,7 +733,7 @@ namespace AESTest2._0
             this.lblAnswerC.Text = "Отговор В";
             this.lblAnswerD.Text = "Отговор Г";
             this.lblQuestionText.Text = "...";
-            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.dataHolder.Exams.Where(x => x.Title == cmbGroups.SelectedItem.ToString()).ElementAt(0).QuestionsCount;
+            this.btnQuestIndex.Text = (this.questionIndex + 1) + "/" + this.dataHolder.Exams.Where(x => x.Title == cmbExams.SelectedItem.ToString()).ElementAt(0).QuestionsCount;
             this.setQuestion(this.questionIndex);
             this.sec = 0;
             this.min = 30;
@@ -762,7 +790,7 @@ namespace AESTest2._0
 
                 privateWriter.WriteLine(string.Format("Дата: {0}-{1}-{2}", DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year));
                 privateWriter.WriteLine("Номер на протокола: " + protocol);
-                privateWriter.WriteLine("Явил се на " + cmbGroups.SelectedItem.ToString());
+                privateWriter.WriteLine("Явил се на " + cmbExams.SelectedItem.ToString());
                 privateWriter.WriteLine("Отговорите на: " + name);
                 privateWriter.WriteLine("Резултат: " + mark + "%");
                 privateWriter.WriteLine("\n");
@@ -822,7 +850,7 @@ namespace AESTest2._0
                 }
             }
             path += exam.Title;
-            path += ".docx";
+            path += ".doc";
             return path;
 
         }
@@ -876,7 +904,7 @@ namespace AESTest2._0
             throw new Exception("Group of test is not supported");
         }
 
-        private void labelTime_Click(object sender, EventArgs e)
+        private void btnAppExit_Click(object sender, EventArgs e)
         {
             var passForm = new PasswordForm();
             passForm.Show();
@@ -884,8 +912,10 @@ namespace AESTest2._0
 
         private void btnNextTest_Click(object sender, EventArgs e)
         {
-            this.cmbGroups.SelectedIndex = -1;
+            this.cmbExams.SelectedIndex = -1;
             this.cmbPosts.SelectedIndex = -1;
+            this.cmbNames.SelectedIndex = -1;
+            this.cmbGroups.SelectedIndex = -1;
             this.stageManager.Enabled = false;
             this.stageManager.Visible = false;
             this.stage_3.Enabled = false;
@@ -896,8 +926,9 @@ namespace AESTest2._0
             this.btnStart.Enabled = false;
             this.btnStart.Visible = false;
             this.cmbNames.Enabled = true;
-            this.cmbGroups.Enabled = true;
+            this.cmbExams.Enabled = true;
             this.cmbPosts.Enabled = true;
+            this.btnStart.Enabled = true;
 
         }
 
@@ -967,7 +998,7 @@ namespace AESTest2._0
                 return;
             }
 
-            if (this.cmbGroups.Items.Contains(newExamType))
+            if (this.cmbExams.Items.Contains(newExamType))
             {
                 MessageBox.Show("Вече има такъв изпит.");
                 return;
@@ -999,7 +1030,7 @@ namespace AESTest2._0
             };
             this.dataHolder.Exams.Add(newExam);
             this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
-            this.cmbGroups.Items.Add(newExam.Title);
+            this.cmbExams.Items.Add(newExam.Title);
 
             this.tbAddExamType.Text = "";
             this.tbAddExamTypeQCount.Text = "";
@@ -1049,7 +1080,7 @@ namespace AESTest2._0
         {
             // TODO: selected item has -> <number of questions> appended to it.
             this.dataHolder.Exams.Remove(this.dataHolder.Exams.Where(x => x.Title == lbExamTypes.SelectedItem.ToString()).First());
-            this.cmbGroups.Items.Remove(lbExamTypes.SelectedItem.ToString());
+            this.cmbExams.Items.Remove(lbExamTypes.SelectedItem.ToString());
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -1088,7 +1119,7 @@ namespace AESTest2._0
         private void btnAddPassedTemplate_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Word Files|*.docx;";
+            dialog.Filter = "Word Files|*.doc;";
             dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -1096,14 +1127,14 @@ namespace AESTest2._0
                 string item = this.lbExamTypes.SelectedItem.ToString();
                 int n = item.IndexOf(" -> ");
                 item = item.Remove(n);
-                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Преминали\\" + item + ".docx", true);
+                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Преминали\\" + item + ".doc", true);
             }
         }
 
         private void btnAddFailedTemplate_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Word Files|*.docx;";
+            dialog.Filter = "Word Files|*.doc;";
             dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -1111,14 +1142,14 @@ namespace AESTest2._0
                 string item = this.lbExamTypes.SelectedItem.ToString();
                 int n = item.IndexOf(" -> ");
                 item = item.Remove(n);
-                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + item + ".docx", true);
+                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + item + ".doc", true);
             }
         }
 
         private void btnAddCertificateTemplate_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Word Files|*.docx;";
+            dialog.Filter = "Word Files|*.doc;";
             dialog.Title = "Please select a Word 2008+ document for the template.";
 
             string item = this.lbExamTypes.SelectedItem.ToString();
@@ -1126,14 +1157,14 @@ namespace AESTest2._0
             item = item.Remove(n);
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Удостоверения\\" + item + ".docx", true);
+                File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Удостоверения\\" + item + ".doc", true);
             }
         }
 
         private void btnAddTemplateFailedSecondTime_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Word Files|*.docx;";
+            dialog.Filter = "Word Files|*.doc;";
             dialog.Title = "Please select a Word 2008+ document for the template.";
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -1141,13 +1172,8 @@ namespace AESTest2._0
                 string item = this.lbExamTypes.SelectedItem.ToString();
                 int n = item.IndexOf(" -> ");
                 item = item.Remove(n);
-                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + TEMPLATESFAILEDAGAIN + item + ".docx", true);
+                File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + TEMPLATESFAILEDAGAIN + item + ".doc", true);
             }
-        }
-
-        private void btnHelp_Click(object sender, EventArgs e)
-        {
-            // Open Help Panel
         }
 
         private void btn_AddProtocolFile_Click(object sender, EventArgs e)
@@ -1233,7 +1259,7 @@ namespace AESTest2._0
                 w.WriteLine(tbAddPost.Text + " " + tbAddPostYears.Text);
                 w.Flush();
             }
-            this.cmbPosts.Items.Add(tbAddPost.Text);
+            this.cmbPosts.Items.Add(tbAddPost.Text); 
             this.dataHolder.Posts.Add(new Post()
             {
                 Title = tbAddPost.Text,
@@ -1243,6 +1269,24 @@ namespace AESTest2._0
             this.tbAddPost.Text = "";
             this.tbAddPostYears.Text = "";
             MessageBox.Show("Добавихте нова длъжност успешно");
+        }
+
+        private void btnAddGroup_Click(object sender, EventArgs e)
+        {
+            string g = tbAddGroup.Text;
+            if (string.IsNullOrEmpty(g))
+            {
+                MessageBox.Show("Въведете нова квалификационна група в полето");
+                return;
+            }
+            this.cmbGroups.Items.Add(g);
+            using (var w = new StreamWriter(MAINPATH + DATAGROUPS, true))
+            {
+                w.WriteLine(g);
+                w.Flush();
+            }
+            this.tbAddGroup.Text = "";
+            MessageBox.Show("Успешно добавихте нова квалификационна група");
         }
     }
 }

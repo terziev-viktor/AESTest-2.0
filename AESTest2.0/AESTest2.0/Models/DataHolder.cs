@@ -11,6 +11,7 @@ namespace AESTest2._0
             this.Exams = new List<Exam>();
             this.Questions = new List<Question>();
             this.Posts = new List<Post>();
+            this.Groups = new List<string>();
         }
         
         public int CurrentExamIndex { get; set; }
@@ -22,5 +23,7 @@ namespace AESTest2._0
         public List<Exam> Exams { get; set; }
 
         public List<Question> Questions { get; set; }
+
+        public List<string> Groups { get; set; }
     }
 }

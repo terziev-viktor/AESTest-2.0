@@ -61,12 +61,12 @@
             // 
             // inp
             // 
-            this.inp.Font = new System.Drawing.Font("Wingdings", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.inp.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.inp.Location = new System.Drawing.Point(7, 47);
             this.inp.Margin = new System.Windows.Forms.Padding(4);
             this.inp.Name = "inp";
             this.inp.PasswordChar = '*';
-            this.inp.Size = new System.Drawing.Size(165, 23);
+            this.inp.Size = new System.Drawing.Size(165, 24);
             this.inp.TabIndex = 4;
             this.inp.UseSystemPasswordChar = true;
             // 
