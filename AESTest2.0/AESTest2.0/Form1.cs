@@ -135,18 +135,32 @@ namespace AESTest2._0
             dir.Attributes = FileAttributes.Hidden;
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS);
             Directory.CreateDirectory(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS);
-            
-            object misValue = System.Reflection.Missing.Value;
-            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-            if (excelApp == null)
-            {
-                MessageBox.Show("MS Excel не е инсталиран правилно или е стара версия (< 2008).");
-                System.Windows.Forms.Application.Exit();
-            }
             File.Create(MAINPATH + PROTOCOLDOC).Close();
             File.Create(MAINPATH + DATAEXAMS).Close();
             File.Create(MAINPATH + DATAPOSTS).Close();
             File.Create(MAINPATH + DATASTUDENTS).Close();
+
+            try
+            {
+                Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+                Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
+                if (excelApp == null)
+                {
+                    MessageBox.Show("MS Excel не е инсталиран правилно или е стара версия (< 2008).");
+                    ExplorerManager.Start();
+                    System.Windows.Forms.Application.Exit();
+                }
+                if (wordApp == null)
+                {
+                    MessageBox.Show("MS Word не е инсталиран правилно или е стара версия (< 2008)");
+                    ExplorerManager.Start();
+                    System.Windows.Forms.Application.Exit();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private void Fill(string pathToTemplate, string saveAsPath,
