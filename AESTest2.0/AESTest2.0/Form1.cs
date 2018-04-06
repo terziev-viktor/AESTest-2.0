@@ -139,6 +139,7 @@ namespace AESTest2._0
             File.Create(MAINPATH + DATAEXAMS).Close();
             File.Create(MAINPATH + DATAPOSTS).Close();
             File.Create(MAINPATH + DATASTUDENTS).Close();
+            File.Create(MAINPATH + DATAGROUPS).Close();
 
             try
             {
