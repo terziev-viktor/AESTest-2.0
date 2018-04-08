@@ -1,11 +1,10 @@
-﻿using AESTest2._0.Extensions;
-using System;
+﻿using System;
 using System.IO;
-using System.Security.AccessControl;
 using System.Windows.Forms;
 
 namespace AESTest2._0
 {
+    using Tools;
     public partial class PasswordForm : Form
     {
         private const string PATH = @"C:\Windows\iluesjkdgbk.txt";

@@ -15,7 +15,7 @@ namespace AESTest2._0.Extensions
             }
             while (n < count)
             {
-                int k = rnd.Next(n, count);
+                int k = rnd.Next(n, l.Count);
                 T value = l[k];
                 l[k] = l[n];
                 l[n] = value;

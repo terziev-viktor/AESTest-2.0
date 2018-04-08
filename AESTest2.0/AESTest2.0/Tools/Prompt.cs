@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace AESTest2._0.Extensions
+namespace AESTest2._0.Tools
 {
     public static class Prompt
     {

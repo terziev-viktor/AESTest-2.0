@@ -53,7 +53,7 @@ namespace AESTest2._0
         private int min = 30;
         private int questionIndex = 0;
         private const int WS_SYSMENU = 0x80000;
-        
+
         public MainForm()
         {
             InitializeComponent();
@@ -112,10 +112,11 @@ namespace AESTest2._0
                 MessageBox.Show("Вие отворихте програмата за първи път. Файлове с данни ще бъдат генерирани в папка C:/data/. Моля попълнете ги. Или отворете програмата отново с администраторски права и попълненте всичко от мениджърския панел, като влезете с парола по подразбиране.");
                 this.InitSetup();
                 this.SaveDataToDataSheets = false;
+                ExplorerManager.Start();
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            //ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -178,12 +179,12 @@ namespace AESTest2._0
             string group,
             string egn)
         {
-            
+
             object missing = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
             Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
             this.setProgressBar(1, doc.Words.Count);
-            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, exam, group, egn};
+            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, exam, group, egn };
             pBar.Maximum = templateStrings.Length;
             pBar.Minimum = 0;
             pBar.Value = 1;
@@ -229,7 +230,7 @@ namespace AESTest2._0
             using (var r = new StreamReader(MAINPATH + DATASTUDENTS))
             {
                 string line = r.ReadLine();
-                while(line != null && line != "")
+                while (!string.IsNullOrEmpty(line))
                 {
                     string[] sp = line.Split(new char[] { ' ' });
                     string egn = sp[sp.Length - 1];
@@ -247,17 +248,20 @@ namespace AESTest2._0
             using (var r = new StreamReader(MAINPATH + DATAEXAMS))
             {
                 string line = r.ReadLine();
-                while(line != null && line != "")
+                while (!string.IsNullOrEmpty(line))
                 {
                     string[] sp = line.Split(new char[] { ' ' });
-                    string minScore = sp[sp.Length - 1];
-                    string num = sp[sp.Length - 2];
-                    string exam = string.Join(" ", sp.Take(sp.Length - 2));
+                    ExamType examtype = (ExamType)Enum.Parse(typeof(ExamType), sp[sp.Length - 1]);
+                    string minScore = sp[sp.Length - 2];
+                    string questionsCount = sp[sp.Length - 3];
+                    string exam = string.Join(" ", sp.Take(sp.Length - 3));
+
                     dataHolder.Exams.Add(new Exam()
                     {
                         MinScore = int.Parse(minScore),
-                        QuestionsCount = int.Parse(num),
-                        Title = exam
+                        QuestionsCount = int.Parse(questionsCount),
+                        Title = exam,
+                        Type = examtype
                     });
                     this.cmbExams.Items.Add(exam);
                     line = r.ReadLine();
@@ -267,7 +271,7 @@ namespace AESTest2._0
             using (var r = new StreamReader(MAINPATH + DATAPOSTS))
             {
                 string line = r.ReadLine();
-                while(line != null && line != "")
+                while (!string.IsNullOrEmpty(line))
                 {
                     string[] sp = line.Split(new char[] { ' ' });
                     string deltaYear = sp[sp.Length - 1];
@@ -285,11 +289,16 @@ namespace AESTest2._0
             using (var r = new StreamReader(MAINPATH + PROTOCOLDOC))
             {
                 string line = r.ReadLine();
-                while(!string.IsNullOrEmpty(line) && line != "\n")
+                while (!string.IsNullOrEmpty(line) && line != "\n")
                 {
                     string[] examAndProtocolPath = line.Split(new char[] { ' ' });
                     string examTitle = string.Join(" ", examAndProtocolPath.Take(examAndProtocolPath.Length - 1).ToArray());
-                    dataHolder.Exams.First((x) => { return x.Title == examTitle; }).ProtocolNumberPath = examAndProtocolPath[examAndProtocolPath.Length - 1];
+                    Exam e = dataHolder.Exams.FirstOrDefault((x) => { return x.Title == examTitle; });
+                    if (e != null)
+                    {
+                        e.ProtocolNumberPath = examAndProtocolPath[examAndProtocolPath.Length - 1];
+                    }
+
                     line = r.ReadLine();
                 }
             }
@@ -308,22 +317,34 @@ namespace AESTest2._0
 
         /// <summary>
         /// reads questions from .xls file with the same name as the selected exam
+        /// number of sheet = number of quallification group
         /// </summary>
         private bool ReadDataStage_2()
         {
-            string selectedItem = cmbExams.SelectedItem.ToString();
-            Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedItem).ElementAt(0);
-            string examQuestionsPath = MAINPATH + QUESTIONSDOCS + selectedItem + ".xls";
+            string examTitle = cmbExams.SelectedItem.ToString();
+            Exam exam = this.dataHolder.Exams.First(x => { return x.Title == examTitle; });
+            string examQuestionsPath = MAINPATH + QUESTIONSDOCS + examTitle + ".xls";
+
             if (!File.Exists(examQuestionsPath))
             {
                 MessageBox.Show("Не сте избрали въпросник за този тест.");
                 return false;
             }
+            string sheetname;
+            if (exam.Type == ExamType.Ordinance9)
+            {
+                sheetname = this.cmbPosts.SelectedItem.ToString();
+            }
+            else
+            {
+                sheetname = this.cmbGroups.SelectedItem.ToString();
+            }
+
             Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
             Workbook wBook = excelApp.Workbooks.Open(examQuestionsPath);
-            Worksheet wSheet = (Worksheet)wBook.Worksheets.get_Item(1);
-            Microsoft.Office.Interop.Excel.Range range = wSheet.UsedRange;
-            
+            Worksheet wSheet = (Worksheet)wBook.Worksheets[sheetname];
+            Range range = wSheet.UsedRange;
+
             for (int i = 2; i <= range.Rows.Count; i++)
             {
                 string currentQuestion = Convert.ToString((range.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
@@ -360,8 +381,7 @@ namespace AESTest2._0
         {
             if (cmbPosts.SelectedIndex > -1
                 && cmbExams.SelectedIndex > -1
-                && cmbNames.SelectedIndex > -1
-                && cmbGroups.SelectedIndex > -1)
+                && cmbNames.SelectedIndex > -1)
             {
                 this.btnStart.Enabled = true;
                 this.btnStart.Visible = true;
@@ -375,6 +395,17 @@ namespace AESTest2._0
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            Exam exam = this.dataHolder.Exams.FirstOrDefault((x) => { return x.Title == cmbExams.SelectedItem.ToString(); });
+            if (exam == null)
+            {
+                MessageBox.Show("Този изпит не съществува.");
+                return;
+            }
+            if (exam.Type == ExamType.ForSafety && cmbGroups.SelectedIndex == -1)
+            {
+                MessageBox.Show("Задължително трябва да изберете квалификационна група ако теста е тип безопасност.");
+                return;
+            }
             this.EnterStage_2();
         }
 
@@ -532,7 +563,11 @@ namespace AESTest2._0
             this.dataHolder.Questions[this.questionIndex].StudentsAnswer = 4;
         }
 
-        // Fills the templates and enters stage_3
+        /// <summary>
+        /// Fills the templates and enters stage_3
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnEnd_Click(object sender, EventArgs e)
         {
             this.btnEnd.Enabled = false;
@@ -549,7 +584,11 @@ namespace AESTest2._0
                 Post post = this.dataHolder.Posts.Where(x => x.Title == cmbPosts.SelectedItem.ToString()).ElementAt(0);
 
                 int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Where(x => x.RightAnswer == x.StudentsAnswer).Count(); // number of right answers
-                string group = cmbGroups.SelectedItem.ToString();
+                string group = "";
+                if (cmbGroups.SelectedIndex > -1)
+                {
+                    group = cmbGroups.SelectedItem.ToString();
+                }
                 int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
                 int protocol = this.getProtocolNumber(exam); // number of protocol
                 string date = DateTime.Now.ToShortDateString();
@@ -630,7 +669,7 @@ namespace AESTest2._0
             {
                 for (int i = 0; i < dataHolder.Exams.Count; i++)
                 {
-                    w.WriteLine(dataHolder.Exams[i].Title + " " + dataHolder.Exams[i].QuestionsCount + " " + dataHolder.Exams[i].MinScore);
+                    w.WriteLine(dataHolder.Exams[i].Title + " " + dataHolder.Exams[i].QuestionsCount + " " + dataHolder.Exams[i].MinScore + " " + dataHolder.Exams[i].Type);
                 }
             }
 
@@ -655,7 +694,7 @@ namespace AESTest2._0
 
         private void RemoveNameFromDoc(string path, string nameToRemove)
         {
-            if(!File.Exists(path))
+            if (!File.Exists(path))
             {
                 File.Create(path).Close();
             }
@@ -680,7 +719,7 @@ namespace AESTest2._0
                 }
             }
         }
-        
+
         private void PutInAreToBeExamined(Post post, Student student)
         {
             using (StreamWriter w = new StreamWriter(MAINPATH + "Предстоят да се явят.txt", true))
@@ -779,7 +818,7 @@ namespace AESTest2._0
             {
                 path += FAILEDDOCS + examtype + ".txt";
             }
-            if(!File.Exists(path))
+            if (!File.Exists(path))
             {
                 File.Create(path).Close();
             }
@@ -891,10 +930,15 @@ namespace AESTest2._0
                 return false;
             }
         }
-        
+
         private int getProtocolNumber(Exam exam)
         {
             int protocolNo;
+            if (string.IsNullOrEmpty(exam.ProtocolNumberPath))
+            {
+                MessageBox.Show("Няма избран файл за протокол на този изпит. Ще бъде използван номер по подразбиране.");
+                return 100;
+            }
             using (StreamReader reader = new StreamReader(exam.ProtocolNumberPath))
             {
                 bool success = int.TryParse(reader.ReadLine(), out protocolNo);
@@ -963,7 +1007,7 @@ namespace AESTest2._0
             {
                 e.Cancel = true;
             }
-            if(this.SaveDataToDataSheets)
+            if (this.SaveDataToDataSheets)
             {
                 WriteDataToDataSheets();
             }
@@ -977,7 +1021,7 @@ namespace AESTest2._0
         private void btnOpenManagerPanel_Click(object sender, EventArgs e)
         {
             bool isAdmin = PasswordForm.GetPassword();
-            if(isAdmin)
+            if (isAdmin)
             {
                 this.enterManagerStage();
             }
@@ -1027,21 +1071,33 @@ namespace AESTest2._0
             int minscore;
             bool isCountInt = int.TryParse(qcount, out count);
             bool isMinScoreInt = int.TryParse(minscoreStr, out minscore);
-            if(!isCountInt)
+            if (!isCountInt)
             {
                 MessageBox.Show("Невалиден брой въпроси.");
                 return;
             }
-            if(!isMinScoreInt)
+            if (!isMinScoreInt)
             {
                 MessageBox.Show("Невалиден минимален резултат за оценка 'Да'.");
                 return;
             }
+            ExamType t = ExamType.ForSafety;
+            if (radioOrdinance9.Checked && !radioSafety.Checked)
+            {
+                t = ExamType.Ordinance9;
+            }
+            else if (!radioSafety.Checked && !radioOrdinance9.Checked)
+            {
+                MessageBox.Show("Не сте избрали тип на изпита: За наредба 9 или По безопасност");
+                return;
+            }
+
             Exam newExam = new Exam()
             {
                 Title = newExamType,
                 QuestionsCount = count,
-                MinScore = minscore
+                MinScore = minscore,
+                Type = t
             };
             this.dataHolder.Exams.Add(newExam);
             this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
@@ -1204,7 +1260,7 @@ namespace AESTest2._0
                     string item = this.lbExamTypes.SelectedItem.ToString();
                     int n = item.IndexOf(" -> ");
                     item = item.Remove(n);
-
+                    this.dataHolder.Exams.First((x) => { return x.Title == item; }).ProtocolNumberPath = dialog.FileName;
                     w.WriteLine(item + " " + dialog.FileName);
                 }
             }
@@ -1274,7 +1330,7 @@ namespace AESTest2._0
                 w.WriteLine(tbAddPost.Text + " " + tbAddPostYears.Text);
                 w.Flush();
             }
-            this.cmbPosts.Items.Add(tbAddPost.Text); 
+            this.cmbPosts.Items.Add(tbAddPost.Text);
             this.dataHolder.Posts.Add(new Post()
             {
                 Title = tbAddPost.Text,
