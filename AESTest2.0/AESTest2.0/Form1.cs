@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
 using AESTest2._0.Extensions;
+using AESTest2._0.Tools;
 
 namespace AESTest2._0
 {
@@ -31,20 +32,20 @@ namespace AESTest2._0
         private const string DEFAULTPROTOCOLNUMBER = "100";
         private const string DATAGROUPS = "квалификационни_групи.txt";
         private bool SaveDataToDataSheets = true;
-        private string[] templateStrings =
+        private Dictionary<string,string> map = new Dictionary<string, string>()
         {
-            "<protocol>",
-            "<date>",
-            "<dateplus>",
-            "<fullname>",
-            "<name>",
-            "<sur>",
-            "<famil>",
-            "<post>",
-            "<mark>",
-            "<exam>",
-            "<group>",
-            "<pin>",
+            {"<protocol>", "" },
+            {"<date>","" },
+            {"<dateplus>","" }, 
+            {"<fullname>","" },
+            {"<name>","" },
+            {"<sur>", "" },
+            {"<famil>","" },
+            {"<post>","" },
+            {"<mark>","" },
+            {"<exam>","" },
+            {"<group>","" },
+            {"<pin>","" },
         };
 
         private DataHolder dataHolder = new DataHolder();
@@ -165,36 +166,22 @@ namespace AESTest2._0
             }
         }
 
-        private void Fill(string pathToTemplate, string saveAsPath,
-            string protocolNumber,
-            string date,
-            string dateplus,
-            string fullname,
-            string name,
-            string sur,
-            string famil,
-            string post,
-            string markInPercent,
-            string exam,
-            string group,
-            string egn)
+        private void Fill(string path, string saveAsPath)
         {
-
             object missing = System.Reflection.Missing.Value;
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
-            Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(pathToTemplate);
+            Microsoft.Office.Interop.Word.Document doc = wordApp.Documents.Open(path);
             this.setProgressBar(1, doc.Words.Count);
-            string[] correspondingStrings = { protocolNumber, date, dateplus, fullname, name, sur, famil, post, markInPercent, exam, group, egn };
-            pBar.Maximum = templateStrings.Length;
+            pBar.Maximum = map.Count;
             pBar.Minimum = 0;
             pBar.Value = 1;
-            for (int i = 0; i < templateStrings.Length; i++)
+            foreach(KeyValuePair<string, string> entity in map)
             {
                 Microsoft.Office.Interop.Word.Find findObject = wordApp.Selection.Find;
                 findObject.ClearFormatting();
-                findObject.Text = templateStrings[i];
+                findObject.Text = entity.Key;
                 findObject.Replacement.ClearFormatting();
-                findObject.Replacement.Text = correspondingStrings[i];
+                findObject.Replacement.Text = entity.Value;
 
                 object replaceAll = Microsoft.Office.Interop.Word.WdReplace.wdReplaceAll;
                 findObject.Execute(ref missing, ref missing, ref missing, ref missing, ref missing,
@@ -577,63 +564,44 @@ namespace AESTest2._0
             if (dialogResult == DialogResult.Yes)
             {
                 // contains only questions with right student's answer
-
                 string selectedExamType = cmbExams.SelectedItem.ToString();
-                Exam exam = this.dataHolder.Exams.Where(x => x.Title == selectedExamType).ElementAt(0);
-                Student student = this.dataHolder.Students.Where(x => x.Fullname == this.cmbNames.SelectedItem.ToString()).ElementAt(0);
-                Post post = this.dataHolder.Posts.Where(x => x.Title == cmbPosts.SelectedItem.ToString()).ElementAt(0);
-
-                int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Where(x => x.RightAnswer == x.StudentsAnswer).Count(); // number of right answers
+                Exam exam = this.dataHolder.Exams.First(x => x.Title == selectedExamType);
+                map["<exam>"] = exam.Title;
+                Student student = this.dataHolder.Students.First(x => x.Fullname == this.cmbNames.SelectedItem.ToString());
+                map["<pin>"] = student.PIN;
+                Post post = this.dataHolder.Posts.First(x => x.Title == cmbPosts.SelectedItem.ToString());
+                map["<post>"] = post.Title;
+                int rightAnswersCount = dataHolder.Questions.Take(exam.QuestionsCount).Count(x => x.RightAnswer == x.StudentsAnswer); // number of right answers
                 string group = "";
                 if (cmbGroups.SelectedIndex > -1)
                 {
                     group = cmbGroups.SelectedItem.ToString();
                 }
+                map["<group>"] = group;
                 int mark = ((rightAnswersCount * 100) / exam.QuestionsCount); // students mark
-                int protocol = this.getProtocolNumber(exam); // number of protocol
-                string date = DateTime.Now.ToShortDateString();
-                string dateplus = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
-                string path = this.GetTemplatePath(mark, student.Fullname, exam); // Path to template for current exam
-                string certificatePath = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + exam.Title + ".doc"; // path to certificate for current group
+                map["<protocol>"] = this.getProtocolNumber(exam).ToString(); // number of protocol
+                map["<date>"] = DateTime.Now.ToShortDateString();
+                map["<dateplus>"] = DateTime.Now.AddYears(post.DeltaYear).ToShortDateString();
+                string[] nameSplitted = student.Fullname.Split(new char[] { ' ' });
+                map["<fullname>"] = student.Fullname;
+                map["<name>"] = nameSplitted[0];
+                map["<sur>"] = nameSplitted[1];
+                map["<famil>"] = nameSplitted[2];
+                map["<mark>"] = mark.ToString();
                 bool passed = mark >= exam.MinScore; // If the student passed the exam
                 string passedStr = passed ? "Издържал" : "Скъсан";
-                string[] nameSplitted = student.Fullname.Split(new char[] { ' ' });
-                string saveAsPath = MAINPATH + GENERATEDDOCS + student.Fullname;
-                saveAsPath += "_" + passedStr + "_";
-                saveAsPath += exam.Title + ".doc";
-                this.Fill(path, saveAsPath,
-                    protocol.ToString(),
-                    date,
-                    dateplus,
-                    student.Fullname,
-                    nameSplitted[0],
-                    nameSplitted[1],
-                    nameSplitted[2],
-                    post.Title,
-                    mark.ToString(),
-                    exam.Title,
-                    group,
-                    student.PIN);
+                string saveAsPath = MAINPATH + GENERATEDDOCS + student.Fullname + "_" + passedStr + "_" + exam.Title + ".doc";
+                string pathToTemplate = this.GetTemplatePath(mark, student.Fullname, exam); // Path to template for current exam
+                this.Fill(pathToTemplate, saveAsPath);
                 if (passed)
                 {
-                    string saveCertificatePath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
+                    saveAsPath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
                         student.Fullname +
                         "_" +
                         exam.Title + ".doc";
+                    pathToTemplate = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + exam.Title + ".doc"; // path to certificate for current group
 
-                    this.Fill(certificatePath, saveCertificatePath,
-                        protocol.ToString(),
-                        date,
-                        dateplus,
-                        student.Fullname,
-                        nameSplitted[0],
-                        nameSplitted[1],
-                        nameSplitted[2],
-                        post.Title,
-                        mark.ToString(),
-                        selectedExamType,
-                        cmbGroups.SelectedItem.ToString(),
-                        student.PIN);
+                    this.Fill(pathToTemplate, saveAsPath);
                     this.RemoveFromFailedDocument(exam.Title, student.Fullname);
                 }
                 else
@@ -641,7 +609,7 @@ namespace AESTest2._0
                     this.PutInFailedDocument(student.Fullname, exam.Title);
                 }
                 this.PutInAreToBeExamined(post, student);
-                this.GeneratePrivateDocuments(student.Fullname, mark, protocol, passedStr, exam);
+                this.GeneratePrivateDocuments(student.Fullname, mark, map["<protocol>"], passedStr, exam);
                 this.dataHolder.Students.RemoveAt(dataHolder.Students.FindIndex(x => x.Fullname == student.Fullname));
                 cmbNames.Items.Clear();
                 cmbNames.Items.AddRange(dataHolder.Students.Select(x => x.Fullname).ToArray());
@@ -828,7 +796,7 @@ namespace AESTest2._0
             }
         }
 
-        private void GeneratePrivateDocuments(string name, int mark, int protocol, string passed, Exam exam)
+        private void GeneratePrivateDocuments(string name, int mark, string protocol, string passed, Exam exam)
         {
             setProgressBar(1, exam.QuestionsCount);
             using (StreamWriter privateWriter = new StreamWriter(string.Format(MAINPATH + GENERATEDDOCS + HIDDENDOCS + @"Отговори {0}_{1}_{2}.txt", name, passed, exam.Title)))
@@ -887,7 +855,6 @@ namespace AESTest2._0
         private string GetTemplatePath(int mark, string name, Exam exam)
         {
             bool hasAlreadyFailed = this.StudentHasAlreadyFailed(name, exam.Title);
-            // TODO: calculate the score needed to pass the exam
             int scoreNeeded = exam.MinScore;
 
             string path = MAINPATH + TEMPLATESDOCS;
@@ -906,7 +873,6 @@ namespace AESTest2._0
             path += exam.Title;
             path += ".doc";
             return path;
-
         }
 
         private bool StudentHasAlreadyFailed(string name, string examtype)
@@ -1294,16 +1260,16 @@ namespace AESTest2._0
                 w.WriteLine(fullName + " " + tbAddEgn.Text);
                 w.Flush();
             }
-            tbAddName.Text = "";
-            tbAddSurname.Text = "";
-            tbAddFamilName.Text = "";
-            tbAddEgn.Text = "";
             dataHolder.Students.Add(new Student()
             {
                 Fullname = fullName,
                 PIN = tbAddEgn.Text
             });
             this.cmbNames.Items.Add(fullName);
+            tbAddName.Text = "";
+            tbAddSurname.Text = "";
+            tbAddFamilName.Text = "";
+            tbAddEgn.Text = "";
             MessageBox.Show("Служителят е добавен за изпитване");
         }
 

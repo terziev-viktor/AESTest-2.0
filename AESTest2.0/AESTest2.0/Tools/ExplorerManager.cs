@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace AESTest2._0
+namespace AESTest2._0.Tools
 {
     public static class ExplorerManager
     {

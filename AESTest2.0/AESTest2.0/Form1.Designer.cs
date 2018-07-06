@@ -969,8 +969,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1322, 790);
             this.ControlBox = false;
-            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stageManager);
+            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stage_3);
             this.Controls.Add(this.stage_2);
             this.Controls.Add(this.btnOpenManagerPanel);

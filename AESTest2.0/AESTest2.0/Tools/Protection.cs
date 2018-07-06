@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AESTest2._0
+namespace AESTest2._0.Tools
 {
     public static class Protection
     {
