@@ -60,6 +60,8 @@
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.stageManager = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.lblManager = new System.Windows.Forms.Label();
             this.radioSafety = new System.Windows.Forms.RadioButton();
             this.radioOrdinance9 = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
@@ -96,13 +98,14 @@
             this.btnAddExamType = new System.Windows.Forms.Button();
             this.tbAddExamType = new System.Windows.Forms.TextBox();
             this.lblExamTypes = new System.Windows.Forms.Label();
-            this.lblManager = new System.Windows.Forms.Label();
             this.btnOpenManagerPanel = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
             this.stageManager.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelTime
@@ -297,7 +300,8 @@
             // stage_1
             // 
             this.stage_1.BackColor = System.Drawing.Color.White;
-            this.stage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.stage_1.BackgroundImage = global::AESTest2._0.Properties.Resources.tpp_aes_logo;
+            this.stage_1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.stage_1.Controls.Add(this.cmbGroups);
             this.stage_1.Controls.Add(this.lblGroups);
             this.stage_1.Controls.Add(this.rtbAbout);
@@ -308,7 +312,7 @@
             this.stage_1.Controls.Add(this.lblNames);
             this.stage_1.Controls.Add(this.cmbExams);
             this.stage_1.Controls.Add(this.cmbNames);
-            this.stage_1.Location = new System.Drawing.Point(97, 12);
+            this.stage_1.Location = new System.Drawing.Point(96, 32);
             this.stage_1.Name = "stage_1";
             this.stage_1.Size = new System.Drawing.Size(1008, 617);
             this.stage_1.TabIndex = 38;
@@ -351,10 +355,10 @@
             // 
             // btnStart
             // 
-            this.btnStart.BackColor = System.Drawing.Color.DodgerBlue;
+            this.btnStart.BackColor = System.Drawing.Color.Blue;
             this.btnStart.FlatAppearance.BorderSize = 0;
             this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 18.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnStart.Font = new System.Drawing.Font("Century Gothic", 20F);
             this.btnStart.ForeColor = System.Drawing.Color.White;
             this.btnStart.Location = new System.Drawing.Point(10, 220);
             this.btnStart.Margin = new System.Windows.Forms.Padding(4);
@@ -405,12 +409,14 @@
             // 
             this.lblNames.AutoSize = true;
             this.lblNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNames.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblNames.Location = new System.Drawing.Point(4, 28);
             this.lblNames.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNames.Name = "lblNames";
             this.lblNames.Size = new System.Drawing.Size(79, 32);
             this.lblNames.TabIndex = 36;
             this.lblNames.Text = "Име:";
+            this.lblNames.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // cmbExams
             // 
@@ -502,6 +508,8 @@
             // stageManager
             // 
             this.stageManager.BackColor = System.Drawing.Color.White;
+            this.stageManager.Controls.Add(this.vScrollBar1);
+            this.stageManager.Controls.Add(this.panel1);
             this.stageManager.Controls.Add(this.radioSafety);
             this.stageManager.Controls.Add(this.radioOrdinance9);
             this.stageManager.Controls.Add(this.label9);
@@ -538,17 +546,38 @@
             this.stageManager.Controls.Add(this.btnAddExamType);
             this.stageManager.Controls.Add(this.tbAddExamType);
             this.stageManager.Controls.Add(this.lblExamTypes);
-            this.stageManager.Controls.Add(this.lblManager);
             this.stageManager.Enabled = false;
-            this.stageManager.Location = new System.Drawing.Point(24, 40);
+            this.stageManager.Location = new System.Drawing.Point(49, 12);
             this.stageManager.Name = "stageManager";
             this.stageManager.Size = new System.Drawing.Size(1160, 724);
             this.stageManager.TabIndex = 52;
             this.stageManager.Visible = false;
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Blue;
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.lblManager);
+            this.panel1.Location = new System.Drawing.Point(395, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(393, 77);
+            this.panel1.TabIndex = 53;
+            // 
+            // lblManager
+            // 
+            this.lblManager.AutoSize = true;
+            this.lblManager.Font = new System.Drawing.Font("Palatino Linotype", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblManager.ForeColor = System.Drawing.Color.White;
+            this.lblManager.Location = new System.Drawing.Point(41, 29);
+            this.lblManager.Name = "lblManager";
+            this.lblManager.Size = new System.Drawing.Size(319, 38);
+            this.lblManager.TabIndex = 0;
+            this.lblManager.Text = "Панел на мениджъра";
+            // 
             // radioSafety
             // 
             this.radioSafety.AutoSize = true;
+            this.radioSafety.ForeColor = System.Drawing.Color.Black;
             this.radioSafety.Location = new System.Drawing.Point(867, 456);
             this.radioSafety.Name = "radioSafety";
             this.radioSafety.Size = new System.Drawing.Size(135, 21);
@@ -560,6 +589,7 @@
             // radioOrdinance9
             // 
             this.radioOrdinance9.AutoSize = true;
+            this.radioOrdinance9.ForeColor = System.Drawing.Color.Black;
             this.radioOrdinance9.Location = new System.Drawing.Point(751, 455);
             this.radioOrdinance9.Name = "radioOrdinance9";
             this.radioOrdinance9.Size = new System.Drawing.Size(118, 21);
@@ -579,10 +609,12 @@
             // 
             // btnAddGroup
             // 
-            this.btnAddGroup.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.btnAddGroup.BackColor = System.Drawing.Color.Blue;
+            this.btnAddGroup.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddGroup.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddGroup.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddGroup.ForeColor = System.Drawing.Color.White;
             this.btnAddGroup.Location = new System.Drawing.Point(654, 692);
             this.btnAddGroup.Name = "btnAddGroup";
             this.btnAddGroup.Size = new System.Drawing.Size(168, 29);
@@ -618,10 +650,12 @@
             // 
             // btnAddPost
             // 
-            this.btnAddPost.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.btnAddPost.BackColor = System.Drawing.Color.Blue;
+            this.btnAddPost.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddPost.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddPost.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddPost.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddPost.ForeColor = System.Drawing.Color.White;
             this.btnAddPost.Location = new System.Drawing.Point(35, 692);
             this.btnAddPost.Name = "btnAddPost";
             this.btnAddPost.Size = new System.Drawing.Size(87, 29);
@@ -683,10 +717,12 @@
             // 
             // btnAddNames
             // 
-            this.btnAddNames.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.btnAddNames.BackColor = System.Drawing.Color.Blue;
+            this.btnAddNames.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddNames.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddNames.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddNames.ForeColor = System.Drawing.Color.White;
             this.btnAddNames.Location = new System.Drawing.Point(32, 595);
             this.btnAddNames.Name = "btnAddNames";
             this.btnAddNames.Size = new System.Drawing.Size(90, 30);
@@ -735,11 +771,15 @@
             this.btn_AddProtocolFile.Enabled = false;
             this.btn_AddProtocolFile.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btn_AddProtocolFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_AddProtocolFile.Font = new System.Drawing.Font("Century Gothic", 7.2F);
+            this.btn_AddProtocolFile.Image = ((System.Drawing.Image)(resources.GetObject("btn_AddProtocolFile.Image")));
+            this.btn_AddProtocolFile.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btn_AddProtocolFile.Location = new System.Drawing.Point(881, 345);
             this.btn_AddProtocolFile.Name = "btn_AddProtocolFile";
-            this.btn_AddProtocolFile.Size = new System.Drawing.Size(121, 53);
+            this.btn_AddProtocolFile.Size = new System.Drawing.Size(121, 83);
             this.btn_AddProtocolFile.TabIndex = 22;
             this.btn_AddProtocolFile.Text = "Добави Файл за протокол";
+            this.btn_AddProtocolFile.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btn_AddProtocolFile.UseVisualStyleBackColor = false;
             this.btn_AddProtocolFile.Visible = false;
             this.btn_AddProtocolFile.Click += new System.EventHandler(this.btn_AddProtocolFile_Click);
@@ -747,6 +787,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.Black;
             this.label3.Location = new System.Drawing.Point(475, 435);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(264, 17);
@@ -756,17 +797,19 @@
             // tbAddExamTypeMinScore
             // 
             this.tbAddExamTypeMinScore.BackColor = System.Drawing.Color.White;
+            this.tbAddExamTypeMinScore.Font = new System.Drawing.Font("Century Gothic", 9.75F);
             this.tbAddExamTypeMinScore.Location = new System.Drawing.Point(475, 455);
             this.tbAddExamTypeMinScore.Name = "tbAddExamTypeMinScore";
-            this.tbAddExamTypeMinScore.Size = new System.Drawing.Size(270, 22);
+            this.tbAddExamTypeMinScore.Size = new System.Drawing.Size(243, 27);
             this.tbAddExamTypeMinScore.TabIndex = 3;
             // 
             // btnAppExit
             // 
             this.btnAppExit.BackColor = System.Drawing.Color.Red;
+            this.btnAppExit.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAppExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAppExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnAppExit.ForeColor = System.Drawing.Color.Black;
+            this.btnAppExit.ForeColor = System.Drawing.Color.Transparent;
             this.btnAppExit.Location = new System.Drawing.Point(29, 12);
             this.btnAppExit.Name = "btnAppExit";
             this.btnAppExit.Size = new System.Drawing.Size(48, 37);
@@ -781,11 +824,15 @@
             this.btnAddTemplateFailedSecondTime.Enabled = false;
             this.btnAddTemplateFailedSecondTime.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddTemplateFailedSecondTime.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddTemplateFailedSecondTime.Font = new System.Drawing.Font("Century Gothic", 7.2F);
+            this.btnAddTemplateFailedSecondTime.Image = ((System.Drawing.Image)(resources.GetObject("btnAddTemplateFailedSecondTime.Image")));
+            this.btnAddTemplateFailedSecondTime.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddTemplateFailedSecondTime.Location = new System.Drawing.Point(520, 345);
             this.btnAddTemplateFailedSecondTime.Name = "btnAddTemplateFailedSecondTime";
-            this.btnAddTemplateFailedSecondTime.Size = new System.Drawing.Size(178, 52);
+            this.btnAddTemplateFailedSecondTime.Size = new System.Drawing.Size(178, 83);
             this.btnAddTemplateFailedSecondTime.TabIndex = 20;
             this.btnAddTemplateFailedSecondTime.Text = "Добави темплейт за скъсан втори път";
+            this.btnAddTemplateFailedSecondTime.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddTemplateFailedSecondTime.UseVisualStyleBackColor = false;
             this.btnAddTemplateFailedSecondTime.Visible = false;
             this.btnAddTemplateFailedSecondTime.Click += new System.EventHandler(this.btnAddTemplateFailedSecondTime_Click);
@@ -793,6 +840,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.Black;
             this.label2.Location = new System.Drawing.Point(369, 435);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 17);
@@ -802,17 +850,20 @@
             // tbAddExamTypeQCount
             // 
             this.tbAddExamTypeQCount.BackColor = System.Drawing.Color.White;
+            this.tbAddExamTypeQCount.Font = new System.Drawing.Font("Century Gothic", 9.75F);
             this.tbAddExamTypeQCount.Location = new System.Drawing.Point(372, 455);
             this.tbAddExamTypeQCount.Name = "tbAddExamTypeQCount";
-            this.tbAddExamTypeQCount.Size = new System.Drawing.Size(97, 22);
+            this.tbAddExamTypeQCount.Size = new System.Drawing.Size(97, 27);
             this.tbAddExamTypeQCount.TabIndex = 2;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(32, 435);
+            this.label1.Font = new System.Drawing.Font("Century Gothic", 9.75F);
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(32, 431);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 17);
+            this.label1.Size = new System.Drawing.Size(90, 21);
             this.label1.TabIndex = 14;
             this.label1.Text = "Нов изпит";
             // 
@@ -830,10 +881,11 @@
             // 
             // button1
             // 
-            this.button1.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.button1.BackColor = System.Drawing.Color.Blue;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(88, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(86, 37);
@@ -848,11 +900,15 @@
             this.btnAddCertificateTemplate.Enabled = false;
             this.btnAddCertificateTemplate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddCertificateTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddCertificateTemplate.Font = new System.Drawing.Font("Century Gothic", 7.2F);
+            this.btnAddCertificateTemplate.Image = ((System.Drawing.Image)(resources.GetObject("btnAddCertificateTemplate.Image")));
+            this.btnAddCertificateTemplate.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddCertificateTemplate.Location = new System.Drawing.Point(704, 345);
             this.btnAddCertificateTemplate.Name = "btnAddCertificateTemplate";
-            this.btnAddCertificateTemplate.Size = new System.Drawing.Size(171, 53);
+            this.btnAddCertificateTemplate.Size = new System.Drawing.Size(171, 83);
             this.btnAddCertificateTemplate.TabIndex = 21;
             this.btnAddCertificateTemplate.Text = "Добави темплейт за сертификат";
+            this.btnAddCertificateTemplate.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddCertificateTemplate.UseVisualStyleBackColor = false;
             this.btnAddCertificateTemplate.Visible = false;
             this.btnAddCertificateTemplate.Click += new System.EventHandler(this.btnAddCertificateTemplate_Click);
@@ -863,11 +919,15 @@
             this.btnAddFailedTemplate.Enabled = false;
             this.btnAddFailedTemplate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddFailedTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddFailedTemplate.Font = new System.Drawing.Font("Century Gothic", 7.2F);
+            this.btnAddFailedTemplate.Image = ((System.Drawing.Image)(resources.GetObject("btnAddFailedTemplate.Image")));
+            this.btnAddFailedTemplate.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddFailedTemplate.Location = new System.Drawing.Point(339, 346);
             this.btnAddFailedTemplate.Name = "btnAddFailedTemplate";
-            this.btnAddFailedTemplate.Size = new System.Drawing.Size(175, 52);
+            this.btnAddFailedTemplate.Size = new System.Drawing.Size(175, 82);
             this.btnAddFailedTemplate.TabIndex = 19;
             this.btnAddFailedTemplate.Text = "Добави темплейт за скъсан";
+            this.btnAddFailedTemplate.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddFailedTemplate.UseVisualStyleBackColor = false;
             this.btnAddFailedTemplate.Visible = false;
             this.btnAddFailedTemplate.Click += new System.EventHandler(this.btnAddFailedTemplate_Click);
@@ -878,11 +938,15 @@
             this.btnAddPassedTemplate.Enabled = false;
             this.btnAddPassedTemplate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddPassedTemplate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAddPassedTemplate.Font = new System.Drawing.Font("Century Gothic", 7.2F);
+            this.btnAddPassedTemplate.Image = ((System.Drawing.Image)(resources.GetObject("btnAddPassedTemplate.Image")));
+            this.btnAddPassedTemplate.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddPassedTemplate.Location = new System.Drawing.Point(162, 344);
             this.btnAddPassedTemplate.Name = "btnAddPassedTemplate";
-            this.btnAddPassedTemplate.Size = new System.Drawing.Size(171, 53);
+            this.btnAddPassedTemplate.Size = new System.Drawing.Size(171, 84);
             this.btnAddPassedTemplate.TabIndex = 18;
             this.btnAddPassedTemplate.Text = "Добави темплейт за преминал";
+            this.btnAddPassedTemplate.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddPassedTemplate.UseVisualStyleBackColor = false;
             this.btnAddPassedTemplate.Visible = false;
             this.btnAddPassedTemplate.Click += new System.EventHandler(this.btnAddPassedTemplate_Click);
@@ -893,22 +957,27 @@
             this.btnAddQuestionsFile.Enabled = false;
             this.btnAddQuestionsFile.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddQuestionsFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAddQuestionsFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnAddQuestionsFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F);
+            this.btnAddQuestionsFile.Image = ((System.Drawing.Image)(resources.GetObject("btnAddQuestionsFile.Image")));
+            this.btnAddQuestionsFile.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnAddQuestionsFile.Location = new System.Drawing.Point(32, 343);
             this.btnAddQuestionsFile.Name = "btnAddQuestionsFile";
-            this.btnAddQuestionsFile.Size = new System.Drawing.Size(124, 54);
+            this.btnAddQuestionsFile.Size = new System.Drawing.Size(124, 85);
             this.btnAddQuestionsFile.TabIndex = 17;
             this.btnAddQuestionsFile.Text = "Добави въпросник";
+            this.btnAddQuestionsFile.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAddQuestionsFile.UseVisualStyleBackColor = false;
             this.btnAddQuestionsFile.Visible = false;
             this.btnAddQuestionsFile.Click += new System.EventHandler(this.btnAddQuestionsFile_Click);
             // 
             // btnAddExamType
             // 
-            this.btnAddExamType.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.btnAddExamType.BackColor = System.Drawing.Color.Blue;
+            this.btnAddExamType.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnAddExamType.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnAddExamType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddExamType.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddExamType.ForeColor = System.Drawing.Color.White;
             this.btnAddExamType.Location = new System.Drawing.Point(32, 483);
             this.btnAddExamType.Name = "btnAddExamType";
             this.btnAddExamType.Size = new System.Drawing.Size(90, 30);
@@ -920,9 +989,10 @@
             // tbAddExamType
             // 
             this.tbAddExamType.BackColor = System.Drawing.Color.White;
+            this.tbAddExamType.Font = new System.Drawing.Font("Century Gothic", 9.75F);
             this.tbAddExamType.Location = new System.Drawing.Point(32, 455);
             this.tbAddExamType.Name = "tbAddExamType";
-            this.tbAddExamType.Size = new System.Drawing.Size(334, 22);
+            this.tbAddExamType.Size = new System.Drawing.Size(334, 27);
             this.tbAddExamType.TabIndex = 1;
             // 
             // lblExamTypes
@@ -935,27 +1005,20 @@
             this.lblExamTypes.TabIndex = 30;
             this.lblExamTypes.Text = "Изпит  -> Брой Въпроси";
             // 
-            // lblManager
-            // 
-            this.lblManager.AutoSize = true;
-            this.lblManager.Font = new System.Drawing.Font("Modern No. 20", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblManager.Location = new System.Drawing.Point(24, 52);
-            this.lblManager.Name = "lblManager";
-            this.lblManager.Size = new System.Drawing.Size(257, 30);
-            this.lblManager.TabIndex = 0;
-            this.lblManager.Text = "Панел на мениджъра";
-            // 
             // btnOpenManagerPanel
             // 
             this.btnOpenManagerPanel.BackColor = System.Drawing.Color.White;
             this.btnOpenManagerPanel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.btnOpenManagerPanel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOpenManagerPanel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnOpenManagerPanel.Location = new System.Drawing.Point(1173, 12);
+            this.btnOpenManagerPanel.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenManagerPanel.Image")));
+            this.btnOpenManagerPanel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnOpenManagerPanel.Location = new System.Drawing.Point(1172, 12);
             this.btnOpenManagerPanel.Name = "btnOpenManagerPanel";
-            this.btnOpenManagerPanel.Size = new System.Drawing.Size(137, 35);
+            this.btnOpenManagerPanel.Size = new System.Drawing.Size(138, 35);
             this.btnOpenManagerPanel.TabIndex = 51;
             this.btnOpenManagerPanel.Text = "Мениджър";
+            this.btnOpenManagerPanel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnOpenManagerPanel.UseVisualStyleBackColor = false;
             this.btnOpenManagerPanel.Click += new System.EventHandler(this.btnOpenManagerPanel_Click);
             // 
@@ -963,18 +1026,27 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Location = new System.Drawing.Point(723, 455);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(16, 27);
+            this.vScrollBar1.SmallChange = 5;
+            this.vScrollBar1.TabIndex = 54;
+            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1322, 790);
             this.ControlBox = false;
-            this.Controls.Add(this.stageManager);
-            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stage_3);
             this.Controls.Add(this.stage_2);
-            this.Controls.Add(this.btnOpenManagerPanel);
             this.Controls.Add(this.labelTime);
+            this.Controls.Add(this.btnOpenManagerPanel);
+            this.Controls.Add(this.stage_1);
+            this.Controls.Add(this.stageManager);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -994,6 +1066,8 @@
             this.stage_3.PerformLayout();
             this.stageManager.ResumeLayout(false);
             this.stageManager.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1070,6 +1144,8 @@
         private System.Windows.Forms.TextBox tbAddGroup;
         private System.Windows.Forms.RadioButton radioSafety;
         private System.Windows.Forms.RadioButton radioOrdinance9;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
     }
 }
 

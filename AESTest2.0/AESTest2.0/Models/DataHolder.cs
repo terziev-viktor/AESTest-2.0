@@ -12,8 +12,18 @@ namespace AESTest2._0
             this.Posts = new List<Post>();
             this.Groups = new List<string>();
         }
-        
-        public int CurrentExamIndex { get; set; }
+
+        public Student CurrentStudent { get; set; }
+
+        public Post CurrentPost { get; set; }
+
+        public Exam CurrentExam { get; set; }
+
+        public string CurrentGroup { get; set; }
+
+        public int ProtocolNumber { get; set; }
+
+        public int Mark { get; set; }
 
         public List<Student> Students { get; set; }
 
