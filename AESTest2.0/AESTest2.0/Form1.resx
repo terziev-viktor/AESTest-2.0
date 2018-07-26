@@ -131,6 +131,18 @@
 За всеки въпрос трябва да изберете отговор. Накрая на теста ще се появи бутон "Приключи теста". Натиснете го ако мислите, че сте готови и изчакайте, за да си видите резултата.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnUpdateExamInfo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJ
+        TUUH4gcaCis6pzfazwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAD6SURBVDhP
+        ndM/S0JRHIfxE+UQYW4RLYI0uBa41S7o5JCC7yGwoRp7AxEOuoTh6NAQri5tTkEvIQxdnGpwCKOe773n
+        Xs1/N88DH87veuV6kHONbduuQRlU8IAn3CCPXcy1gR4aSKKFb7ygiTs84wN95PCnI/xYY3ShHcwWg3by
+        hXtswusSwQNEvxreXNAxXrHjXVEH0w8QfSmqNOIaBvhEG+fQjf+kP7eqYR9bGtbsFEV/dO/Ark6dYOiP
+        bh1CZ8e5hF2dymIEHa6wPZT8MTK9F9f+OCmFd+jdWNYZdIxXpm29oeZdGVPGFfT5Iy4QmV6mArSbOm7t
+        PJMxv5O2LCeU1B0WAAAAAElFTkSuQmCC
+</value>
+  </data>
   <data name="btn_AddProtocolFile.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6

@@ -31,8 +31,7 @@ namespace AESTest2._0
         private const string PROTOCOLDOC = @"Номер на протокола.txt";
         private const string DEFAULTPROTOCOLNUMBER = "100";
         private const string DATAGROUPS = "квалификационни_групи.txt";
-        private bool SaveDataToDataSheets = true;
-
+        
         private DataHolder dataHolder = new DataHolder();
 
         private int sec = 0;
@@ -60,12 +59,14 @@ namespace AESTest2._0
             this.labelTime.Location = new System.Drawing.Point(this.Width / 2 - this.labelTime.Width / 2, 0);
             this.stageManager.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
             this.stageManager.Location = new System.Drawing.Point(0, this.labelTime.Height);
-
+            
             this.stage_1.Size = new Size(this.Size.Width * 2 / 3, 700);
             this.rtbAbout.Width = this.stage_1.Width - 10;
             this.rtbAbout.Height = 250;
             this.stage_1.Location = new System.Drawing.Point(this.Size.Width / 2 - this.stage_1.Width / 2, this.labelTime.Size.Height + 30);
             this.btnOpenManagerPanel.Location = new System.Drawing.Point(this.Width - this.btnOpenManagerPanel.Width, this.btnOpenManagerPanel.Height);
+            this.panelManagerTitle.Width = this.Size.Width;
+            this.lblManager.Location = new System.Drawing.Point(this.Width / 2 - this.lblManager.Width / 2, 20);
             this.stage_2.Size = new Size(this.Size.Width, this.Size.Height - (this.labelTime.Height));
             this.stage_2.Location = new System.Drawing.Point(0, this.labelTime.Height);
             this.stage_3.Location = new System.Drawing.Point(this.Width / 2 - this.stage_3.Width / 2, this.Height / 2 - this.stage_3.Height / 2);
@@ -99,7 +100,6 @@ namespace AESTest2._0
                 // the program is opened for first time. Setup the main directory with all files that should be there
                 MessageBox.Show("Вие отворихте програмата за първи път. Файлове с данни ще бъдат генерирани в папка C:/data/. Моля попълнете ги. Или отворете програмата отново с администраторски права и попълненте всичко от мениджърския панел, като влезете с парола по подразбиране.");
                 this.InitSetup();
-                this.SaveDataToDataSheets = false;
                 ExplorerManager.Start();
                 System.Windows.Forms.Application.Exit();
             }
@@ -585,6 +585,7 @@ namespace AESTest2._0
                 this.GeneratePrivateDocuments(dataHolder.CurrentStudent.Fullname, dataHolder.Mark, dataHolder.ProtocolNumber, passedStr, dataHolder.CurrentExam);
                 this.pBar.PerformStep();
                 this.dataHolder.Students.Remove(dataHolder.CurrentStudent);
+                WriteDataToDataSheets();
                 this.pBar.PerformStep();
                 cmbNames.Items.Clear();
                 cmbNames.Items.AddRange(dataHolder.Students.Select(x => x.Fullname).ToArray());
@@ -592,6 +593,7 @@ namespace AESTest2._0
                 this.pBar.Enabled = false;
                 this.pBar.PerformStep();
                 this.pBar.Visible = false;
+                
                 this.EnterStage_3();
                 Time.Stop();
             }
@@ -938,10 +940,6 @@ namespace AESTest2._0
             {
                 e.Cancel = true;
             }
-            if (this.SaveDataToDataSheets)
-            {
-                WriteDataToDataSheets();
-            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -964,6 +962,8 @@ namespace AESTest2._0
             this.stage_1.Visible = false;
             this.stageManager.Enabled = true;
             this.stageManager.Visible = true;
+            this.tbExamInfoMinScore.Text = "";
+            this.tbExamInfoNumOfQuestions.Text = "";
             this.lbExamTypes.Items.Clear();
             this.readDataStageManager();
         }
@@ -972,7 +972,7 @@ namespace AESTest2._0
         {
             foreach (var item in this.dataHolder.Exams)
             {
-                this.lbExamTypes.Items.Add(item.Title + " -> " + item.QuestionsCount);
+                this.lbExamTypes.Items.Add(item.Title);
             }
         }
 
@@ -1035,7 +1035,7 @@ namespace AESTest2._0
                 Type = t
             };
             this.dataHolder.Exams.Add(newExam);
-            this.lbExamTypes.Items.Add(newExam.Title + " -> " + newExam.QuestionsCount);
+            this.lbExamTypes.Items.Add(newExam.Title);
             this.cmbExams.Items.Add(newExam.Title);
 
             this.tbAddExamType.Text = "";
@@ -1075,13 +1075,14 @@ namespace AESTest2._0
                 this.btnAddCertificateTemplate.Visible = true;
                 this.btn_AddProtocolFile.Enabled = true;
                 this.btn_AddProtocolFile.Visible = true;
+                this.tbExamInfoMinScore.Text = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].MinScore.ToString();
+                this.tbExamInfoNumOfQuestions.Text = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].QuestionsCount.ToString();
             }
         }
 
         private void btnRemoveExamType_Click(object sender, EventArgs e)
         {
-            // TODO: selected item has -> <number of questions> appended to it.
-            this.dataHolder.Exams.Remove(this.dataHolder.Exams.Where(x => x.Title == lbExamTypes.SelectedItem.ToString()).First());
+            this.dataHolder.Exams.RemoveAt(lbExamTypes.SelectedIndex);
             this.cmbExams.Items.Remove(lbExamTypes.SelectedItem.ToString());
         }
 
@@ -1107,13 +1108,11 @@ namespace AESTest2._0
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string item = this.lbExamTypes.SelectedItem.ToString();
-                if (item == "" && item == null)
+                if (string.IsNullOrEmpty(item))
                 {
-                    // TODO
+                    MessageBox.Show("Невалиден Изпит");
                     return;
                 }
-                int n = item.IndexOf(" -> ");
-                item = item.Remove(n);
                 File.Copy(dialog.FileName, MAINPATH + @"Въпросници\" + item + ".xls", true);
             }
         }
@@ -1127,8 +1126,6 @@ namespace AESTest2._0
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string item = this.lbExamTypes.SelectedItem.ToString();
-                int n = item.IndexOf(" -> ");
-                item = item.Remove(n);
                 File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Преминали\\" + item + ".doc", true);
             }
         }
@@ -1142,8 +1139,6 @@ namespace AESTest2._0
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string item = this.lbExamTypes.SelectedItem.ToString();
-                int n = item.IndexOf(" -> ");
-                item = item.Remove(n);
                 File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + item + ".doc", true);
             }
         }
@@ -1155,8 +1150,6 @@ namespace AESTest2._0
             dialog.Title = "Please select a Word 2008+ document for the template.";
 
             string item = this.lbExamTypes.SelectedItem.ToString();
-            int n = item.IndexOf(" -> ");
-            item = item.Remove(n);
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 File.Copy(dialog.FileName, MAINPATH + "Темплейти\\Удостоверения\\" + item + ".doc", true);
@@ -1172,8 +1165,6 @@ namespace AESTest2._0
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 string item = this.lbExamTypes.SelectedItem.ToString();
-                int n = item.IndexOf(" -> ");
-                item = item.Remove(n);
                 File.Copy(dialog.FileName, MAINPATH + TEMPLATESDOCS + TEMPLATESFAILED + TEMPLATESFAILEDAGAIN + item + ".doc", true);
             }
         }
@@ -1189,8 +1180,6 @@ namespace AESTest2._0
                 using (var w = new StreamWriter(MAINPATH + PROTOCOLDOC, true))
                 {
                     string item = this.lbExamTypes.SelectedItem.ToString();
-                    int n = item.IndexOf(" -> ");
-                    item = item.Remove(n);
                     this.dataHolder.Exams.First((x) => { return x.Title == item; }).ProtocolNumberPath = dialog.FileName;
                     w.WriteLine(item + " " + dialog.FileName);
                 }
@@ -1294,6 +1283,28 @@ namespace AESTest2._0
         private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
             this.tbAddExamTypeMinScore.Text = (100 - vScrollBar1.Value).ToString();
+        }
+
+        private void stageManager_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btnUpdateExamInfo_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.tbExamInfoMinScore.Text) ||
+                string.IsNullOrEmpty(this.tbExamInfoNumOfQuestions.Text))
+            {
+                MessageBox.Show("Не може да обновим с празна информация");
+                return;
+            }
+            if (this.lbExamTypes.SelectedIndex < 0)
+            {
+                MessageBox.Show("Не е избран изпит за обновяване");
+                return;
+            }
+            this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].MinScore = int.Parse(this.tbExamInfoMinScore.Text);
+            this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].QuestionsCount = int.Parse(this.tbExamInfoNumOfQuestions.Text);
         }
     }
 }

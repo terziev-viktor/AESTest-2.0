@@ -60,8 +60,11 @@
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.stageManager = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.panelManagerTitle = new System.Windows.Forms.Panel();
             this.lblManager = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnAppExit = new System.Windows.Forms.Button();
             this.radioSafety = new System.Windows.Forms.RadioButton();
             this.radioOrdinance9 = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
@@ -84,13 +87,11 @@
             this.btn_AddProtocolFile = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.tbAddExamTypeMinScore = new System.Windows.Forms.TextBox();
-            this.btnAppExit = new System.Windows.Forms.Button();
             this.btnAddTemplateFailedSecondTime = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tbAddExamTypeQCount = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.lbExamTypes = new System.Windows.Forms.ListBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnAddCertificateTemplate = new System.Windows.Forms.Button();
             this.btnAddFailedTemplate = new System.Windows.Forms.Button();
             this.btnAddPassedTemplate = new System.Windows.Forms.Button();
@@ -100,12 +101,16 @@
             this.lblExamTypes = new System.Windows.Forms.Label();
             this.btnOpenManagerPanel = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.tbExamInfoNumOfQuestions = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tbExamInfoMinScore = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.btnUpdateExamInfo = new System.Windows.Forms.Button();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
             this.stageManager.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.panelManagerTitle.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelTime
@@ -255,7 +260,7 @@
             this.stage_2.Controls.Add(this.lblAnswerC);
             this.stage_2.Controls.Add(this.lblAnswerB);
             this.stage_2.Controls.Add(this.lblAnswerA);
-            this.stage_2.Location = new System.Drawing.Point(97, 604);
+            this.stage_2.Location = new System.Drawing.Point(12, 391);
             this.stage_2.Name = "stage_2";
             this.stage_2.Size = new System.Drawing.Size(934, 738);
             this.stage_2.TabIndex = 51;
@@ -312,7 +317,7 @@
             this.stage_1.Controls.Add(this.lblNames);
             this.stage_1.Controls.Add(this.cmbExams);
             this.stage_1.Controls.Add(this.cmbNames);
-            this.stage_1.Location = new System.Drawing.Point(96, 32);
+            this.stage_1.Location = new System.Drawing.Point(114, 41);
             this.stage_1.Name = "stage_1";
             this.stage_1.Size = new System.Drawing.Size(1008, 617);
             this.stage_1.TabIndex = 38;
@@ -464,7 +469,7 @@
             this.stage_3.Controls.Add(this.btnNextTest);
             this.stage_3.Controls.Add(this.lblMark);
             this.stage_3.Enabled = false;
-            this.stage_3.Location = new System.Drawing.Point(958, 269);
+            this.stage_3.Location = new System.Drawing.Point(1160, 225);
             this.stage_3.Name = "stage_3";
             this.stage_3.Size = new System.Drawing.Size(352, 380);
             this.stage_3.TabIndex = 36;
@@ -508,8 +513,13 @@
             // stageManager
             // 
             this.stageManager.BackColor = System.Drawing.Color.White;
+            this.stageManager.Controls.Add(this.btnUpdateExamInfo);
+            this.stageManager.Controls.Add(this.label12);
+            this.stageManager.Controls.Add(this.tbExamInfoMinScore);
+            this.stageManager.Controls.Add(this.label11);
+            this.stageManager.Controls.Add(this.tbExamInfoNumOfQuestions);
             this.stageManager.Controls.Add(this.vScrollBar1);
-            this.stageManager.Controls.Add(this.panel1);
+            this.stageManager.Controls.Add(this.panelManagerTitle);
             this.stageManager.Controls.Add(this.radioSafety);
             this.stageManager.Controls.Add(this.radioOrdinance9);
             this.stageManager.Controls.Add(this.label9);
@@ -532,13 +542,11 @@
             this.stageManager.Controls.Add(this.btn_AddProtocolFile);
             this.stageManager.Controls.Add(this.label3);
             this.stageManager.Controls.Add(this.tbAddExamTypeMinScore);
-            this.stageManager.Controls.Add(this.btnAppExit);
             this.stageManager.Controls.Add(this.btnAddTemplateFailedSecondTime);
             this.stageManager.Controls.Add(this.label2);
             this.stageManager.Controls.Add(this.tbAddExamTypeQCount);
             this.stageManager.Controls.Add(this.label1);
             this.stageManager.Controls.Add(this.lbExamTypes);
-            this.stageManager.Controls.Add(this.button1);
             this.stageManager.Controls.Add(this.btnAddCertificateTemplate);
             this.stageManager.Controls.Add(this.btnAddFailedTemplate);
             this.stageManager.Controls.Add(this.btnAddPassedTemplate);
@@ -547,32 +555,73 @@
             this.stageManager.Controls.Add(this.tbAddExamType);
             this.stageManager.Controls.Add(this.lblExamTypes);
             this.stageManager.Enabled = false;
-            this.stageManager.Location = new System.Drawing.Point(49, 12);
+            this.stageManager.Location = new System.Drawing.Point(34, 101);
             this.stageManager.Name = "stageManager";
             this.stageManager.Size = new System.Drawing.Size(1160, 724);
             this.stageManager.TabIndex = 52;
             this.stageManager.Visible = false;
             // 
-            // panel1
+            // vScrollBar1
             // 
-            this.panel1.BackColor = System.Drawing.Color.Blue;
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.lblManager);
-            this.panel1.Location = new System.Drawing.Point(395, 3);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(393, 77);
-            this.panel1.TabIndex = 53;
+            this.vScrollBar1.Location = new System.Drawing.Point(723, 455);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(16, 27);
+            this.vScrollBar1.SmallChange = 5;
+            this.vScrollBar1.TabIndex = 54;
+            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            // 
+            // panelManagerTitle
+            // 
+            this.panelManagerTitle.BackColor = System.Drawing.Color.Blue;
+            this.panelManagerTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelManagerTitle.Controls.Add(this.lblManager);
+            this.panelManagerTitle.Controls.Add(this.button1);
+            this.panelManagerTitle.Controls.Add(this.btnAppExit);
+            this.panelManagerTitle.Location = new System.Drawing.Point(3, 3);
+            this.panelManagerTitle.Name = "panelManagerTitle";
+            this.panelManagerTitle.Size = new System.Drawing.Size(1154, 77);
+            this.panelManagerTitle.TabIndex = 53;
             // 
             // lblManager
             // 
             this.lblManager.AutoSize = true;
             this.lblManager.Font = new System.Drawing.Font("Palatino Linotype", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblManager.ForeColor = System.Drawing.Color.White;
-            this.lblManager.Location = new System.Drawing.Point(41, 29);
+            this.lblManager.Location = new System.Drawing.Point(480, 13);
             this.lblManager.Name = "lblManager";
             this.lblManager.Size = new System.Drawing.Size(319, 38);
             this.lblManager.TabIndex = 0;
             this.lblManager.Text = "Панел на мениджъра";
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Blue;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(68, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(86, 37);
+            this.button1.TabIndex = 31;
+            this.button1.Text = "Назад";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnAppExit
+            // 
+            this.btnAppExit.BackColor = System.Drawing.Color.Red;
+            this.btnAppExit.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnAppExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAppExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnAppExit.ForeColor = System.Drawing.Color.Transparent;
+            this.btnAppExit.Location = new System.Drawing.Point(14, 6);
+            this.btnAppExit.Name = "btnAppExit";
+            this.btnAppExit.Size = new System.Drawing.Size(48, 37);
+            this.btnAppExit.TabIndex = 32;
+            this.btnAppExit.Text = "X";
+            this.btnAppExit.UseVisualStyleBackColor = false;
+            this.btnAppExit.Click += new System.EventHandler(this.btnAppExit_Click);
             // 
             // radioSafety
             // 
@@ -803,21 +852,6 @@
             this.tbAddExamTypeMinScore.Size = new System.Drawing.Size(243, 27);
             this.tbAddExamTypeMinScore.TabIndex = 3;
             // 
-            // btnAppExit
-            // 
-            this.btnAppExit.BackColor = System.Drawing.Color.Red;
-            this.btnAppExit.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAppExit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAppExit.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnAppExit.ForeColor = System.Drawing.Color.Transparent;
-            this.btnAppExit.Location = new System.Drawing.Point(29, 12);
-            this.btnAppExit.Name = "btnAppExit";
-            this.btnAppExit.Size = new System.Drawing.Size(48, 37);
-            this.btnAppExit.TabIndex = 32;
-            this.btnAppExit.Text = "X";
-            this.btnAppExit.UseVisualStyleBackColor = false;
-            this.btnAppExit.Click += new System.EventHandler(this.btnAppExit_Click);
-            // 
             // btnAddTemplateFailedSecondTime
             // 
             this.btnAddTemplateFailedSecondTime.BackColor = System.Drawing.Color.White;
@@ -875,24 +909,9 @@
             this.lbExamTypes.ItemHeight = 22;
             this.lbExamTypes.Location = new System.Drawing.Point(32, 135);
             this.lbExamTypes.Name = "lbExamTypes";
-            this.lbExamTypes.Size = new System.Drawing.Size(970, 202);
+            this.lbExamTypes.Size = new System.Drawing.Size(843, 202);
             this.lbExamTypes.TabIndex = 16;
             this.lbExamTypes.SelectedIndexChanged += new System.EventHandler(this.lbExamTypes_SelectedIndexChanged);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.Blue;
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(88, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(86, 37);
-            this.button1.TabIndex = 31;
-            this.button1.Text = "Назад";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnAddCertificateTemplate
             // 
@@ -978,7 +997,7 @@
             this.btnAddExamType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAddExamType.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddExamType.ForeColor = System.Drawing.Color.White;
-            this.btnAddExamType.Location = new System.Drawing.Point(32, 483);
+            this.btnAddExamType.Location = new System.Drawing.Point(32, 488);
             this.btnAddExamType.Name = "btnAddExamType";
             this.btnAddExamType.Size = new System.Drawing.Size(90, 30);
             this.btnAddExamType.TabIndex = 4;
@@ -999,11 +1018,11 @@
             // 
             this.lblExamTypes.AutoSize = true;
             this.lblExamTypes.Font = new System.Drawing.Font("Modern No. 20", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblExamTypes.Location = new System.Drawing.Point(27, 102);
+            this.lblExamTypes.Location = new System.Drawing.Point(31, 102);
             this.lblExamTypes.Name = "lblExamTypes";
-            this.lblExamTypes.Size = new System.Drawing.Size(280, 30);
+            this.lblExamTypes.Size = new System.Drawing.Size(82, 30);
             this.lblExamTypes.TabIndex = 30;
-            this.lblExamTypes.Text = "Изпит  -> Брой Въпроси";
+            this.lblExamTypes.Text = "Изпит";
             // 
             // btnOpenManagerPanel
             // 
@@ -1026,14 +1045,49 @@
             // 
             this.openFileDialog.FileName = "openFileDialog1";
             // 
-            // vScrollBar1
+            // tbExamInfoNumOfQuestions
             // 
-            this.vScrollBar1.Location = new System.Drawing.Point(723, 455);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(16, 27);
-            this.vScrollBar1.SmallChange = 5;
-            this.vScrollBar1.TabIndex = 54;
-            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            this.tbExamInfoNumOfQuestions.Location = new System.Drawing.Point(881, 135);
+            this.tbExamInfoNumOfQuestions.Name = "tbExamInfoNumOfQuestions";
+            this.tbExamInfoNumOfQuestions.Size = new System.Drawing.Size(121, 22);
+            this.tbExamInfoNumOfQuestions.TabIndex = 55;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(878, 114);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(102, 17);
+            this.label11.TabIndex = 57;
+            this.label11.Text = "Брой Въпроси";
+            // 
+            // tbExamInfoMinScore
+            // 
+            this.tbExamInfoMinScore.Location = new System.Drawing.Point(881, 187);
+            this.tbExamInfoMinScore.Name = "tbExamInfoMinScore";
+            this.tbExamInfoMinScore.Size = new System.Drawing.Size(121, 22);
+            this.tbExamInfoMinScore.TabIndex = 58;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(881, 167);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(91, 17);
+            this.label12.TabIndex = 59;
+            this.label12.Text = "Мин. за \"Да\"";
+            // 
+            // btnUpdateExamInfo
+            // 
+            this.btnUpdateExamInfo.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdateExamInfo.Image")));
+            this.btnUpdateExamInfo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnUpdateExamInfo.Location = new System.Drawing.Point(881, 230);
+            this.btnUpdateExamInfo.Name = "btnUpdateExamInfo";
+            this.btnUpdateExamInfo.Size = new System.Drawing.Size(121, 31);
+            this.btnUpdateExamInfo.TabIndex = 62;
+            this.btnUpdateExamInfo.Text = "Обнови";
+            this.btnUpdateExamInfo.UseVisualStyleBackColor = true;
+            this.btnUpdateExamInfo.Click += new System.EventHandler(this.btnUpdateExamInfo_Click);
             // 
             // MainForm
             // 
@@ -1041,12 +1095,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1322, 790);
             this.ControlBox = false;
+            this.Controls.Add(this.stageManager);
             this.Controls.Add(this.stage_3);
-            this.Controls.Add(this.stage_2);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.btnOpenManagerPanel);
             this.Controls.Add(this.stage_1);
-            this.Controls.Add(this.stageManager);
+            this.Controls.Add(this.stage_2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -1066,8 +1120,8 @@
             this.stage_3.PerformLayout();
             this.stageManager.ResumeLayout(false);
             this.stageManager.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.panelManagerTitle.ResumeLayout(false);
+            this.panelManagerTitle.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1144,8 +1198,13 @@
         private System.Windows.Forms.TextBox tbAddGroup;
         private System.Windows.Forms.RadioButton radioSafety;
         private System.Windows.Forms.RadioButton radioOrdinance9;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panelManagerTitle;
         private System.Windows.Forms.VScrollBar vScrollBar1;
+        private System.Windows.Forms.Button btnUpdateExamInfo;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox tbExamInfoMinScore;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox tbExamInfoNumOfQuestions;
     }
 }
 
