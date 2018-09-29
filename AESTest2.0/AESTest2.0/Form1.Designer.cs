@@ -60,6 +60,11 @@
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.stageManager = new System.Windows.Forms.Panel();
+            this.btnUpdateExamInfo = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tbExamInfoMinScore = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tbExamInfoNumOfQuestions = new System.Windows.Forms.TextBox();
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.panelManagerTitle = new System.Windows.Forms.Panel();
             this.lblManager = new System.Windows.Forms.Label();
@@ -101,11 +106,6 @@
             this.lblExamTypes = new System.Windows.Forms.Label();
             this.btnOpenManagerPanel = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.tbExamInfoNumOfQuestions = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.tbExamInfoMinScore = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.btnUpdateExamInfo = new System.Windows.Forms.Button();
             this.stage_2.SuspendLayout();
             this.stage_1.SuspendLayout();
             this.stage_3.SuspendLayout();
@@ -555,11 +555,55 @@
             this.stageManager.Controls.Add(this.tbAddExamType);
             this.stageManager.Controls.Add(this.lblExamTypes);
             this.stageManager.Enabled = false;
-            this.stageManager.Location = new System.Drawing.Point(34, 101);
+            this.stageManager.Location = new System.Drawing.Point(28, 80);
             this.stageManager.Name = "stageManager";
             this.stageManager.Size = new System.Drawing.Size(1160, 724);
             this.stageManager.TabIndex = 52;
             this.stageManager.Visible = false;
+            // 
+            // btnUpdateExamInfo
+            // 
+            this.btnUpdateExamInfo.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdateExamInfo.Image")));
+            this.btnUpdateExamInfo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnUpdateExamInfo.Location = new System.Drawing.Point(881, 230);
+            this.btnUpdateExamInfo.Name = "btnUpdateExamInfo";
+            this.btnUpdateExamInfo.Size = new System.Drawing.Size(121, 31);
+            this.btnUpdateExamInfo.TabIndex = 62;
+            this.btnUpdateExamInfo.Text = "Обнови";
+            this.btnUpdateExamInfo.UseVisualStyleBackColor = true;
+            this.btnUpdateExamInfo.Click += new System.EventHandler(this.btnUpdateExamInfo_Click);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(881, 167);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(91, 17);
+            this.label12.TabIndex = 59;
+            this.label12.Text = "Мин. за \"Да\"";
+            // 
+            // tbExamInfoMinScore
+            // 
+            this.tbExamInfoMinScore.Location = new System.Drawing.Point(881, 187);
+            this.tbExamInfoMinScore.Name = "tbExamInfoMinScore";
+            this.tbExamInfoMinScore.Size = new System.Drawing.Size(121, 22);
+            this.tbExamInfoMinScore.TabIndex = 58;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(878, 114);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(102, 17);
+            this.label11.TabIndex = 57;
+            this.label11.Text = "Брой Въпроси";
+            // 
+            // tbExamInfoNumOfQuestions
+            // 
+            this.tbExamInfoNumOfQuestions.Location = new System.Drawing.Point(881, 135);
+            this.tbExamInfoNumOfQuestions.Name = "tbExamInfoNumOfQuestions";
+            this.tbExamInfoNumOfQuestions.Size = new System.Drawing.Size(121, 22);
+            this.tbExamInfoNumOfQuestions.TabIndex = 55;
             // 
             // vScrollBar1
             // 
@@ -602,7 +646,7 @@
             this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(68, 6);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(86, 37);
+            this.button1.Size = new System.Drawing.Size(119, 37);
             this.button1.TabIndex = 31;
             this.button1.Text = "Назад";
             this.button1.UseVisualStyleBackColor = false;
@@ -1044,50 +1088,6 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog1";
-            // 
-            // tbExamInfoNumOfQuestions
-            // 
-            this.tbExamInfoNumOfQuestions.Location = new System.Drawing.Point(881, 135);
-            this.tbExamInfoNumOfQuestions.Name = "tbExamInfoNumOfQuestions";
-            this.tbExamInfoNumOfQuestions.Size = new System.Drawing.Size(121, 22);
-            this.tbExamInfoNumOfQuestions.TabIndex = 55;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(878, 114);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(102, 17);
-            this.label11.TabIndex = 57;
-            this.label11.Text = "Брой Въпроси";
-            // 
-            // tbExamInfoMinScore
-            // 
-            this.tbExamInfoMinScore.Location = new System.Drawing.Point(881, 187);
-            this.tbExamInfoMinScore.Name = "tbExamInfoMinScore";
-            this.tbExamInfoMinScore.Size = new System.Drawing.Size(121, 22);
-            this.tbExamInfoMinScore.TabIndex = 58;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(881, 167);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(91, 17);
-            this.label12.TabIndex = 59;
-            this.label12.Text = "Мин. за \"Да\"";
-            // 
-            // btnUpdateExamInfo
-            // 
-            this.btnUpdateExamInfo.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdateExamInfo.Image")));
-            this.btnUpdateExamInfo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnUpdateExamInfo.Location = new System.Drawing.Point(881, 230);
-            this.btnUpdateExamInfo.Name = "btnUpdateExamInfo";
-            this.btnUpdateExamInfo.Size = new System.Drawing.Size(121, 31);
-            this.btnUpdateExamInfo.TabIndex = 62;
-            this.btnUpdateExamInfo.Text = "Обнови";
-            this.btnUpdateExamInfo.UseVisualStyleBackColor = true;
-            this.btnUpdateExamInfo.Click += new System.EventHandler(this.btnUpdateExamInfo_Click);
             // 
             // MainForm
             // 

@@ -310,7 +310,21 @@ namespace AESTest2._0
 
             Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
             Workbook wBook = excelApp.Workbooks.Open(examQuestionsPath);
-            Worksheet wSheet = (Worksheet)wBook.Worksheets[sheetname];
+            Worksheet wSheet;
+            try
+            {
+                wSheet = (Worksheet)wBook.Worksheets[sheetname];
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Във въпросника за изпит " + exam.Title + " трябва има лист (sheet) с име " + sheetname + " съдържащ въпроси за изпита");
+                wBook.Close(false);
+                ReleaseObject(wBook);
+                excelApp.Quit();
+                ReleaseObject(excelApp);
+                return false;
+            }
+            
             Range range = wSheet.UsedRange;
 
             for (int i = 2; i <= range.Rows.Count; i++)
@@ -318,7 +332,7 @@ namespace AESTest2._0
                 string currentQuestion = Convert.ToString((range.Cells[i, 1] as Microsoft.Office.Interop.Excel.Range).Value2);
                 string currentAnswer = Convert.ToString((range.Cells[i, 2] as Microsoft.Office.Interop.Excel.Range).Value2);
                 string currentReference = Convert.ToString((range.Cells[i, 3] as Microsoft.Office.Interop.Excel.Range).Value2);
-                if (currentAnswer != null && currentQuestion != null && currentAnswer.Length != 0 && currentQuestion.Length != 0)
+                if (!string.IsNullOrEmpty(currentQuestion) || !string.IsNullOrEmpty(currentAnswer))
                 {
                     Question quest = new Question();
                     string[] questionAndItsAnswes = currentQuestion.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -327,7 +341,7 @@ namespace AESTest2._0
                     quest.AnswerB = questionAndItsAnswes[2];
                     quest.AnswerC = questionAndItsAnswes[3];
                     quest.AnswerD = questionAndItsAnswes[4];
-                    if (currentReference != null && currentReference != "")
+                    if (string.IsNullOrEmpty(currentReference))
                     {
                         quest.ForReference = currentReference;
                     }
@@ -374,9 +388,16 @@ namespace AESTest2._0
                 MessageBox.Show("Задължително трябва да изберете квалификационна група ако теста е тип безопасност.");
                 return;
             }
+            if(dataHolder.CurrentExam.Type == ExamType.ForSafety)
+            {
+                dataHolder.CurrentGroup = cmbGroups.SelectedItem.ToString();
+            }
+            else
+            {
+                dataHolder.CurrentGroup = "";
+            }
             string studentName = cmbNames.SelectedItem.ToString();
             dataHolder.CurrentStudent = dataHolder.Students.First((x) => { return x.Fullname == studentName; });
-            dataHolder.CurrentGroup = cmbGroups.SelectedItem.ToString();
             string postTitle = cmbPosts.SelectedItem.ToString();
             dataHolder.CurrentPost = dataHolder.Posts.First((x) => { return x.Title == postTitle; });
             this.EnterStage_2();
@@ -701,7 +722,6 @@ namespace AESTest2._0
 
         private void EnterStage_2()
         {
-            this.dataHolder.Questions.Clear();
             this.btnStart.Enabled = false;
             bool read = this.ReadDataStage_2();
             if (!read)
@@ -709,6 +729,7 @@ namespace AESTest2._0
                 this.btnStart.Enabled = true;
                 return;
             }
+            this.dataHolder.Questions.Clear();
             this.btnStart.Enabled = false;
             this.stage_1.Enabled = false;
             this.stage_1.Visible = false;
@@ -940,6 +961,7 @@ namespace AESTest2._0
             {
                 e.Cancel = true;
             }
+            WriteDataToDataSheets();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

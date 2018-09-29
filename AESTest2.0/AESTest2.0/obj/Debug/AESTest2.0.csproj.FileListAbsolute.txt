@@ -47,7 +47,6 @@ C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.ex
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.exe
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\AESTest2.0.pdb
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\bin\Debug\DocX.dll
-C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.csprojResolveAssemblyReference.cache
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.MainForm.resources
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.PasswordForm.resources
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2._0.Properties.Resources.resources
@@ -56,3 +55,4 @@ C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.cs
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.csproj.CopyComplete
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.exe
 C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.pdb
+C:\Users\terzi\Desktop\AESTest-2.0\AESTest2.0\AESTest2.0\obj\Debug\AESTest2.0.csprojAssemblyReference.cache
