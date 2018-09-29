@@ -8,7 +8,7 @@ namespace AESTest2._0.Tools
 {
     class Mapper
     {
-        public static Dictionary<string, string> Map(DataHolder dataHolder)
+        public static Dictionary<string, string> GetMap(DataHolder dataHolder)
         {
             Dictionary<string, string> map = new Dictionary<string, string>();
             map.Add("<exam>", dataHolder.CurrentExam.Title);
