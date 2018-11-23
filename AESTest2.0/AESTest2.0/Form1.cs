@@ -8,6 +8,7 @@ using Microsoft.Office.Interop.Excel;
 using System.IO;
 using AESTest2._0.Extensions;
 using AESTest2._0.Tools;
+using System.Threading;
 
 namespace AESTest2._0
 {
@@ -320,8 +321,17 @@ namespace AESTest2._0
             {
                 sheetname = this.cmbGroups.SelectedItem.ToString();
             }
-
-            Workbook wBook = excelApp.Workbooks.Open(examQuestionsPath);
+            Workbook wBook = null;
+            try
+            {
+                wBook = excelApp.Workbooks.Open(examQuestionsPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Грешка");
+                return false;
+            }
+            
             Worksheet wSheet = null;
             try
             {
@@ -629,30 +639,45 @@ namespace AESTest2._0
 
         private void WriteDataToDataSheets()
         {
-
-            using (var w = new StreamWriter(MAINPATH + DATASTUDENTS, false))
-            {
-                for (int i = 0; i < dataHolder.Students.Count; i++)
+            Thread th1 = new Thread(new ThreadStart(() => {
+                using (var w = new StreamWriter(MAINPATH + DATASTUDENTS, false))
                 {
-                    w.WriteLine(dataHolder.Students[i].Fullname + " " + dataHolder.Students[i].PIN);
+                    for (int i = 0; i < dataHolder.Students.Count; i++)
+                    {
+                        w.WriteLine(dataHolder.Students[i].Fullname + " " + dataHolder.Students[i].PIN);
+                    }
                 }
-            }
+            }));
 
-            using (var w = new StreamWriter(MAINPATH + DATAEXAMS, false))
+            Thread th2 = new Thread(new ThreadStart(() =>
             {
-                for (int i = 0; i < dataHolder.Exams.Count; i++)
+                using (var w = new StreamWriter(MAINPATH + DATAEXAMS, false))
                 {
-                    w.WriteLine(dataHolder.Exams[i].Title + " " + dataHolder.Exams[i].QuestionsCount + " " + dataHolder.Exams[i].MinScore + " " + dataHolder.Exams[i].Type);
+                    for (int i = 0; i < dataHolder.Exams.Count; i++)
+                    {
+                        w.WriteLine(dataHolder.Exams[i].Title + " " + dataHolder.Exams[i].QuestionsCount + " " + dataHolder.Exams[i].MinScore + " " + dataHolder.Exams[i].Type);
+                    }
                 }
-            }
+            }));
 
-            using (var w = new StreamWriter(MAINPATH + DATAPOSTS, false))
+            Thread th3 = new Thread(new ThreadStart(() =>
             {
-                for (int i = 0; i < dataHolder.Posts.Count; i++)
+                using (var w = new StreamWriter(MAINPATH + DATAPOSTS, false))
                 {
-                    w.WriteLine(dataHolder.Posts[i].Title + " " + dataHolder.Posts[i].DeltaYear);
+                    for (int i = 0; i < dataHolder.Posts.Count; i++)
+                    {
+                        w.WriteLine(dataHolder.Posts[i].Title + " " + dataHolder.Posts[i].DeltaYear);
+                    }
                 }
-            }
+            }));
+
+            th1.Start();
+            th2.Start();
+            th3.Start();
+
+            th1.Join();
+            th2.Join();
+            th3.Join();
         }
 
         // --------------------------------
