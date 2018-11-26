@@ -1015,17 +1015,25 @@ namespace AESTest2._0
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            WriteDataToDataSheets();
-            if (excelApp != null)
+            if(e.CloseReason == CloseReason.ApplicationExitCall)
             {
-                excelApp.Quit();
-                ReleaseObject(excelApp);
+                WriteDataToDataSheets();
+                if (excelApp != null)
+                {
+                    excelApp.Quit();
+                    ReleaseObject(excelApp);
+                }
+                if (wordApp != null)
+                {
+                    wordApp.Quit();
+                    ReleaseObject(wordApp);
+                }
             }
-            if (wordApp != null)
+            else
             {
-                wordApp.Quit();
-                ReleaseObject(wordApp);
+                e.Cancel = true;
             }
+           
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
