@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            //ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -324,7 +324,8 @@ namespace AESTest2._0
             Workbook wBook = null;
             try
             {
-                wBook = excelApp.Workbooks.Open(examQuestionsPath);
+                wBook = excelApp.Workbooks.Open(examQuestionsPath, Type.Missing, true, Type.Missing, Type.Missing, Type.Missing,
+                Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
             }
             catch (Exception ex)
             {
@@ -595,8 +596,17 @@ namespace AESTest2._0
                 Dictionary<string, string> map = Mapper.GetMap(dataHolder);
                 this.pBar.PerformStep();
                 bool passed = dataHolder.Mark >= dataHolder.CurrentExam.MinScore; // If the student passed the exam
+                dataHolder.CurrentStudent.HasAlreadyFailed = this.StudentHasAlreadyFailed(dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam.Title);
                 string passedStr = passed ? "Издържал" : "Скъсан";
-                string saveAsPath = MAINPATH + GENERATEDDOCS + dataHolder.CurrentStudent.Fullname + "_" + passedStr + "_" + dataHolder.CurrentExam.Title + ".doc";
+                string saveAsPath;
+                if (dataHolder.CurrentStudent.HasAlreadyFailed)
+                {
+                    saveAsPath = MAINPATH + GENERATEDDOCS + dataHolder.CurrentStudent.Fullname + '_' + passedStr + '_' + "Втори Път" + '_' + dataHolder.CurrentExam.Title + ".doc";
+                }
+                else
+                {
+                    saveAsPath = MAINPATH + GENERATEDDOCS + dataHolder.CurrentStudent.Fullname + "_" + passedStr + "_" + dataHolder.CurrentExam.Title + ".doc";
+                }
                 string pathToTemplate = this.GetTemplatePath(dataHolder.Mark, dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam); // Path to template for current exam
                 this.pBar.PerformStep();
                 this.Fill(pathToTemplate, saveAsPath, map);
@@ -685,8 +695,18 @@ namespace AESTest2._0
         {
             string path1 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt";
             string path2 = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDAGAINDOCS + examtype + ".txt";
-            RemoveNameFromDoc(path1, nameToRemove);
-            RemoveNameFromDoc(path2, nameToRemove);
+            //RemoveNameFromDoc(path1, nameToRemove);
+            //RemoveNameFromDoc(path2, nameToRemove);
+            Thread t1 = new Thread(new ThreadStart(() => {
+                RemoveNameFromDoc(path1, nameToRemove);
+            }));
+            Thread t2 = new Thread(new ThreadStart(() => {
+                RemoveNameFromDoc(path2, nameToRemove);
+            }));
+            t1.Start();
+            t2.Start();
+            t1.Join();
+            t2.Join();
         }
 
         private void RemoveNameFromDoc(string path, string nameToRemove)
@@ -814,7 +834,7 @@ namespace AESTest2._0
         {
             string path = MAINPATH + GENERATEDDOCS + HIDDENDOCS;
 
-            if (this.StudentHasAlreadyFailed(name, examtype))
+            if (dataHolder.CurrentStudent.HasAlreadyFailed)
             {
                 path += FAILEDAGAINDOCS + examtype + ".txt";
             }
@@ -900,7 +920,7 @@ namespace AESTest2._0
             else
             {
                 path += TEMPLATESFAILED;
-                if (this.StudentHasAlreadyFailed(name, exam.Title))
+                if (dataHolder.CurrentStudent.HasAlreadyFailed)
                 {
                     path += TEMPLATESFAILEDAGAIN;
                 }
