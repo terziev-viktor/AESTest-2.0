@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            //ExplorerManager.Kill();
+            ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -329,7 +329,7 @@ namespace AESTest2._0
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Грешка");
+                MessageBox.Show(ex.Message, "Грешка при отваряне на екселски документ");
                 return false;
             }
             
@@ -479,7 +479,7 @@ namespace AESTest2._0
                 if (this.min < 0)
                 {
                     MessageBox.Show("Вашето време изтече");
-                    System.Windows.Forms.Application.Exit();
+                    //System.Windows.Forms.Application.Exit();
                 }
             }
             this.labelTime.Text = string.Format("Оставащо време: {0}:{1}", this.min, this.sec);
