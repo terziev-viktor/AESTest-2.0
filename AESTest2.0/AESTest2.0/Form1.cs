@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            //ExplorerManager.Kill();
+            ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
