@@ -18,7 +18,14 @@ namespace AESTest2._0.Tools
             
             map["<protocol>"] = dataHolder.ProtocolNumber.ToString();
             map["<date>"] = DateTime.Now.ToShortDateString();
-            map["<dateplus>"] = DateTime.Now.AddYears(dataHolder.CurrentPost.DeltaYear).ToShortDateString();
+            if (dataHolder.CurrentExam.Type == ExamType.ForSafety)
+            {
+                map["<dateplus>"] = DateTime.Now.AddYears(dataHolder.CurrentPost.DeltaYear).ToShortDateString();
+            }
+            else
+            {
+                map["<dateplus>"] = DateTime.Now.AddYears(1).ToShortDateString();
+            }
             string[] nameSplitted = dataHolder.CurrentStudent.Fullname.Split(new char[] { ' ' });
             map["<fullname>"] = dataHolder.CurrentStudent.Fullname;
             map["<name>"] = nameSplitted[0];

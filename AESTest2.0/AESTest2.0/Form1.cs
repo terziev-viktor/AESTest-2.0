@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            //ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -588,13 +588,11 @@ namespace AESTest2._0
             if (dialogResult == DialogResult.Yes)
             {
                 this.setProgressBar(1, 10);
-                this.pBar.PerformStep();
-                int rightAnswersCount = dataHolder.Questions.Take(dataHolder.CurrentExam.QuestionsCount).Count(x => x.RightAnswer == x.StudentsAnswer); // number of right answers
-                dataHolder.Mark = ((rightAnswersCount * 100) / dataHolder.CurrentExam.QuestionsCount);
+                this.pBar.PerformStep(); // [--       ]
                 dataHolder.ProtocolNumber = this.getProtocolNumber();
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [---      ]
                 Dictionary<string, string> map = Mapper.GetMap(dataHolder);
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [----     ]
                 bool passed = dataHolder.Mark >= dataHolder.CurrentExam.MinScore; // If the student passed the exam
                 dataHolder.CurrentStudent.HasAlreadyFailed = this.StudentHasAlreadyFailed(dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam.Title);
                 string passedStr = passed ? "Издържал" : "Скъсан";
@@ -608,9 +606,9 @@ namespace AESTest2._0
                     saveAsPath = MAINPATH + GENERATEDDOCS + dataHolder.CurrentStudent.Fullname + "_" + passedStr + "_" + dataHolder.CurrentExam.Title + ".doc";
                 }
                 string pathToTemplate = this.GetTemplatePath(dataHolder.Mark, dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam); // Path to template for current exam
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [-----   ]
                 this.Fill(pathToTemplate, saveAsPath, map);
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [------   ]
                 if (passed)
                 {
                     saveAsPath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
@@ -620,30 +618,32 @@ namespace AESTest2._0
                     pathToTemplate = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + dataHolder.CurrentExam.Title + ".doc"; // path to certificate for current group
 
                     this.Fill(pathToTemplate, saveAsPath, map);
-                    this.pBar.PerformStep();
+                    this.pBar.PerformStep(); // [-------  ]
                     this.RemoveFromFailedDocument(dataHolder.CurrentExam.Title, dataHolder.CurrentStudent.Fullname);
                 }
                 else
                 {
                     this.PutInFailedDocument(dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam.Title);
-                    this.pBar.PerformStep();
+                    this.pBar.PerformStep(); // [-------  ]
                 }
                 this.PutInAreToBeExamined(dataHolder.CurrentPost, dataHolder.CurrentStudent);
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [-------- ]
                 this.GeneratePrivateDocuments(dataHolder.CurrentStudent.Fullname, dataHolder.Mark, dataHolder.ProtocolNumber, passedStr, dataHolder.CurrentExam);
-                this.pBar.PerformStep();
+                this.pBar.PerformStep(); // [---------]
                 this.dataHolder.Students.Remove(dataHolder.CurrentStudent);
                 WriteDataToDataSheets();
-                this.pBar.PerformStep();
                 cmbNames.Items.Clear();
                 cmbNames.Items.AddRange(dataHolder.Students.Select(x => x.Fullname).ToArray());
                 this.pBar.Visible = false;
                 this.pBar.Enabled = false;
-                this.pBar.PerformStep();
                 this.pBar.Visible = false;
-
+                
                 this.EnterStage_3();
                 Time.Stop();
+            }
+            else
+            {
+                this.btnEnd.Enabled = true;
             }
         }
 
