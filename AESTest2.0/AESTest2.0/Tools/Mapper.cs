@@ -15,10 +15,9 @@ namespace AESTest2._0.Tools
             map.Add("<pin>", dataHolder.CurrentStudent.PIN);
             map.Add("<post>", dataHolder.CurrentPost.Title);
             map["<group>"] = dataHolder.CurrentGroup;
-            
             map["<protocol>"] = dataHolder.ProtocolNumber.ToString();
             map["<date>"] = DateTime.Now.ToShortDateString();
-            if (dataHolder.CurrentExam.Type == ExamType.ForSafety)
+            if (dataHolder.CurrentExam.Type == ExamType.Ordinance9)
             {
                 map["<dateplus>"] = DateTime.Now.AddYears(dataHolder.CurrentPost.DeltaYear).ToShortDateString();
             }

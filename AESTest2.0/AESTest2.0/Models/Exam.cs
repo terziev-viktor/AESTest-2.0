@@ -10,6 +10,11 @@
     {
         public string Title { get; set; }
 
+        public int ProtocolNumber
+        {
+            get; set;
+        }
+
         public int QuestionsCount { get; set; }
 
         public int MinScore { get; set; }

@@ -28,7 +28,25 @@ namespace AESTest2._0
 
         public int ProtocolNumber { get; set; }
 
-        public int Mark { get 
+        public void CalcMark()
+        {
+            int c = 0;
+            for (int i = 0; i < this.CurrentExam.QuestionsCount; ++i)
+            {
+                if (this.Questions[i].RightAnswer == this.Questions[i].StudentsAnswer)
+                {
+                    ++c;
+                }
+            }
+            this.mark = ((c * 100) / this.CurrentExam.QuestionsCount);
+        }
+
+        /// <summary>
+        /// Mark in % of right answers. Its calculated only once. Call CalcMark() if needed.
+        /// </summary>
+        public int Mark
+        {
+            get 
             {
                 if (markCalculated)
                 {
@@ -38,15 +56,7 @@ namespace AESTest2._0
                 {
                     return 0;
                 }
-                int c = 0;
-                for (int i = 0; i < this.CurrentExam.QuestionsCount; i++)
-                {
-                    if (this.Questions[i].RightAnswer == this.Questions[i].StudentsAnswer)
-                    {
-                        ++c;
-                    }
-                }
-                this.mark = ((c * 100) / this.CurrentExam.QuestionsCount);
+                CalcMark();
                 this.markCalculated = true;
                 return this.mark;
             } 

@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            // ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -295,6 +295,26 @@ namespace AESTest2._0
                 }
             }
 
+            foreach(var r in this.dataHolder.Exams)
+            {
+                if (!string.IsNullOrEmpty(r.ProtocolNumberPath))
+                {
+                    using (StreamReader sr = new StreamReader(r.ProtocolNumberPath))
+                    {
+                        int n;
+                        bool b = int.TryParse(sr.ReadLine(), out n);
+                        if (!b)
+                        {
+                            MessageBox.Show("Невалиден номер на протокола за изпит " + r.Title);
+                            r.ProtocolNumber = 0;
+                        }
+                        else
+                        {
+                            r.ProtocolNumber = n;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -587,12 +607,10 @@ namespace AESTest2._0
                                                          MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
-                this.setProgressBar(1, 10);
-                this.pBar.PerformStep(); // [--       ]
+                this.setProgressBar(1, 5);
                 dataHolder.ProtocolNumber = this.getProtocolNumber();
-                this.pBar.PerformStep(); // [---      ]
+                this.pBar.PerformStep(); // [-    ]
                 Dictionary<string, string> map = Mapper.GetMap(dataHolder);
-                this.pBar.PerformStep(); // [----     ]
                 bool passed = dataHolder.Mark >= dataHolder.CurrentExam.MinScore; // If the student passed the exam
                 dataHolder.CurrentStudent.HasAlreadyFailed = this.StudentHasAlreadyFailed(dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam.Title);
                 string passedStr = passed ? "Издържал" : "Скъсан";
@@ -606,9 +624,8 @@ namespace AESTest2._0
                     saveAsPath = MAINPATH + GENERATEDDOCS + dataHolder.CurrentStudent.Fullname + "_" + passedStr + "_" + dataHolder.CurrentExam.Title + ".doc";
                 }
                 string pathToTemplate = this.GetTemplatePath(dataHolder.Mark, dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam); // Path to template for current exam
-                this.pBar.PerformStep(); // [-----   ]
                 this.Fill(pathToTemplate, saveAsPath, map);
-                this.pBar.PerformStep(); // [------   ]
+                this.pBar.PerformStep(); // [--   ]
                 if (passed)
                 {
                     saveAsPath = MAINPATH + GENERATEDDOCS + TEMPLATESCERTIFICATES +
@@ -618,18 +635,17 @@ namespace AESTest2._0
                     pathToTemplate = MAINPATH + TEMPLATESDOCS + TEMPLATESCERTIFICATES + dataHolder.CurrentExam.Title + ".doc"; // path to certificate for current group
 
                     this.Fill(pathToTemplate, saveAsPath, map);
-                    this.pBar.PerformStep(); // [-------  ]
+                    this.pBar.PerformStep(); // [---  ]
                     this.RemoveFromFailedDocument(dataHolder.CurrentExam.Title, dataHolder.CurrentStudent.Fullname);
                 }
                 else
                 {
                     this.PutInFailedDocument(dataHolder.CurrentStudent.Fullname, dataHolder.CurrentExam.Title);
-                    this.pBar.PerformStep(); // [-------  ]
+                    this.pBar.PerformStep(); // [---  ]
                 }
                 this.PutInAreToBeExamined(dataHolder.CurrentPost, dataHolder.CurrentStudent);
-                this.pBar.PerformStep(); // [-------- ]
                 this.GeneratePrivateDocuments(dataHolder.CurrentStudent.Fullname, dataHolder.Mark, dataHolder.ProtocolNumber, passedStr, dataHolder.CurrentExam);
-                this.pBar.PerformStep(); // [---------]
+                this.pBar.PerformStep(); // [---- ]
                 this.dataHolder.Students.Remove(dataHolder.CurrentStudent);
                 WriteDataToDataSheets();
                 cmbNames.Items.Clear();
@@ -932,12 +948,13 @@ namespace AESTest2._0
 
         private bool StudentHasAlreadyFailed(string name, string examtype)
         {
-            if (!File.Exists(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
+            string filename = MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt";
+            if (!File.Exists(filename))
             {
-                File.Create(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt").Close();
+                File.Create(filename).Close();
                 return false;
             }
-            using (StreamReader r = new StreamReader(MAINPATH + GENERATEDDOCS + HIDDENDOCS + FAILEDDOCS + examtype + ".txt"))
+            using (StreamReader r = new StreamReader(filename))
             {
                 string readName;
                 do
@@ -1157,8 +1174,10 @@ namespace AESTest2._0
 
             if (b)
             {
-                this.tbExamInfoMinScore.Text = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].MinScore.ToString();
-                this.tbExamInfoNumOfQuestions.Text = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].QuestionsCount.ToString();
+                Exam ex = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex];
+                this.tbProtocolNo.Text = ex.ProtocolNumber.ToString();
+                this.tbExamInfoMinScore.Text = ex.MinScore.ToString();
+                this.tbExamInfoNumOfQuestions.Text = ex.QuestionsCount.ToString();
             }
         }
 
@@ -1259,11 +1278,32 @@ namespace AESTest2._0
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                using (var w = new StreamWriter(MAINPATH + PROTOCOLDOC, true))
+                Exam ex = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex];
+                bool valid = true;
+                using (var r = new StreamReader(dialog.FileName))
                 {
-                    Exam ex = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex];
-                    ex.ProtocolNumberPath = dialog.FileName;
-                    w.WriteLine(ex.Title + " " + dialog.FileName);
+                    string str = r.ReadLine();
+                    if(!string.IsNullOrEmpty(str))
+                    {
+                        int n;
+                        if(int.TryParse(str, out n))
+                        {
+                            ex.ProtocolNumber = n;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Номерът на протокола е навалиден");
+                            valid = false;
+                        }
+                    }
+                }
+                if (valid)
+                {
+                    using (var w = new StreamWriter(MAINPATH + PROTOCOLDOC, true))
+                    {
+                        ex.ProtocolNumberPath = dialog.FileName;
+                        w.WriteLine(ex.Title + " " + dialog.FileName);
+                    }
                 }
             }
         }
@@ -1376,7 +1416,8 @@ namespace AESTest2._0
         private void btnUpdateExamInfo_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(this.tbExamInfoMinScore.Text) ||
-                string.IsNullOrEmpty(this.tbExamInfoNumOfQuestions.Text))
+                string.IsNullOrEmpty(this.tbExamInfoNumOfQuestions.Text) ||
+                string.IsNullOrEmpty(this.tbProtocolNo.Text))
             {
                 MessageBox.Show("Не може да обновим с празна информация");
                 return;
@@ -1386,8 +1427,30 @@ namespace AESTest2._0
                 MessageBox.Show("Не е избран изпит за обновяване");
                 return;
             }
-            this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].MinScore = int.Parse(this.tbExamInfoMinScore.Text);
-            this.dataHolder.Exams[this.lbExamTypes.SelectedIndex].QuestionsCount = int.Parse(this.tbExamInfoNumOfQuestions.Text);
+            Exam ex = this.dataHolder.Exams[this.lbExamTypes.SelectedIndex];
+            int n;
+            if(!int.TryParse(this.tbExamInfoMinScore.Text, out n))
+            {
+                MessageBox.Show("Невалиден Минимален Резултат за ДА");
+                n = 0;
+            }
+            ex.MinScore = n;
+            if(int.TryParse(this.tbExamInfoNumOfQuestions.Text, out n))
+            {
+                MessageBox.Show("Невалиден Брой Въпроси");
+                n = 0;
+            }
+            ex.QuestionsCount = n;
+            if(int.TryParse(this.tbProtocolNo.Text, out n))
+            {
+                MessageBox.Show("Невалиден Номер на протокола");
+                n = 0;
+            }
+            ex.ProtocolNumber = n;
+            using (StreamWriter w = new StreamWriter(ex.ProtocolNumberPath))
+            {
+                w.WriteLine(this.tbProtocolNo.Text);
+            }
         }
     }
 }

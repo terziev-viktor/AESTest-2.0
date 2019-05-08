@@ -60,6 +60,8 @@
             this.btnNextTest = new System.Windows.Forms.Button();
             this.lblMark = new System.Windows.Forms.Label();
             this.stageManager = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.tbProtocolNo = new System.Windows.Forms.TextBox();
             this.btnUpdateExamInfo = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.tbExamInfoMinScore = new System.Windows.Forms.TextBox();
@@ -260,7 +262,7 @@
             this.stage_2.Controls.Add(this.lblAnswerC);
             this.stage_2.Controls.Add(this.lblAnswerB);
             this.stage_2.Controls.Add(this.lblAnswerA);
-            this.stage_2.Location = new System.Drawing.Point(12, 391);
+            this.stage_2.Location = new System.Drawing.Point(12, 166);
             this.stage_2.Name = "stage_2";
             this.stage_2.Size = new System.Drawing.Size(934, 738);
             this.stage_2.TabIndex = 51;
@@ -513,6 +515,8 @@
             // stageManager
             // 
             this.stageManager.BackColor = System.Drawing.Color.White;
+            this.stageManager.Controls.Add(this.label10);
+            this.stageManager.Controls.Add(this.tbProtocolNo);
             this.stageManager.Controls.Add(this.btnUpdateExamInfo);
             this.stageManager.Controls.Add(this.label12);
             this.stageManager.Controls.Add(this.tbExamInfoMinScore);
@@ -561,11 +565,27 @@
             this.stageManager.TabIndex = 52;
             this.stageManager.Visible = false;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(881, 258);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(84, 17);
+            this.label10.TabIndex = 64;
+            this.label10.Text = "Протокол #";
+            // 
+            // tbProtocolNo
+            // 
+            this.tbProtocolNo.Location = new System.Drawing.Point(881, 278);
+            this.tbProtocolNo.Name = "tbProtocolNo";
+            this.tbProtocolNo.Size = new System.Drawing.Size(121, 22);
+            this.tbProtocolNo.TabIndex = 63;
+            // 
             // btnUpdateExamInfo
             // 
             this.btnUpdateExamInfo.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdateExamInfo.Image")));
             this.btnUpdateExamInfo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnUpdateExamInfo.Location = new System.Drawing.Point(881, 230);
+            this.btnUpdateExamInfo.Location = new System.Drawing.Point(881, 306);
             this.btnUpdateExamInfo.Name = "btnUpdateExamInfo";
             this.btnUpdateExamInfo.Size = new System.Drawing.Size(121, 31);
             this.btnUpdateExamInfo.TabIndex = 62;
@@ -576,7 +596,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(881, 167);
+            this.label12.Location = new System.Drawing.Point(881, 192);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(91, 17);
             this.label12.TabIndex = 59;
@@ -584,7 +604,7 @@
             // 
             // tbExamInfoMinScore
             // 
-            this.tbExamInfoMinScore.Location = new System.Drawing.Point(881, 187);
+            this.tbExamInfoMinScore.Location = new System.Drawing.Point(881, 212);
             this.tbExamInfoMinScore.Name = "tbExamInfoMinScore";
             this.tbExamInfoMinScore.Size = new System.Drawing.Size(121, 22);
             this.tbExamInfoMinScore.TabIndex = 58;
@@ -592,7 +612,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(878, 114);
+            this.label11.Location = new System.Drawing.Point(881, 135);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(102, 17);
             this.label11.TabIndex = 57;
@@ -600,7 +620,7 @@
             // 
             // tbExamInfoNumOfQuestions
             // 
-            this.tbExamInfoNumOfQuestions.Location = new System.Drawing.Point(881, 135);
+            this.tbExamInfoNumOfQuestions.Location = new System.Drawing.Point(881, 154);
             this.tbExamInfoNumOfQuestions.Name = "tbExamInfoNumOfQuestions";
             this.tbExamInfoNumOfQuestions.Size = new System.Drawing.Size(121, 22);
             this.tbExamInfoNumOfQuestions.TabIndex = 55;
@@ -844,9 +864,10 @@
             // lbl3
             // 
             this.lbl3.AutoSize = true;
+            this.lbl3.Font = new System.Drawing.Font("MS Reference Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl3.Location = new System.Drawing.Point(29, 529);
             this.lbl3.Name = "lbl3";
-            this.lbl3.Size = new System.Drawing.Size(231, 17);
+            this.lbl3.Size = new System.Drawing.Size(253, 18);
             this.lbl3.TabIndex = 23;
             this.lbl3.Text = "Служител за изпитване (3 имена)";
             // 
@@ -1095,12 +1116,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1322, 790);
             this.ControlBox = false;
-            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stageManager);
+            this.Controls.Add(this.stage_2);
+            this.Controls.Add(this.stage_1);
             this.Controls.Add(this.stage_3);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.btnOpenManagerPanel);
-            this.Controls.Add(this.stage_2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -1205,6 +1226,8 @@
         private System.Windows.Forms.TextBox tbExamInfoMinScore;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox tbExamInfoNumOfQuestions;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox tbProtocolNo;
     }
 }
 
