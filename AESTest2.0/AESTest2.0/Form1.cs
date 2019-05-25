@@ -1435,13 +1435,13 @@ namespace AESTest2._0
                 n = 0;
             }
             ex.MinScore = n;
-            if(int.TryParse(this.tbExamInfoNumOfQuestions.Text, out n))
+            if(!int.TryParse(this.tbExamInfoNumOfQuestions.Text, out n))
             {
                 MessageBox.Show("Невалиден Брой Въпроси");
                 n = 0;
             }
             ex.QuestionsCount = n;
-            if(int.TryParse(this.tbProtocolNo.Text, out n))
+            if(!int.TryParse(this.tbProtocolNo.Text, out n))
             {
                 MessageBox.Show("Невалиден Номер на протокола");
                 n = 0;

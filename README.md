@@ -4,7 +4,7 @@
 ```
 <protocol> - Number of protocol
 <date> - Current date
-<dateplus> - Current date + One Year
+<date+> - Current date + Delta Year depending on the type of test
 <fullname> - Full name of the studens
 <name> - First name of student
 <sur> - Surname of student
@@ -18,7 +18,7 @@
 
 ### Naming templates
 ```
-path + Exam Title + .docx where path is one if {'Темплейти\Преминали', 'Темплейти\Скъсани', 'Темплейти\Скъсани\Скъсани Втори Път\'}
+path + Exam Title + .doc where path is one of {'Темплейти\Преминали', 'Темплейти\Скъсани', 'Темплейти\Скъсани\Скъсани Втори Път\'}
 ```
 
 

@@ -19,11 +19,11 @@ namespace AESTest2._0.Tools
             map["<date>"] = DateTime.Now.ToShortDateString();
             if (dataHolder.CurrentExam.Type == ExamType.Ordinance9)
             {
-                map["<dateplus>"] = DateTime.Now.AddYears(dataHolder.CurrentPost.DeltaYear).ToShortDateString();
+                map["<date+>"] = DateTime.Now.AddYears(dataHolder.CurrentPost.DeltaYear).ToShortDateString();
             }
             else
             {
-                map["<dateplus>"] = DateTime.Now.AddYears(1).ToShortDateString();
+                map["<date+>"] = DateTime.Now.AddYears(1).ToShortDateString();
             }
             string[] nameSplitted = dataHolder.CurrentStudent.Fullname.Split(new char[] { ' ' });
             map["<fullname>"] = dataHolder.CurrentStudent.Fullname;
