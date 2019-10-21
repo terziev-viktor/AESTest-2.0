@@ -8,6 +8,8 @@ namespace AESTest2._0
 
         private bool markCalculated;
 
+        private Exam currentExam = null;
+
         public DataHolder()
         {
             this.Students = new List<Student>();
@@ -22,7 +24,7 @@ namespace AESTest2._0
 
         public Post CurrentPost { get; set; }
 
-        public Exam CurrentExam { get; set; }
+        public Exam CurrentExam { get { return this.currentExam; } set { this.markCalculated = false; this.currentExam = value; } }
 
         public string CurrentGroup { get; set; }
 

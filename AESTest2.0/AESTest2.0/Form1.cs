@@ -107,7 +107,7 @@ namespace AESTest2._0
                 System.Windows.Forms.Application.Exit();
             }
             // Kills explorer.exe
-            ExplorerManager.Kill();
+            // ExplorerManager.Kill();
             this.EnterStage_1();
         }
 
@@ -434,9 +434,7 @@ namespace AESTest2._0
             {
                 dataHolder.CurrentGroup = "";
             }
-            string studentName = cmbNames.SelectedItem.ToString();
             dataHolder.CurrentStudent = dataHolder.Students[cmbNames.SelectedIndex];
-            string postTitle = cmbPosts.SelectedItem.ToString();
             dataHolder.CurrentPost = dataHolder.Posts[cmbPosts.SelectedIndex];
             this.EnterStage_2();
         }
